@@ -124,33 +124,67 @@ def _epoch(v):
 
 
 # ---------------------------------------------------------------- Alertswiss
+CHIAVI_TITOLO = ("title", "titolo", "headline", "titel")
+CHIAVI_TESTO = ("description", "text", "summary", "instruction", "message", "beschreibung", "testo", "content")
+CHIAVI_LINK = ("link", "url", "detailsUrl", "detailUrl", "href")
+CHIAVI_DATA = ("sent", "date", "published", "publishedAt", "created", "timestamp", "datum", "data")
+CHIAVI_AREA = ("area", "areas", "region", "regions", "areaDesc", "location", "gebiet")
+CHIAVI_LIVELLO = ("severity", "level", "type", "alertType", "category", "kind")
+
+
+def _primo(d, chiavi):
+    for k in chiavi:
+        if k in d and d[k] not in (None, "", [], {}):
+            return d[k]
+    return None
+
+
+def _testo_piatto(v, max_len=800):
+    if isinstance(v, (list, dict)):
+        v = json.dumps(v, ensure_ascii=False)
+    return re.sub(r"<[^>]+>", " ", str(v)).strip()[:max_len]
+
+
+def _trova_notifiche(nodo, out):
+    """Raccoglie ricorsivamente gli oggetti che hanno un titolo: sono le notifiche."""
+    if isinstance(nodo, dict):
+        if _primo(nodo, CHIAVI_TITOLO) is not None and any(k in nodo for k in CHIAVI_TESTO + CHIAVI_AREA + CHIAVI_LIVELLO):
+            out.append(nodo)
+        for v in nodo.values():
+            _trova_notifiche(v, out)
+    elif isinstance(nodo, list):
+        for v in nodo:
+            _trova_notifiche(v, out)
+
+
 def alertswiss():
     cfg = CFG["alertswiss"]
-    testo, usato = None, None
+    js, usato = None, None
     for url in cfg["url_candidati"]:
         try:
-            testo = scarica(url)
+            js = scarica(url, "json")
             usato = url
             break
         except Exception as e:
             log(f"Alertswiss: {url} non risponde ({e})")
-    if testo is None:
+    if js is None:
         return non_disp("nessun URL candidato risponde")
-    GREZZI["alertswiss"] = testo[:200000]
-    try:
-        radice = ET.fromstring(testo.encode("utf-8"))
-    except ET.ParseError as e:
-        return non_disp(f"XML non valido: {e}")
+    GREZZI["alertswiss"] = js
+    grezze = []
+    _trova_notifiche(js, grezze)
     voci = []
-    for it in radice.iter("item"):
-        titolo = (it.findtext("title") or "").strip()
-        descr = re.sub(r"<[^>]+>", " ", it.findtext("description") or "").strip()
-        voci.append({"titolo": titolo, "testo": descr[:800], "link": it.findtext("link"),
-                     "data": it.findtext("pubDate")})
+    for n in grezze:
+        voci.append({
+            "titolo": _testo_piatto(_primo(n, CHIAVI_TITOLO), 200),
+            "testo": _testo_piatto(_primo(n, CHIAVI_TESTO) or ""),
+            "area": _testo_piatto(_primo(n, CHIAVI_AREA) or "", 300),
+            "livello": _testo_piatto(_primo(n, CHIAVI_LIVELLO) or "", 60),
+            "link": _primo(n, CHIAVI_LINK) if isinstance(_primo(n, CHIAVI_LINK), str) else None,
+            "data": _epoch(_primo(n, CHIAVI_DATA)) if isinstance(_primo(n, CHIAVI_DATA), (int, float)) else _testo_piatto(_primo(n, CHIAVI_DATA) or "", 40),
+        })
     kw = [k.lower() for k in cfg["parole_chiave"]]
-    pertinenti = [v for v in voci if any(k in (v["titolo"] + v["testo"]).lower() for k in kw)]
-    return {"disponibile": True, "fonte": usato, "totale_svizzera": len(voci),
-            "notifiche": pertinenti}
+    pertinenti = [v for v in voci if any(k in (v["titolo"] + v["testo"] + v["area"]).lower() for k in kw)]
+    return {"disponibile": True, "fonte": usato, "totale_svizzera": len(voci), "notifiche": pertinenti}
 
 
 # ---------------------------------------------------------------- UFAM: pegel
