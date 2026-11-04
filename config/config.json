@@ -3,70 +3,203 @@
   "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
   "fuso_orario": "Europe/Zurich",
   "dati_stantii_minuti": 30,
-
   "comuni": [
-    {"nome": "Lugano",        "plz": "6900", "lat": 46.0037, "lon": 8.9511},
-    {"nome": "Paradiso",      "plz": "6900", "lat": 45.9900, "lon": 8.9460},
-    {"nome": "Massagno",      "plz": "6900", "lat": 46.0120, "lon": 8.9430},
-    {"nome": "Savosa",        "plz": "6942", "lat": 46.0210, "lon": 8.9450},
-    {"nome": "Vezia",         "plz": "6943", "lat": 46.0250, "lon": 8.9360},
-    {"nome": "Porza",         "plz": "6948", "lat": 46.0290, "lon": 8.9540},
-    {"nome": "Comano",        "plz": "6949", "lat": 46.0340, "lon": 8.9500},
-    {"nome": "Canobbio",      "plz": "6952", "lat": 46.0320, "lon": 8.9680},
-    {"nome": "Sorengo",       "plz": "6924", "lat": 45.9990, "lon": 8.9300},
-    {"nome": "Muzzano",       "plz": "6933", "lat": 45.9980, "lon": 8.9160},
-    {"nome": "Collina d'Oro", "plz": "6926", "lat": 45.9760, "lon": 8.9180},
-    {"nome": "Grancia",       "plz": "6916", "lat": 45.9700, "lon": 8.9280},
-    {"nome": "Melide",        "plz": "6815", "lat": 45.9550, "lon": 8.9470},
-    {"nome": "Morcote",       "plz": "6922", "lat": 45.9240, "lon": 8.9150},
-    {"nome": "Vico Morcote",  "plz": "6921", "lat": 45.9330, "lon": 8.9170}
+    {
+      "nome": "Lugano",
+      "plz": "6900",
+      "lat": 46.0037,
+      "lon": 8.9511
+    },
+    {
+      "nome": "Paradiso",
+      "plz": "6900",
+      "lat": 45.99,
+      "lon": 8.946
+    },
+    {
+      "nome": "Massagno",
+      "plz": "6900",
+      "lat": 46.012,
+      "lon": 8.943
+    },
+    {
+      "nome": "Savosa",
+      "plz": "6942",
+      "lat": 46.021,
+      "lon": 8.945
+    },
+    {
+      "nome": "Vezia",
+      "plz": "6943",
+      "lat": 46.025,
+      "lon": 8.936
+    },
+    {
+      "nome": "Porza",
+      "plz": "6948",
+      "lat": 46.029,
+      "lon": 8.954
+    },
+    {
+      "nome": "Comano",
+      "plz": "6949",
+      "lat": 46.034,
+      "lon": 8.95
+    },
+    {
+      "nome": "Canobbio",
+      "plz": "6952",
+      "lat": 46.032,
+      "lon": 8.968
+    },
+    {
+      "nome": "Sorengo",
+      "plz": "6924",
+      "lat": 45.999,
+      "lon": 8.93
+    },
+    {
+      "nome": "Muzzano",
+      "plz": "6933",
+      "lat": 45.998,
+      "lon": 8.916
+    },
+    {
+      "nome": "Collina d'Oro",
+      "plz": "6926",
+      "lat": 45.976,
+      "lon": 8.918
+    },
+    {
+      "nome": "Grancia",
+      "plz": "6916",
+      "lat": 45.97,
+      "lon": 8.928
+    },
+    {
+      "nome": "Melide",
+      "plz": "6815",
+      "lat": 45.955,
+      "lon": 8.947
+    },
+    {
+      "nome": "Morcote",
+      "plz": "6922",
+      "lat": 45.924,
+      "lon": 8.915
+    },
+    {
+      "nome": "Vico Morcote",
+      "plz": "6921",
+      "lat": 45.933,
+      "lon": 8.917
+    }
   ],
-
   "allerte_meteosvizzera": {
     "_nota": "DA_VERIFICARE. Backend pubblico dell'app MeteoSvizzera, non documentato: funziona senza chiave ma può cambiare. Appena MeteoSvizzera pubblicherà l'API OGD delle allerte, sostituire l'URL qui.",
     "url": "https://app-prod-ws.meteoswiss-app.ch/v1/plzDetail?plz={plz}00",
     "lingua": "it",
     "tipi": {
-      "1": "Vento", "2": "Temporali", "3": "Pioggia", "4": "Neve", "5": "Strade sdrucciolevoli",
-      "6": "Gelo", "7": "Caldo", "8": "Valanghe", "9": "Siccità", "10": "Incendio di bosco",
-      "11": "Piene", "12": "Terremoto"
+      "1": "Vento",
+      "2": "Temporali",
+      "3": "Pioggia",
+      "4": "Neve",
+      "5": "Strade sdrucciolevoli",
+      "6": "Gelo",
+      "7": "Caldo",
+      "8": "Valanghe",
+      "9": "Siccità",
+      "10": "Incendio di bosco",
+      "11": "Piene",
+      "12": "Terremoto"
     }
   },
-
   "alertswiss": {
     "_nota": "DA_VERIFICARE. Feed RSS pubblico di Alertswiss; il primo URL che risponde viene usato. Le notifiche sono filtrate per parola chiave.",
     "url_candidati": [
       "https://www.alert.swiss/content/alertswiss-internet/it/home/_jcr_content/alerts.rss",
       "https://www.alert.swiss/content/alertswiss-internet/de/home/_jcr_content/alerts.rss"
     ],
-    "parole_chiave": ["Ticino", "Tessin", "Lugano", "Luganese", "Sottoceneri", "Mendrisiotto", "Ceresio"]
+    "parole_chiave": [
+      "Ticino",
+      "Tessin",
+      "Lugano",
+      "Luganese",
+      "Sottoceneri",
+      "Mendrisiotto",
+      "Ceresio"
+    ]
   },
-
   "stazioni_meteo": [
-    {"id": "LUG", "nome": "Lugano",          "ruolo": "principale"},
-    {"id": "GEN", "nome": "Monte Generoso",  "ruolo": "quota"}
+    {
+      "id": "LUG",
+      "nome": "Lugano",
+      "ruolo": "principale"
+    },
+    {
+      "id": "GEN",
+      "nome": "Monte Generoso",
+      "ruolo": "quota"
+    }
   ],
   "meteosvizzera_smn_url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/{id}/ogd-smn_{id}_t_now.csv",
-
   "pegel": [
-    {"id": "2321", "nome": "Cassarate",      "luogo": "Pregassona", "tipo": "fiume", "param": "Q",
-     "unita": "m3/s", "soglie": {"2": 40, "3": 60, "4": 80, "5": 110},
-     "_nota": "DA_VERIFICARE: soglie ufficiali UFAM dei livelli di pericolo (hydrodaten.admin.ch, scheda stazione)"},
-    {"id": "2629", "nome": "Vedeggio",       "luogo": "Agno",       "tipo": "fiume", "param": "Q",
-     "unita": "m3/s", "soglie": {"2": 60, "3": 90, "4": 120, "5": 160},
-     "_nota": "DA_VERIFICARE: id stazione e soglie"},
-    {"id": "2101", "nome": "Lago di Lugano", "luogo": "Melide",     "tipo": "lago",  "param": "P",
-     "unita": "m s.l.m.", "soglie": {"2": 271.50, "3": 271.85, "4": 272.25, "5": 272.70},
-     "_nota": "DA_VERIFICARE: id stazione e soglie"}
+    {
+      "id": "2321",
+      "nome": "Cassarate",
+      "luogo": "Pregassona",
+      "tipo": "fiume",
+      "param": "Q",
+      "unita": "m3/s",
+      "soglie": {
+        "2": 40,
+        "3": 60,
+        "4": 80,
+        "5": 110
+      },
+      "_nota": "DA_VERIFICARE: soglie ufficiali UFAM dei livelli di pericolo (hydrodaten.admin.ch, scheda stazione)"
+    },
+    {
+      "id": "2629",
+      "nome": "Vedeggio",
+      "luogo": "Agno",
+      "tipo": "fiume",
+      "param": "Q",
+      "unita": "m3/s",
+      "soglie": {
+        "2": 60,
+        "3": 90,
+        "4": 120,
+        "5": 160
+      },
+      "_nota": "DA_VERIFICARE: id stazione e soglie"
+    },
+    {
+      "id": "2101",
+      "nome": "Lago di Lugano",
+      "luogo": "Melide",
+      "tipo": "lago",
+      "param": "P",
+      "unita": "m s.l.m.",
+      "soglie": {
+        "2": 271.5,
+        "3": 271.85,
+        "4": 272.25,
+        "5": 272.7
+      },
+      "_nota": "DA_VERIFICARE: id stazione e soglie"
+    }
   ],
   "ufam_url_candidati": [
     "https://www.hydrodaten.admin.ch/plots/p_q_7days/{id}_p_q_7days_it.json",
+    "https://www.hydrodaten.admin.ch/plots/p_7days/{id}_p_7days_it.json",
+    "https://www.hydrodaten.admin.ch/plots/q_7days/{id}_q_7days_it.json",
     "https://api3.geo.admin.ch/rest/services/api/MapServer/ch.bafu.hydrologie-hydromessstationen/{id}?returnGeometry=false&sr=2056"
   ],
-
   "previsione": {
     "_nota": "Open-Meteo, servizio open non ufficiale; usato per la previsione puntuale su Lugano.",
-    "lat": 46.0037, "lon": 8.9511,
+    "lat": 46.0037,
+    "lon": 8.9511,
     "url": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,wind_speed_10m,wind_gusts_10m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_gusts_10m_max,weather_code&timezone=Europe%2FZurich&forecast_days=6&wind_speed_unit=kmh"
   }
 }
