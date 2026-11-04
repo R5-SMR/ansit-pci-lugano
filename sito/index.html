@@ -55,9 +55,9 @@
   .nota { color: var(--muto); font-size: 13px; margin-top: 6px; }
   .carta-box { background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 8px; }
   #carta svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; }
-  #carta path.ctx { fill: var(--l1); stroke: var(--carta); stroke-width: 1; opacity: .6; }
-  #carta path.com { stroke: var(--testo); stroke-width: 1.2; cursor: pointer; }
-  #carta path.com.l1 { fill: var(--l1); } #carta path.com.l2 { fill: var(--l2); } #carta path.com.l3 { fill: var(--l3); }
+  #carta path.ctx { fill: var(--linea); stroke: var(--carta); stroke-width: 1; opacity: .35; }
+  #carta path.com { stroke: var(--testo); stroke-width: .8; cursor: pointer; }
+  #carta path.com.l1 { fill: var(--carta); } #carta path.com.l2 { fill: var(--l2); } #carta path.com.l3 { fill: var(--l3); }
   #carta path.com.l4 { fill: var(--l4); } #carta path.com.l5 { fill: var(--l5); } #carta path.com.nd { fill: url(#tratteggio); }
   #carta path.com.scelto { stroke-width: 3; }
   #carta text { font-size: 11px; fill: var(--testo); pointer-events: none; paint-order: stroke; stroke: var(--carta); stroke-width: 3px; stroke-linejoin: round; }
@@ -150,8 +150,8 @@
   const CODICI = {0:"Sereno",1:"Poco nuvoloso",2:"Parz. nuvoloso",3:"Coperto",45:"Nebbia",48:"Nebbia",51:"Pioviggine",53:"Pioviggine",55:"Pioviggine",61:"Pioggia debole",63:"Pioggia",65:"Pioggia forte",71:"Neve debole",73:"Neve",75:"Neve forte",80:"Rovesci",81:"Rovesci",82:"Rovesci forti",95:"Temporale",96:"Temporale con grandine",99:"Temporale con grandine"};
   let dati = null, carta = null;
   // spostamenti manuali delle etichette per i Comuni piccoli (dx, dy in unità della carta)
-  const OFFSET = {"Savosa": [0, -8], "Massagno": [0, 6], "Porza": [12, -4], "Canobbio": [14, 6], "Comano": [-6, -8],
-                  "Sorengo": [-4, -6], "Muzzano": [-8, 8], "Grancia": [10, 2], "Vico Morcote": [16, 10], "Morcote": [-14, 2]};
+  const OFFSET = {"Vezia": [-22, -4], "Savosa": [14, -12], "Massagno": [-4, 8], "Porza": [10, -6], "Canobbio": [18, 4], "Comano": [-8, -10],
+                  "Sorengo": [-10, -4], "Muzzano": [-12, 8], "Grancia": [12, 4], "Vico Morcote": [22, 10], "Morcote": [-16, 2], "Paradiso": [8, -4]};
 
   async function caricaCarta() {
     try {
