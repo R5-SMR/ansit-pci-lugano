@@ -167,7 +167,7 @@
     } else {
       $("aw-sub").textContent = `${aw.notifiche.length} pertinenti su ${aw.totale_svizzera} in Svizzera`;
       $("alertswiss").innerHTML = aw.notifiche.length
-        ? `<ul class="lista">${aw.notifiche.map(n => `<li class="peggiora"><b>${n.titolo}</b><br>${n.testo}${n.link ? ` <a href="${n.link}" target="_blank" rel="noopener">apri</a>` : ""}</li>`).join("")}</ul>`
+        ? `<ul class="lista">${aw.notifiche.map(n => `<li class="peggiora"><b>${n.titolo}</b>${n.livello ? ` <span style="color:var(--muto)">(${n.livello})</span>` : ""}<br>${n.area ? `<span style="color:var(--muto)">${n.area}</span><br>` : ""}${n.testo}${n.link ? ` <a href="${n.link}" target="_blank" rel="noopener">apri</a>` : ""}</li>`).join("")}</ul>`
         : `<div class="ok-box">Nessuna notifica Alertswiss pertinente per il comprensorio.</div>`;
     }
 
