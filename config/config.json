@@ -115,10 +115,10 @@
     }
   },
   "alertswiss": {
-    "_nota": "DA_VERIFICARE. Feed RSS pubblico di Alertswiss; il primo URL che risponde viene usato. Le notifiche sono filtrate per parola chiave.",
+    "_nota": "Endpoint JSON del sito alert.swiss (quello usato dalla pagina stessa). Non documentato ufficialmente: se cambia, ripetere la ricerca con gli strumenti del browser.",
     "url_candidati": [
-      "https://www.alert.swiss/content/alertswiss-internet/it/home/_jcr_content/alerts.rss",
-      "https://www.alert.swiss/content/alertswiss-internet/de/home/_jcr_content/alerts.rss"
+      "https://www.alert.swiss/content/alertswiss-internet/it/home/_jcr_content/polyalert.alertswiss_alerts.actual.json",
+      "https://www.alert.swiss/content/alertswiss-internet/de/home/_jcr_content/polyalert.alertswiss_alerts.actual.json"
     ],
     "parole_chiave": [
       "Ticino",
@@ -127,7 +127,9 @@
       "Luganese",
       "Sottoceneri",
       "Mendrisiotto",
-      "Ceresio"
+      "Ceresio",
+      "Canton TI",
+      "Cantone TI"
     ]
   },
   "stazioni_meteo": [
