@@ -169,7 +169,8 @@ def pegel(st):
             usato = url
             break
     if valore is None:
-        return non_disp("valore non trovato nelle risposte")
+        return {**non_disp("valore non trovato nelle risposte"), "id": st["id"],
+                "nome": st["nome"], "luogo": st["luogo"]}
     livello = 1
     for liv, soglia in sorted(st["soglie"].items(), key=lambda kv: int(kv[0])):
         if valore >= soglia:
@@ -184,14 +185,19 @@ def pegel(st):
             "trend_8h": trend, "fonte": usato}
 
 
+PAROLE_Q = ("PORTATA", "ABFLUSS", "DÉBIT", "DEBIT", "DISCHARGE")
+PAROLE_P = ("LIVELLO", "PEGEL", "NIVEAU", "WATER LEVEL", "WASSERSTAND")
+
+
 def _estrai_ufam(js, param):
-    """Ricerca tolerante: cerca una serie il cui nome contiene il parametro (P o Q)
-    oppure un attributo con l'ultimo valore. Da adattare al formato reale al primo avvio."""
+    """Cerca la serie giusta nel JSON dei grafici UFAM (nomi in IT/DE/FR/EN),
+    oppure un attributo con l'ultimo valore nel formato geo.admin."""
+    parole = PAROLE_Q if param == "Q" else PAROLE_P
     # formato "plots": {"plot": {"data": [{"name": ..., "x": [...], "y": [...]}]}}
     try:
         for serie in js["plot"]["data"]:
             nome = str(serie.get("name", "")).upper()
-            if param.upper() in nome or ("ABFLUSS" in nome and param == "Q") or ("PEGEL" in nome and param == "P"):
+            if any(p in nome for p in parole):
                 y = [v for v in serie.get("y", []) if isinstance(v, (int, float))]
                 if y:
                     return float(y[-1]), y[-48:]
