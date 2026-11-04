@@ -53,6 +53,12 @@
   .allerta.l2 { border-left-color: var(--l2); } .allerta.l3 { border-left-color: var(--l3); } .allerta.l4 { border-left-color: var(--l4); } .allerta.l5 { border-left-color: var(--l5); }
   .allerta small { color: var(--muto); display: block; }
   .nota { color: var(--muto); font-size: 13px; margin-top: 6px; }
+  svg.spark { width: 120px; height: 32px; display: block; }
+  svg.spark path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+  svg.spark rect { fill: currentColor; opacity: .55; }
+  svg.spark line { stroke: var(--l3); stroke-width: 1; stroke-dasharray: 3 3; }
+  .andamento { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 6px; }
+  .andamento .misura svg.spark { width: 100%; height: 48px; margin-top: 4px; }
   footer { color: var(--muto); font-size: 13px; border-top: 1px solid var(--linea); padding-top: 12px; }
   select { font: inherit; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--linea); background: var(--carta); color: var(--testo); }
   button { font: inherit; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--linea); background: var(--carta); color: var(--testo); cursor: pointer; }
@@ -97,6 +103,7 @@
   <section>
     <h2>Misure attuali<small id="mis-sub"></small></h2>
     <div class="misure" id="misure"></div>
+    <div class="andamento" id="andamento" style="margin-top:6px"></div>
   </section>
 
   <section>
@@ -122,6 +129,37 @@
   const livHtml = (l, nd) => nd ? '<span class="liv nd">n/d</span>' : `<span class="liv l${l}">${l}</span>`;
   const CODICI = {0:"Sereno",1:"Poco nuvoloso",2:"Parz. nuvoloso",3:"Coperto",45:"Nebbia",48:"Nebbia",51:"Pioviggine",53:"Pioviggine",55:"Pioviggine",61:"Pioggia debole",63:"Pioggia",65:"Pioggia forte",71:"Neve debole",73:"Neve",75:"Neve forte",80:"Rovesci",81:"Rovesci",82:"Rovesci forti",95:"Temporale",96:"Temporale con grandine",99:"Temporale con grandine"};
   let dati = null;
+
+  // Sparkline a linea: serie numerica (null ammessi), soglia opzionale (linea tratteggiata)
+  function spark(serie, soglia) {
+    const v = serie.filter(x => typeof x === "number");
+    if (v.length < 2) return "";
+    const W = 120, H = 32, p = 3;
+    let min = Math.min(...v), max = Math.max(...v);
+    if (soglia != null) { min = Math.min(min, soglia); max = Math.max(max, soglia); }
+    if (max === min) { max += 1; min -= 1; }
+    const x = i => p + i * (W - 2 * p) / (serie.length - 1);
+    const y = val => H - p - (val - min) * (H - 2 * p) / (max - min);
+    let d = "", pen = false;
+    serie.forEach((val, i) => {
+      if (typeof val !== "number") { pen = false; return; }
+      d += (pen ? "L" : "M") + x(i).toFixed(1) + " " + y(val).toFixed(1) + " ";
+      pen = true;
+    });
+    const sl = soglia != null ? `<line x1="0" x2="${W}" y1="${y(soglia).toFixed(1)}" y2="${y(soglia).toFixed(1)}"/>` : "";
+    return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${sl}<path d="${d}"/></svg>`;
+  }
+
+  // Sparkline a barre: per la pioggia oraria
+  function barre(serie) {
+    const v = serie.filter(x => typeof x === "number");
+    if (!v.length) return "";
+    const W = 120, H = 32, max = Math.max(...v, 0.5);
+    const w = W / serie.length;
+    const r = serie.map((val, i) => typeof val === "number" && val > 0
+      ? `<rect x="${(i * w).toFixed(1)}" y="${(H - val * (H - 2) / max).toFixed(1)}" width="${Math.max(w - 1, 1).toFixed(1)}" height="${(val * (H - 2) / max).toFixed(1)}"/>` : "").join("");
+    return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${r}</svg>`;
+  }
 
   async function carica() {
     try {
@@ -172,9 +210,9 @@
     }
 
     // pegel
-    $("pegel").innerHTML = `<tr><th>Stazione</th><th>Misura</th><th class="num">Valore</th><th>Trend 8 h</th><th>Livello</th></tr>` +
+    $("pegel").innerHTML = `<tr><th>Stazione</th><th>Misura</th><th class="num">Valore</th><th>Andamento 8 h</th><th>Livello</th></tr>` +
       dati.pegel.map(p => p.disponibile
-        ? `<tr><td>${p.nome}<br><small style="color:var(--muto)">${p.luogo}</small></td><td>${p.parametro === "Q" ? "Portata" : "Livello"}</td><td class="num">${t(p.valore)} ${p.unita}</td><td>${t(p.trend_8h)}</td><td>${livHtml(p.livello, stantio)}</td></tr>`
+        ? `<tr><td>${p.nome}<br><small style="color:var(--muto)">${p.luogo}</small></td><td>${p.parametro === "Q" ? "Portata" : "Livello"}</td><td class="num">${t(p.valore)} ${p.unita}</td><td>${spark(p.serie_8h || [], p.soglie && p.soglie["2"])}<small style="color:var(--muto)">${t(p.trend_8h)}</small></td><td>${livHtml(p.livello, stantio)}</td></tr>`
         : `<tr><td>${p.nome || "?"}</td><td colspan="3" style="color:var(--muto)">non disponibile – ${p.motivo}</td><td>${livHtml(null, true)}</td></tr>`).join("");
 
     // misure
@@ -182,12 +220,18 @@
     if (!m.disponibile) {
       $("mis-sub").textContent = "";
       $("misure").innerHTML = `<div class="nd-box" style="grid-column:1/-1">Misure MeteoSvizzera non disponibili (${m.motivo}).</div>`;
+      $("andamento").innerHTML = "";
     } else {
       $("mis-sub").textContent = `${m.nome}, rilevamento ${t(m.rilevamento)} UTC`;
       const box = (v, u, l) => `<div class="misura"><b>${t(v)}${v == null ? "" : u}</b><span>${l}</span></div>`;
       $("misure").innerHTML = box(m.temperatura, " °C", "Temperatura") + box(m.umidita, " %", "Umidità") +
         box(m.vento_kmh, " km/h", "Vento medio") + box(m.raffica_kmh, " km/h", "Raffica") +
         box(m.pioggia_1h, " mm", "Pioggia ultima ora") + box(m.pioggia_24h, " mm", "Pioggia 24 ore") + box(m.pressione, " hPa", "Pressione");
+      const s24 = m.serie_24h || {};
+      $("andamento").innerHTML =
+        `<div class="misura"><span>Pioggia oraria, ultime 24 h</span>${barre(s24.pioggia_oraria || [])}</div>` +
+        `<div class="misura"><span>Raffica, ultime 24 h</span>${spark(s24.raffica_kmh || [])}</div>` +
+        `<div class="misura"><span>Temperatura, ultime 24 h</span>${spark(s24.temperatura || [])}</div>`;
     }
 
     // previsione
