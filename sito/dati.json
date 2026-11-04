@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-04T18:22:31+00:00",
- "generato_locale": "04.11.2026 19:22",
+ "generato": "2026-11-04T18:23:17+00:00",
+ "generato_locale": "04.11.2026 19:23",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -130,8 +130,10 @@
   }
  },
  "alertswiss": {
-  "disponibile": false,
-  "motivo": "nessun URL candidato risponde"
+  "disponibile": true,
+  "fonte": "https://www.alert.swiss/content/alertswiss-internet/it/home/_jcr_content/polyalert.alertswiss_alerts.actual.json",
+  "totale_svizzera": 7,
+  "notifiche": []
  },
  "pegel": [
   {
@@ -188,7 +190,7 @@
     "4": 272.25,
     "5": 272.7
    },
-   "trend_8h": "stabile",
+   "trend_8h": "in calo",
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2101_p_q_7days_it.json"
   }
  ],
@@ -376,9 +378,9 @@
  },
  "variazioni": [
   {
-   "testo": "Nessuna variazione rispetto al ciclo precedente.",
+   "testo": "Fonte «alertswiss»: di nuovo disponibile",
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-04T18:11:33+00:00"
+ "precedente": "2026-11-04T18:22:31+00:00"
 }
