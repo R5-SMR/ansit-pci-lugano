@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-04T18:11:33+00:00",
- "generato_locale": "04.11.2026 19:11",
+ "generato": "2026-11-04T18:22:31+00:00",
+ "generato_locale": "04.11.2026 19:22",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,31 +25,31 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "04.11.2026 18:00",
-   "temperatura": 10.3,
-   "umidita": 80.4,
+   "rilevamento": "04.11.2026 18:10",
+   "temperatura": 9.8,
+   "umidita": 85.8,
    "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 0.8,
-   "raffica_kmh": 1.9,
-   "direzione": 275.0,
-   "pressione": 990.5
+   "vento_kmh": 0.7,
+   "raffica_kmh": 1.7,
+   "direzione": 257.0,
+   "pressione": 990.6
   },
   "GEN": {
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "04.11.2026 18:00",
-   "temperatura": 0.5,
+   "rilevamento": "04.11.2026 18:10",
+   "temperatura": 0.4,
    "umidita": 99.3,
    "pioggia_10min": null,
-   "pioggia_1h": 0.1,
-   "pioggia_24h": 0.1,
-   "vento_kmh": 1.8,
-   "raffica_kmh": 2.1,
-   "direzione": 313.0,
-   "pressione": 845.0
+   "pioggia_1h": 0.2,
+   "pioggia_24h": 0.2,
+   "vento_kmh": 0.6,
+   "raffica_kmh": 1.4,
+   "direzione": 330.0,
+   "pressione": 845.1
   }
  },
  "allerte": {
@@ -131,7 +131,7 @@
  },
  "alertswiss": {
   "disponibile": false,
-  "motivo": "XML non valido: no element found: line 1, column 0"
+  "motivo": "nessun URL candidato risponde"
  },
  "pegel": [
   {
@@ -142,7 +142,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 1.11,
+   "valore": 1.22,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -161,7 +161,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 1.93,
+   "valore": 1.82,
    "livello": 1,
    "soglie": {
     "2": 60,
@@ -169,7 +169,7 @@
     "4": 120,
     "5": 160
    },
-   "trend_8h": "in aumento",
+   "trend_8h": "stabile",
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
   {
@@ -188,7 +188,7 @@
     "4": 272.25,
     "5": 272.7
    },
-   "trend_8h": "in aumento",
+   "trend_8h": "stabile",
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2101_p_q_7days_it.json"
   }
  ],
@@ -380,5 +380,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-04T18:06:14+00:00"
+ "precedente": "2026-11-04T18:11:33+00:00"
 }
