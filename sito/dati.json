@@ -1,0 +1,369 @@
+{
+ "generato": "2026-11-04T17:50:57+00:00",
+ "generato_locale": "04.11.2026 18:50",
+ "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
+ "dati_stantii_minuti": 30,
+ "comuni": [
+  "Lugano",
+  "Paradiso",
+  "Massagno",
+  "Savosa",
+  "Vezia",
+  "Porza",
+  "Comano",
+  "Canobbio",
+  "Sorengo",
+  "Muzzano",
+  "Collina d'Oro",
+  "Grancia",
+  "Melide",
+  "Morcote",
+  "Vico Morcote"
+ ],
+ "misure": {
+  "LUG": {
+   "disponibile": true,
+   "stazione": "LUG",
+   "nome": "Lugano",
+   "rilevamento": "04.11.2026 17:40",
+   "temperatura": 10.7,
+   "umidita": 75.0,
+   "pioggia_10min": 0.0,
+   "pioggia_1h": 0.0,
+   "pioggia_24h": 0.0,
+   "vento_kmh": 0.7,
+   "raffica_kmh": 1.7,
+   "direzione": 280.0,
+   "pressione": 990.2
+  },
+  "GEN": {
+   "disponibile": true,
+   "stazione": "GEN",
+   "nome": "Monte Generoso",
+   "rilevamento": "04.11.2026 17:40",
+   "temperatura": 0.7,
+   "umidita": 99.3,
+   "pioggia_10min": null,
+   "pioggia_1h": 0.1,
+   "pioggia_24h": 0.1,
+   "vento_kmh": 2.4,
+   "raffica_kmh": 2.7,
+   "direzione": 319.0,
+   "pressione": 844.9
+  }
+ },
+ "allerte": {
+  "Lugano": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Paradiso": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Massagno": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Savosa": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Vezia": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Porza": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Comano": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Canobbio": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Sorengo": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Muzzano": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Collina d'Oro": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Grancia": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Melide": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Morcote": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  },
+  "Vico Morcote": {
+   "disponibile": true,
+   "livello_max": 1,
+   "allerte": []
+  }
+ },
+ "alertswiss": {
+  "disponibile": false,
+  "motivo": "XML non valido: no element found: line 1, column 0"
+ },
+ "pegel": [
+  {
+   "disponibile": true,
+   "id": "2321",
+   "nome": "Cassarate",
+   "luogo": "Pregassona",
+   "tipo": "fiume",
+   "parametro": "Q",
+   "unita": "m3/s",
+   "valore": 285.95,
+   "livello": 5,
+   "soglie": {
+    "2": 40,
+    "3": 60,
+    "4": 80,
+    "5": 110
+   },
+   "trend_8h": "in aumento",
+   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
+  },
+  {
+   "disponibile": true,
+   "id": "2629",
+   "nome": "Vedeggio",
+   "luogo": "Agno",
+   "tipo": "fiume",
+   "parametro": "Q",
+   "unita": "m3/s",
+   "valore": 274.33,
+   "livello": 5,
+   "soglie": {
+    "2": 60,
+    "3": 90,
+    "4": 120,
+    "5": 160
+   },
+   "trend_8h": "in calo",
+   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
+  },
+  {
+   "disponibile": false,
+   "motivo": "valore non trovato nelle risposte"
+  }
+ ],
+ "previsione": {
+  "disponibile": true,
+  "fonte": "Open-Meteo (non ufficiale)",
+  "orario": [
+   {
+    "ora": "18:00",
+    "temperatura": 10.4,
+    "umidita": 83,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 88,
+    "vento_kmh": 2.9,
+    "raffica_kmh": 5.8,
+    "codice": 3
+   },
+   {
+    "ora": "19:00",
+    "temperatura": 10.3,
+    "umidita": 84,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 78,
+    "vento_kmh": 1.6,
+    "raffica_kmh": 4.7,
+    "codice": 61
+   },
+   {
+    "ora": "20:00",
+    "temperatura": 10.4,
+    "umidita": 86,
+    "pioggia_mm": 0.1,
+    "prob_pioggia": 83,
+    "vento_kmh": 4.0,
+    "raffica_kmh": 6.5,
+    "codice": 61
+   },
+   {
+    "ora": "21:00",
+    "temperatura": 10.2,
+    "umidita": 86,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 78,
+    "vento_kmh": 3.6,
+    "raffica_kmh": 7.2,
+    "codice": 61
+   },
+   {
+    "ora": "22:00",
+    "temperatura": 10.1,
+    "umidita": 84,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 48,
+    "vento_kmh": 2.3,
+    "raffica_kmh": 5.8,
+    "codice": 3
+   },
+   {
+    "ora": "23:00",
+    "temperatura": 10.1,
+    "umidita": 84,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 15,
+    "vento_kmh": 3.0,
+    "raffica_kmh": 4.7,
+    "codice": 3
+   },
+   {
+    "ora": "00:00",
+    "temperatura": 10.1,
+    "umidita": 84,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 8,
+    "vento_kmh": 2.9,
+    "raffica_kmh": 4.3,
+    "codice": 3
+   },
+   {
+    "ora": "01:00",
+    "temperatura": 10.1,
+    "umidita": 85,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 0,
+    "vento_kmh": 2.7,
+    "raffica_kmh": 4.3,
+    "codice": 3
+   },
+   {
+    "ora": "02:00",
+    "temperatura": 9.9,
+    "umidita": 84,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 0,
+    "vento_kmh": 3.4,
+    "raffica_kmh": 5.0,
+    "codice": 3
+   },
+   {
+    "ora": "03:00",
+    "temperatura": 10.0,
+    "umidita": 85,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 0,
+    "vento_kmh": 4.0,
+    "raffica_kmh": 5.4,
+    "codice": 3
+   },
+   {
+    "ora": "04:00",
+    "temperatura": 10.0,
+    "umidita": 87,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 0,
+    "vento_kmh": 1.8,
+    "raffica_kmh": 6.5,
+    "codice": 3
+   },
+   {
+    "ora": "05:00",
+    "temperatura": 9.4,
+    "umidita": 90,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 0,
+    "vento_kmh": 3.4,
+    "raffica_kmh": 5.0,
+    "codice": 3
+   }
+  ],
+  "giorni": [
+   {
+    "data": "2026-11-04",
+    "tmax": 11.2,
+    "tmin": 9.4,
+    "pioggia_mm": 0.3,
+    "raffica_max": 11.5,
+    "codice": 80
+   },
+   {
+    "data": "2026-11-05",
+    "tmax": 13.6,
+    "tmin": 8.7,
+    "pioggia_mm": 0.0,
+    "raffica_max": 8.3,
+    "codice": 3
+   },
+   {
+    "data": "2026-11-06",
+    "tmax": 11.7,
+    "tmin": 9.1,
+    "pioggia_mm": 6.73,
+    "raffica_max": 11.5,
+    "codice": 61
+   },
+   {
+    "data": "2026-11-07",
+    "tmax": 13.0,
+    "tmin": 7.2,
+    "pioggia_mm": 0.5,
+    "raffica_max": 6.8,
+    "codice": 61
+   },
+   {
+    "data": "2026-11-08",
+    "tmax": 14.5,
+    "tmin": 5.0,
+    "pioggia_mm": 0.0,
+    "raffica_max": 11.2,
+    "codice": 45
+   },
+   {
+    "data": "2026-11-09",
+    "tmax": 13.4,
+    "tmin": 6.5,
+    "pioggia_mm": 0.0,
+    "raffica_max": 12.6,
+    "codice": 45
+   }
+  ],
+  "massimi_12h": {
+   "raffica_kmh": 7.2,
+   "pioggia_oraria_mm": 0.1,
+   "pioggia_totale_mm": 0.1,
+   "temperatura": 10.4
+  }
+ },
+ "variazioni": [
+  {
+   "testo": "Prima situazione registrata.",
+   "tipo": "info"
+  }
+ ],
+ "precedente": null
+}
