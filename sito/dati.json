@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-04T17:50:57+00:00",
- "generato_locale": "04.11.2026 18:50",
+ "generato": "2026-11-04T18:06:14+00:00",
+ "generato_locale": "04.11.2026 19:06",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,31 +25,31 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "04.11.2026 17:40",
-   "temperatura": 10.7,
-   "umidita": 75.0,
+   "rilevamento": "04.11.2026 17:50",
+   "temperatura": 10.8,
+   "umidita": 75.1,
    "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 0.7,
-   "raffica_kmh": 1.7,
-   "direzione": 280.0,
-   "pressione": 990.2
+   "vento_kmh": 1.0,
+   "raffica_kmh": 1.9,
+   "direzione": 255.0,
+   "pressione": 990.4
   },
   "GEN": {
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "04.11.2026 17:40",
-   "temperatura": 0.7,
+   "rilevamento": "04.11.2026 17:50",
+   "temperatura": 0.6,
    "umidita": 99.3,
    "pioggia_10min": null,
    "pioggia_1h": 0.1,
    "pioggia_24h": 0.1,
-   "vento_kmh": 2.4,
-   "raffica_kmh": 2.7,
-   "direzione": 319.0,
-   "pressione": 844.9
+   "vento_kmh": 2.1,
+   "raffica_kmh": 2.4,
+   "direzione": 318.0,
+   "pressione": 845.0
   }
  },
  "allerte": {
@@ -142,8 +142,8 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 285.95,
-   "livello": 5,
+   "valore": 1.11,
+   "livello": 1,
    "soglie": {
     "2": 40,
     "3": 60,
@@ -161,36 +161,41 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 274.33,
-   "livello": 5,
+   "valore": 1.93,
+   "livello": 1,
    "soglie": {
     "2": 60,
     "3": 90,
     "4": 120,
     "5": 160
    },
-   "trend_8h": "in calo",
+   "trend_8h": "in aumento",
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
   {
-   "disponibile": false,
-   "motivo": "valore non trovato nelle risposte"
+   "disponibile": true,
+   "id": "2101",
+   "nome": "Lago di Lugano",
+   "luogo": "Melide",
+   "tipo": "lago",
+   "parametro": "P",
+   "unita": "m s.l.m.",
+   "valore": 270.43,
+   "livello": 1,
+   "soglie": {
+    "2": 271.5,
+    "3": 271.85,
+    "4": 272.25,
+    "5": 272.7
+   },
+   "trend_8h": "in aumento",
+   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2101_p_q_7days_it.json"
   }
  ],
  "previsione": {
   "disponibile": true,
   "fonte": "Open-Meteo (non ufficiale)",
   "orario": [
-   {
-    "ora": "18:00",
-    "temperatura": 10.4,
-    "umidita": 83,
-    "pioggia_mm": 0.0,
-    "prob_pioggia": 88,
-    "vento_kmh": 2.9,
-    "raffica_kmh": 5.8,
-    "codice": 3
-   },
    {
     "ora": "19:00",
     "temperatura": 10.3,
@@ -300,6 +305,16 @@
     "vento_kmh": 3.4,
     "raffica_kmh": 5.0,
     "codice": 3
+   },
+   {
+    "ora": "06:00",
+    "temperatura": 9.4,
+    "umidita": 88,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 0,
+    "vento_kmh": 3.6,
+    "raffica_kmh": 5.4,
+    "codice": 3
    }
   ],
   "giorni": [
@@ -361,9 +376,13 @@
  },
  "variazioni": [
   {
-   "testo": "Prima situazione registrata.",
-   "tipo": "info"
+   "testo": "Cassarate (Pregassona): livello da 5 a 1",
+   "tipo": "migliora"
+  },
+  {
+   "testo": "Vedeggio (Agno): livello da 5 a 1",
+   "tipo": "migliora"
   }
  ],
- "precedente": null
+ "precedente": "2026-11-04T17:50:57+00:00"
 }
