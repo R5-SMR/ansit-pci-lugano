@@ -76,6 +76,13 @@ def misure_smn(st):
     pioggia1h = sum(x for x in (num(r, "pioggia_10min") for r in righe[-6:]) if x is not None)
     vento = num(ultima, "vento_kmh")
     raffica = num(ultima, "raffica_kmh")
+    ultime = righe[-144:]
+    serie_t = [num(r, "temperatura") for r in ultime]
+    serie_raf = [num(r, "raffica_kmh") for r in ultime]
+    pioggia_oraria = []
+    for i in range(0, len(ultime), 6):
+        blocco = [num(r, "pioggia_10min") for r in ultime[i:i + 6]]
+        pioggia_oraria.append(round(sum(x for x in blocco if x is not None), 1))
     return {
         "disponibile": True, "stazione": st["id"], "nome": st["nome"],
         "rilevamento": ultima.get(col_ts), "temperatura": num(ultima, "temperatura"),
@@ -84,6 +91,7 @@ def misure_smn(st):
         # OGD fornisce il vento in km/h (da verificare nei metadati: fkl010z0 è in km/h)
         "vento_kmh": vento, "raffica_kmh": raffica, "direzione": num(ultima, "direzione"),
         "pressione": num(ultima, "pressione"),
+        "serie_24h": {"temperatura": serie_t, "raffica_kmh": serie_raf, "pioggia_oraria": pioggia_oraria},
     }
 
 
@@ -216,7 +224,7 @@ def pegel(st):
     return {"disponibile": True, "id": st["id"], "nome": st["nome"], "luogo": st["luogo"],
             "tipo": st["tipo"], "parametro": st["param"], "unita": st["unita"],
             "valore": round(valore, 2), "livello": livello, "soglie": st["soglie"],
-            "trend_8h": trend, "fonte": usato}
+            "trend_8h": trend, "serie_8h": [round(v, 2) for v in serie], "fonte": usato}
 
 
 PAROLE_Q = ("PORTATA", "ABFLUSS", "DÉBIT", "DEBIT", "DISCHARGE")
