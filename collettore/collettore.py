@@ -261,14 +261,26 @@ def _estrai_ufam(js, param):
 TZ_OASI = timezone(timedelta(hours=1))   # OASI usa GMT+1 fisso, senza ora legale
 
 
+OASI_BLOCCATO = {"stato": False, "motivo": ""}
+
+
 def oasi(st):
     cfg = CFG["oasi"]
+    if OASI_BLOCCATO["stato"]:
+        return {**non_disp("OASI non raggiungibile in questo ciclo: " + OASI_BLOCCATO["motivo"]),
+                "nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"]}
     oggi = ADESSO.astimezone(TZ_OASI).date()
     url = cfg["url"].format(domain=st["dominio"], param=st["param"], codice=quote(st["codice"]),
                             da=(oggi - timedelta(days=1)).isoformat(), a=oggi.isoformat())
     try:
-        testo = scarica(url)
+        testo = scarica(url, timeout=8)
+    except requests.exceptions.ConnectionError as e:
+        # errore di rete (DNS, rifiuto, timeout di connessione): inutile insistere sulle altre stazioni
+        OASI_BLOCCATO.update(stato=True, motivo=str(e)[:120])
+        log(f"OASI: connessione fallita, salto le stazioni successive ({str(e)[:120]})")
+        return {**non_disp(e), "nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"]}
     except Exception as e:
+        log(f"OASI {st['codice']}: {str(e)[:160]}")
         return {**non_disp(e), "nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"]}
     GREZZI.setdefault("oasi", {})[st["codice"]] = testo[-30000:]
     punti = []
