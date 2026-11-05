@@ -197,7 +197,8 @@
         l.bindTooltip(f.properties.nome, {permanent: true, direction: "center", className: "nome-comune"});
       }}).addTo(mappa);
     stratoPunti = L.layerGroup().addTo(mappa);
-    mappa.fitBounds(strato.getBounds(), {padding: [6, 6]});
+    const inquadra = () => { mappa.invalidateSize(); mappa.fitBounds(strato.getBounds(), {padding: [6, 6]}); };
+    inquadra(); setTimeout(inquadra, 300); setTimeout(inquadra, 1500); window.addEventListener("load", inquadra);
   }
 
   function colore(l, nd) { return nd || l == null ? css("--muto") : css("--l" + l); }

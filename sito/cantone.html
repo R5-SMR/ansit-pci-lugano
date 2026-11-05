@@ -171,8 +171,9 @@
     strato.eachLayer(l => { if (l.feature.properties.comprensorio) l.bringToFront(); });
     stratoPunti = L.layerGroup().addTo(mappa);
     regLabel = L.layerGroup().addTo(mappa);
-    mappa.fitBounds(strato.getBounds(), {padding: [4, 4]});
-    window.addEventListener("resize", () => { mappa.invalidateSize(); mappa.fitBounds(strato.getBounds(), {padding: [4, 4]}); });
+    const inquadra = () => { mappa.invalidateSize(); mappa.fitBounds(strato.getBounds(), {padding: [4, 4]}); };
+    inquadra(); setTimeout(inquadra, 300); setTimeout(inquadra, 1500); window.addEventListener("load", inquadra);
+    window.addEventListener("resize", inquadra);
   }
 
   function colore(l, nd) { return nd || l == null ? css("--muto") : css("--l" + l); }
