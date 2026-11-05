@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Analisi della situazione · Ticino · PCi Lugano Città</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin=""></script>
 <style>
   :root {
     --sfondo: #f3f4f2; --carta: #ffffff; --testo: #1b1f1d; --muto: #5c645f; --linea: #d8dcd9;
@@ -44,6 +46,12 @@
   #mappa { grid-row: 1 / 3; }
   #mappa .corpo { display: flex; align-items: center; justify-content: center; }
   #carta svg { width: 100%; height: 100%; max-height: 100%; }
+  #mappa-l { width: 100%; height: 100%; background: #e6e9e7; border-radius: 4px; }
+  #mappa-l .etichetta-peg { background: var(--carta); border: 1.5px solid var(--testo); border-radius: 50%; width: 24px; height: 24px; line-height: 22px; text-align: center; font-weight: 700; font-size: 13px; color: var(--testo); }
+  #mappa-l .etichetta-peg.l2 { background: var(--l2); } #mappa-l .etichetta-peg.l3 { background: var(--l3); } #mappa-l .etichetta-peg.l4 { background: var(--l4); color: #fff; } #mappa-l .etichetta-peg.l5 { background: var(--l5); color: #fff; }
+  #mappa-l .etichetta-peg.nd { background: var(--nd); }
+  #mappa-l .nome-reg { background: none; border: 0; box-shadow: none; font-size: 12px; font-weight: 700; color: var(--testo); text-shadow: 0 0 3px var(--carta), 0 0 3px var(--carta), 0 0 5px var(--carta); white-space: nowrap; }
+  @media (prefers-color-scheme: dark) { #mappa-l .leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); } #mappa-l { background: #1e2320; } }
   #carta path.com { stroke: var(--carta); stroke-width: .5; }
   #carta path.com.l1 { fill: var(--l1); } #carta path.com.l2 { fill: var(--l2); } #carta path.com.l3 { fill: var(--l3); }
   #carta path.com.l4 { fill: var(--l4); } #carta path.com.l5 { fill: var(--l5); } #carta path.com.nd { fill: url(#tratteggio); }
@@ -97,8 +105,8 @@
 <main>
   <section class="pannello" id="mappa">
     <h2>Allerte MeteoSvizzera per regione · pegel UFAM</h2>
-    <div class="corpo"><div id="carta"></div></div>
-    <div class="legenda"><span><i class="l1"></i>1</span><span><i class="l2"></i>2</span><span><i class="l3"></i>3</span><span><i class="l4"></i>4</span><span><i class="l5"></i>5</span><span><i class="nd"></i>n/d</span><span>○ pegel, numero = grado</span><span>contorno nero = comprensorio</span></div>
+    <div class="corpo"><div id="mappa-l"></div><div id="carta" hidden></div></div>
+    <div class="legenda"><span><i class="l1"></i>1</span><span><i class="l2"></i>2</span><span><i class="l3"></i>3</span><span><i class="l4"></i>4</span><span><i class="l5"></i>5</span><span><i class="nd"></i>n/d</span><span>○ pegel, numero = grado</span><span>contorno nero = comprensorio</span><span>sfondo © swisstopo</span></div>
   </section>
 
   <div id="destra">
@@ -149,9 +157,27 @@
     return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${sl}<path d="${d}"/></svg>`;
   }
 
+  let mappa = null, strato = null, stratoPunti = null, geo = null, regLabel = null;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const fisso = window.matchMedia("(min-width: 1000px) and (orientation: landscape)").matches;   // schermo da parete: inquadratura fissa
+
   async function caricaCarta() {
+    try { const r = await fetch("comuni_ti.geojson", {cache: "force-cache"}); if (r.ok) geo = await r.json(); } catch (e) { geo = null; }
     try { const r = await fetch("carta_ti.json", {cache: "force-cache"}); if (r.ok) carta = await r.json(); } catch (e) { carta = null; }
+    if (!geo || typeof L === "undefined") { $("mappa-l").hidden = true; $("carta").hidden = false; return; }
+    mappa = L.map("mappa-l", {zoomSnap: .25, zoomControl: !fisso, dragging: !fisso, scrollWheelZoom: false, doubleClickZoom: !fisso, touchZoom: !fisso, keyboard: false});
+    L.tileLayer("https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg",
+      {attribution: "© swisstopo", maxZoom: 16, minZoom: 8}).addTo(mappa);
+    strato = L.geoJSON(geo, {style: f => ({color: f.properties.comprensorio ? css("--testo") : css("--carta"), weight: f.properties.comprensorio ? 2.2 : .6, fillOpacity: .45})}).addTo(mappa);
+    // i Comuni del comprensorio sopra gli altri, per avere il contorno nero visibile
+    strato.eachLayer(l => { if (l.feature.properties.comprensorio) l.bringToFront(); });
+    stratoPunti = L.layerGroup().addTo(mappa);
+    regLabel = L.layerGroup().addTo(mappa);
+    mappa.fitBounds(strato.getBounds(), {padding: [4, 4]});
+    window.addEventListener("resize", () => { mappa.invalidateSize(); mappa.fitBounds(strato.getBounds(), {padding: [4, 4]}); });
   }
+
+  function colore(l, nd) { return nd || l == null ? css("--muto") : css("--l" + l); }
 
   async function carica() {
     try {
@@ -232,6 +258,27 @@
   }
 
   function disegnaCarta(stantio) {
+    if (mappa) {
+      strato.eachLayer(l => {
+        const pr = l.feature.properties, a = dati.allerte[pr.regione] || {};
+        const nd = stantio || !a.disponibile, liv = a.livello_max;
+        l.setStyle({fillColor: colore(liv, nd), fillOpacity: nd ? .2 : (liv >= 2 ? .6 : .28), dashArray: nd ? "4 3" : null});
+        l.bindTooltip(`${pr.nome} – ${pr.regione}: ${a.disponibile ? "livello " + liv : "n/d"}`, {sticky: true});
+      });
+      regLabel.clearLayers();
+      for (const [n, a] of Object.entries(dati.allerte)) {
+        if (!a.lat) continue;
+        L.marker([a.lat, a.lon], {interactive: false, icon: L.divIcon({className: "nome-reg", html: n + (a.disponibile && a.livello_max >= 2 ? ` <b style="color:${css("--l" + a.livello_max)}">●</b> ${a.livello_max}` : ""), iconAnchor: [40, -8]})}).addTo(regLabel);
+      }
+      stratoPunti.clearLayers();
+      for (const p of dati.pegel) {
+        if (!p.lat || !p.lon) continue;
+        const cls = (stantio || !p.disponibile || p.livello == null) ? "nd" : "l" + p.livello;
+        L.marker([p.lat, p.lon], {icon: L.divIcon({className: "", html: `<div class="etichetta-peg ${cls}">${p.disponibile && p.livello != null ? p.livello : "·"}</div>`, iconSize: [24, 24], iconAnchor: [12, 12]})})
+          .bindTooltip(`${p.nome} – ${p.luogo}: ${p.disponibile ? p.valore + " " + p.unita : "n/d"}`).addTo(stratoPunti);
+      }
+      return;
+    }
     if (!carta) { $("carta").innerHTML = ""; return; }
     let s = `<svg viewBox="${carta.viewBox}" role="img" aria-label="Carta del Cantone Ticino con il livello di allerta per regione e i pegel">
       <defs><pattern id="tratteggio" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="var(--l1)"/><rect width="4" height="8" fill="var(--linea)"/></pattern></defs>`;

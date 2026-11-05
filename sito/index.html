@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Analisi della situazione · PCi Lugano Città</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin=""></script>
 <style>
   :root {
     --sfondo: #f3f4f2; --carta: #ffffff; --testo: #1b1f1d; --muto: #5c645f; --linea: #d8dcd9;
@@ -60,6 +62,13 @@
   .allerta small { color: var(--muto); display: block; }
   .nota { color: var(--muto); font-size: 13px; margin-top: 6px; }
   .carta-box { background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 8px; }
+  #mappa { height: min(70vh, 560px); border-radius: 4px; background: #e6e9e7; }
+  #mappa .etichetta-peg { background: var(--carta); border: 1.5px solid var(--testo); border-radius: 50%; width: 22px; height: 22px; line-height: 20px; text-align: center; font-weight: 700; font-size: 12px; color: var(--testo); }
+  #mappa .etichetta-peg.l2 { background: var(--l2); } #mappa .etichetta-peg.l3 { background: var(--l3); } #mappa .etichetta-peg.l4 { background: var(--l4); color: #fff; } #mappa .etichetta-peg.l5 { background: var(--l5); color: #fff; }
+  #mappa .etichetta-peg.nd { background: var(--nd); }
+  #mappa .etichetta-oasi { background: var(--carta); border: 1.5px solid var(--muto); border-radius: 3px; font-size: 11px; padding: 1px 4px; white-space: nowrap; color: var(--testo); }
+  #mappa .nome-comune { background: none; border: 0; box-shadow: none; font-size: 11px; font-weight: 600; color: var(--testo); text-shadow: 0 0 3px var(--carta), 0 0 3px var(--carta); white-space: nowrap; }
+  @media (prefers-color-scheme: dark) { #mappa .leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); } #mappa { background: #1e2320; } }
   #carta svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; }
   #carta path.ctx { fill: var(--linea); stroke: var(--carta); stroke-width: 1; opacity: .35; }
   #carta path.com { stroke: var(--testo); stroke-width: .8; cursor: pointer; }
@@ -106,10 +115,10 @@
 
   <section>
     <h2>Carta del comprensorio<small>colore = livello di allerta massimo; toccare un Comune per il dettaglio</small></h2>
-    <div class="carta-box"><div id="carta"></div>
+    <div class="carta-box"><div id="mappa"></div><div id="carta" hidden></div>
       <div class="legenda"><span><i class="l1"></i>1 nessun pericolo</span><span><i class="l2"></i>2</span><span><i class="l3"></i>3</span><span><i class="l4"></i>4</span><span><i class="l5"></i>5</span><span><i class="nd"></i>n/d</span></div>
     </div>
-    <p class="nota">Confini comunali: swisstopo swissBOUNDARIES3D (open data), semplificati.</p>
+    <p class="nota">Sfondo: carta nazionale grigia © swisstopo. Confini comunali: swissBOUNDARIES3D © swisstopo, semplificati.</p>
   </section>
 
   <section>
@@ -169,14 +178,59 @@
   const OFFSET = {"Vezia": [-22, -4], "Savosa": [14, -12], "Massagno": [-4, 8], "Porza": [10, -6], "Canobbio": [18, 4], "Comano": [-8, -10],
                   "Sorengo": [-10, -4], "Muzzano": [-12, 8], "Grancia": [12, 4], "Vico Morcote": [22, 10], "Morcote": [-16, 2], "Paradiso": [8, -4]};
 
+  let mappa = null, strato = null, stratoPunti = null, geo = null;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
   async function caricaCarta() {
-    try {
-      const r = await fetch("carta.json", {cache: "force-cache"});
-      if (r.ok) carta = await r.json();
-    } catch (e) { carta = null; }
+    try { const r = await fetch("comuni.geojson", {cache: "force-cache"}); if (r.ok) geo = await r.json(); } catch (e) { geo = null; }
+    if (!geo || typeof L === "undefined") {   // riserva: carta SVG interna
+      try { const r = await fetch("carta.json", {cache: "force-cache"}); if (r.ok) carta = await r.json(); } catch (e) { carta = null; }
+      $("mappa").hidden = true; $("carta").hidden = false;
+      return;
+    }
+    mappa = L.map("mappa", {zoomSnap: .25, attributionControl: true, scrollWheelZoom: false});
+    L.tileLayer("https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg",
+      {attribution: "© swisstopo", maxZoom: 17, minZoom: 9}).addTo(mappa);
+    strato = L.geoJSON(geo, {style: () => ({color: css("--testo"), weight: 1, fillOpacity: .45}),
+      onEachFeature: (f, l) => {
+        l.on("click", () => { $("scelta-comune").value = f.properties.nome; dettaglio(); stileComuni(); });
+        l.bindTooltip(f.properties.nome, {permanent: true, direction: "center", className: "nome-comune"});
+      }}).addTo(mappa);
+    stratoPunti = L.layerGroup().addTo(mappa);
+    mappa.fitBounds(strato.getBounds(), {padding: [6, 6]});
+  }
+
+  function colore(l, nd) { return nd || l == null ? css("--muto") : css("--l" + l); }
+
+  function stileComuni(stantio) {
+    const scelto = $("scelta-comune").value;
+    strato.eachLayer(l => {
+      const n = l.feature.properties.nome, a = dati.allerte[n] || {};
+      const nd = stantio || !a.disponibile, liv = a.livello_max;
+      l.setStyle({fillColor: colore(liv, nd), fillOpacity: nd ? .25 : (liv >= 2 ? .6 : .3), dashArray: nd ? "4 3" : null,
+                  weight: n === scelto ? 3 : 1, color: css("--testo")});
+      l.bindTooltip(n + (a.disponibile ? " – livello " + liv : " – n/d"), {permanent: true, direction: "center", className: "nome-comune"});
+    });
   }
 
   function disegnaCarta(stantio) {
+    if (mappa) {
+      stileComuni(stantio);
+      stratoPunti.clearLayers();
+      for (const p of dati.pegel) {
+        if (!p.lat || !p.lon) continue;
+        const cls = (stantio || !p.disponibile || p.livello == null) ? "nd" : "l" + p.livello;
+        L.marker([p.lat, p.lon], {icon: L.divIcon({className: "", html: `<div class="etichetta-peg ${cls}">${p.disponibile && p.livello != null ? p.livello : "·"}</div>`, iconSize: [22, 22], iconAnchor: [11, 11]})})
+          .bindTooltip(`${p.nome} – ${p.luogo}: ${p.disponibile ? p.valore + " " + p.unita : "n/d"}`).addTo(stratoPunti);
+      }
+      for (const o of (dati.oasi || [])) {
+        if (!o.lat || !o.lon || !o.disponibile) continue;
+        const testo = o.parametro === "Prec" ? `${o.pioggia_1h} mm/1h` : `${o.valore} ${o.unita}`;
+        L.marker([o.lat, o.lon], {icon: L.divIcon({className: "", html: `<div class="etichetta-oasi">${o.nome}: ${testo}</div>`, iconAnchor: [0, 10]})})
+          .bindTooltip(`${o.nome} – ${o.luogo} (OASI, ${o.rilevamento})`).addTo(stratoPunti);
+      }
+      return;
+    }
     if (!carta) { $("carta").innerHTML = ""; return; }
     const scelto = $("scelta-comune").value;
     let s = `<svg viewBox="${carta.viewBox}" role="img" aria-label="Carta dei Comuni del comprensorio con il livello di allerta">
