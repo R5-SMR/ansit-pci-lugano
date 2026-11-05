@@ -12,7 +12,8 @@ Regola di base: una fonte che non risponde produce "disponibile": false,
 mai un valore di default rassicurante.
 """
 import csv, gzip, io, json, os, re, sys, xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from urllib.parse import quote
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -256,6 +257,61 @@ def _estrai_ufam(js, param):
     return None, []
 
 
+# ---------------------------------------------------------------- OASI: rete cantonale
+TZ_OASI = timezone(timedelta(hours=1))   # OASI usa GMT+1 fisso, senza ora legale
+
+
+def oasi(st):
+    cfg = CFG["oasi"]
+    oggi = ADESSO.astimezone(TZ_OASI).date()
+    url = cfg["url"].format(domain=st["dominio"], param=st["param"], codice=quote(st["codice"]),
+                            da=(oggi - timedelta(days=1)).isoformat(), a=oggi.isoformat())
+    try:
+        testo = scarica(url)
+    except Exception as e:
+        return {**non_disp(e), "nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"]}
+    GREZZI.setdefault("oasi", {})[st["codice"]] = testo[-30000:]
+    punti = []
+    for riga in testo.splitlines():
+        if riga.startswith("#") or ";" not in riga:
+            continue
+        campi = riga.split(";")
+        if len(campi) < 2 or not campi[0][:2].isdigit():
+            continue
+        try:
+            t = datetime.strptime(campi[0].strip(), "%d.%m.%Y %H:%M:%S").replace(tzinfo=TZ_OASI)
+            v = float(campi[1])
+        except ValueError:
+            continue
+        punti.append((t, v, campi[2].strip() == "*" if len(campi) > 2 else False))
+    if not punti:
+        return {**non_disp("nessun valore nel periodo"), "nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"]}
+    t_ult, v_ult, provv = punti[-1]
+    eta = int((ADESSO - t_ult).total_seconds() // 60)
+    base = {"disponibile": True, "nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"],
+            "bacino": st.get("bacino"), "parametro": st["param"], "unita": st["unita"],
+            "rilevamento": t_ult.astimezone(TZ).strftime("%d.%m. %H:%M"), "eta_minuti": eta,
+            "provvisorio": provv, "proprietario": st.get("proprietario", cfg["proprietario"])}
+    if st["param"] == "Prec":
+        # i valori sono quantità per intervallo (10 min): si sommano su finestre
+        def somma(ore):
+            return round(sum(v for (t, v, _) in punti if (t_ult - t) < timedelta(hours=ore)), 1)
+        orarie = []
+        for h in range(23, -1, -1):
+            a, b = t_ult - timedelta(hours=h + 1), t_ult - timedelta(hours=h)
+            orarie.append(round(sum(v for (t, v, _) in punti if a < t <= b), 1))
+        return {**base, "valore": somma(1), "pioggia_1h": somma(1), "pioggia_3h": somma(3),
+                "pioggia_6h": somma(6), "pioggia_24h": somma(24), "orarie_24h": orarie}
+    finestra = [v for (t, v, _) in punti if (t_ult - t) <= timedelta(hours=8)]
+    passo = max(1, len(finestra) // 48)
+    serie = finestra[::passo][-48:]
+    trend = None
+    if len(finestra) >= 2:
+        d = finestra[-1] - finestra[0]
+        trend = "in aumento" if d > 0 else "in calo" if d < 0 else "stabile"
+    return {**base, "valore": round(v_ult, 2), "serie_8h": [round(v, 2) for v in serie], "trend_8h": trend}
+
+
 # ---------------------------------------------------------------- Open-Meteo: previsione
 def previsione():
     p = CFG["previsione"]
@@ -314,7 +370,7 @@ def variazioni(nuovo, vecchio):
         for v in ns["notifiche"]:
             if v["titolo"] not in vt:
                 out.append({"testo": f"Nuova notifica Alertswiss: {v['titolo']}", "tipo": "peggiora"})
-    for fonte in ("misure", "allerte", "alertswiss", "pegel", "previsione"):
+    for fonte in ("misure", "allerte", "alertswiss", "pegel", "oasi", "previsione"):
         if _ok(nuovo, fonte) != _ok(vecchio, fonte):
             out.append({"testo": f"Fonte «{fonte}»: {'di nuovo disponibile' if _ok(nuovo, fonte) else 'NON disponibile'}",
                         "tipo": "info"})
@@ -348,6 +404,8 @@ def main():
     dati["alertswiss"] = alertswiss()
     dati["pegel"] = [pegel(st) for st in CFG["pegel"]]
     log("Pegel letti")
+    dati["oasi"] = [oasi(st) for st in CFG["oasi"]["stazioni"]]
+    log("Rete cantonale OASI letta")
     dati["previsione"] = previsione()
     log("Previsione letta")
 
@@ -363,7 +421,7 @@ def main():
     with gzip.open(arch / f"{t:%H%M}.json.gz", "wt", encoding="utf-8") as f:
         json.dump({"generato": dati["generato"], "normalizzato": dati, "grezzi": GREZZI}, f, ensure_ascii=False)
     log(f"Ciclo concluso. Fonti: " + ", ".join(
-        f"{k}={'ok' if _ok(dati, k) else 'KO'}" for k in ("misure", "allerte", "alertswiss", "pegel", "previsione")))
+        f"{k}={'ok' if _ok(dati, k) else 'KO'}" for k in ("misure", "allerte", "alertswiss", "pegel", "oasi", "previsione")))
 
 
 if __name__ == "__main__":
