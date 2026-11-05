@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Quadro di situazione · PCi Lugano Città</title>
+<title>Analisi della situazione · PCi Lugano Città</title>
 <style>
   :root {
     --sfondo: #f3f4f2; --carta: #ffffff; --testo: #1b1f1d; --muto: #5c645f; --linea: #d8dcd9;
@@ -21,8 +21,14 @@
   * { box-sizing: inherit; }
   html, body { margin: 0; background: var(--sfondo); color: var(--testo); }
   body { font: 15px/1.45 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-  header { position: sticky; top: env(safe-area-inset-top,0px); z-index: 5; background: var(--carta); border-bottom: 1px solid var(--linea); padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; }
-  header h1 { font-size: 17px; margin: 0; font-weight: 600; }
+  header { position: sticky; top: env(safe-area-inset-top,0px); z-index: 5; background: var(--carta); border-bottom: 1px solid var(--linea); padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+  header h1 { font-size: 22px; margin: 0; font-weight: 700; letter-spacing: -.01em; }
+  header h1 small { display: block; font-size: 12px; font-weight: 500; color: var(--muto); text-transform: uppercase; letter-spacing: .06em; }
+  .scelta { display: inline-flex; border: 1px solid var(--linea); border-radius: 8px; overflow: hidden; }
+  .scelta a { padding: 7px 14px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--muto); background: var(--carta); }
+  .scelta a + a { border-left: 1px solid var(--linea); }
+  .scelta a.attiva { background: var(--testo); color: var(--carta); }
+  .scelta a:hover:not(.attiva) { background: var(--sfondo); }
   header .stato { font-size: 13px; color: var(--muto); }
   header .stato.vecchio { color: var(--allarme); font-weight: 600; }
   main { max-width: 1100px; margin: 0 auto; padding: 14px 16px 60px; display: grid; gap: 22px; }
@@ -80,10 +86,10 @@
 </head>
 <body>
 <header>
-  <h1>Quadro di situazione – PCi Lugano Città</h1>
+  <h1><small>Protezione civile Regione Lugano Città</small>Analisi della situazione</h1>
+  <nav class="scelta" aria-label="Area"><a class="attiva" href="index.html" aria-current="page">Regione Lugano Città</a><a href="cantone.html">Ticino</a></nav>
   <div class="stato" id="stato">Caricamento dei dati…</div>
-  <a href="cantone.html" style="margin-left:auto;color:var(--muto);font-size:13px">Quadro cantonale ›</a>
-  <button id="aggiorna" type="button">Aggiorna</button>
+  <button id="aggiorna" type="button" style="margin-left:auto">Aggiorna</button>
 </header>
 
 <main>
