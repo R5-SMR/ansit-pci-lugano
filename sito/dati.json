@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-05T12:31:13+00:00",
- "generato_locale": "05.11.2026 13:31",
+ "generato": "2026-11-05T12:37:07+00:00",
+ "generato_locale": "05.11.2026 13:37",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -486,7 +486,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 0.89,
+   "valore": 0.88,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -496,10 +496,8 @@
    },
    "lat": null,
    "lon": null,
-   "trend_8h": "in calo",
+   "trend_8h": "in aumento",
    "serie_8h": [
-    0.94,
-    0.89,
     0.86,
     0.86,
     0.86,
@@ -545,7 +543,9 @@
     0.89,
     0.89,
     0.89,
-    0.89
+    0.89,
+    0.89,
+    0.88
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
@@ -557,7 +557,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 1.84,
+   "valore": 1.67,
    "livello": 1,
    "soglie": {
     "2": 55,
@@ -567,10 +567,8 @@
    },
    "lat": null,
    "lon": null,
-   "trend_8h": "in aumento",
+   "trend_8h": "in calo",
    "serie_8h": [
-    1.79,
-    1.98,
     1.93,
     1.8,
     1.77,
@@ -616,7 +614,9 @@
     1.63,
     1.63,
     1.64,
-    1.84
+    1.84,
+    1.79,
+    1.67
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
@@ -638,9 +638,8 @@
    },
    "lat": null,
    "lon": null,
-   "trend_8h": "stabile",
+   "trend_8h": "in calo",
    "serie_8h": [
-    270.43,
     270.43,
     270.43,
     270.43,
@@ -687,6 +686,7 @@
     270.42,
     270.43,
     270.43,
+    270.43,
     270.43
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2101_p_q_7days_it.json"
@@ -695,73 +695,93 @@
  "oasi": [
   {
    "disponibile": false,
-   "motivo": "HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfacewater&resolution=h&parameter=Q&from=2026-11-04&to=2026-11-05&location=water_31w",
+   "motivo": "OASI non risponde (connessione rifiutata o timeout)",
    "nome": "Vedeggio",
    "luogo": "Isone",
-   "codice": "water_31w"
+   "codice": "water_31w",
+   "parametro": "Q",
+   "bacino": "Vedeggio (testata)"
   },
   {
    "disponibile": false,
-   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
+   "motivo": "OASI non raggiungibile in questo ciclo",
    "nome": "Vecchio Vedeggio",
    "luogo": "Agno",
-   "codice": "water_39w"
+   "codice": "water_39w",
+   "parametro": "Q",
+   "bacino": "Piana di Agno"
   },
   {
    "disponibile": false,
-   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
+   "motivo": "OASI non raggiungibile in questo ciclo",
    "nome": "Scairolo",
    "luogo": "Barbengo",
-   "codice": "water_14w"
+   "codice": "water_14w",
+   "parametro": "Q",
+   "bacino": "Pian Scairolo"
   },
   {
    "disponibile": false,
-   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
+   "motivo": "OASI non raggiungibile in questo ciclo",
    "nome": "Lago di Muzzano",
    "luogo": "Muzzano",
-   "codice": "water_auto_2"
+   "codice": "water_auto_2",
+   "parametro": "WL",
+   "bacino": "Muzzano"
   },
   {
    "disponibile": false,
-   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
+   "motivo": "OASI non raggiungibile in questo ciclo",
    "nome": "Lago di Lugano",
    "luogo": "Morcote",
-   "codice": "water_auto_743"
+   "codice": "water_auto_743",
+   "parametro": "WL",
+   "bacino": "Ceresio (conferma)"
   },
   {
    "disponibile": false,
-   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
+   "motivo": "OASI non raggiungibile in questo ciclo",
    "nome": "Colla",
    "luogo": "Val Colla, 1140 m",
-   "codice": "meteo_u_78"
+   "codice": "meteo_u_78",
+   "parametro": "Prec",
+   "bacino": "Cassarate (testata)"
   },
   {
    "disponibile": false,
-   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
+   "motivo": "OASI non raggiungibile in questo ciclo",
    "nome": "Sonvico",
    "luogo": "Sonvico",
-   "codice": "meteo_auto_926"
+   "codice": "meteo_auto_926",
+   "parametro": "Prec",
+   "bacino": "Cassarate (medio)"
   },
   {
    "disponibile": false,
-   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
+   "motivo": "OASI non raggiungibile in questo ciclo",
    "nome": "Camignolo",
    "luogo": "Camignolo",
-   "codice": "air_525 01 01"
+   "codice": "air_525 01 01",
+   "parametro": "Prec",
+   "bacino": "Vedeggio (alto)"
   },
   {
    "disponibile": false,
-   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
+   "motivo": "OASI non raggiungibile in questo ciclo",
    "nome": "Grancia",
    "luogo": "Grancia",
-   "codice": "meteo_auto_183"
+   "codice": "meteo_auto_183",
+   "parametro": "Prec",
+   "bacino": "Pian Scairolo"
   },
   {
    "disponibile": false,
-   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
+   "motivo": "OASI non raggiungibile in questo ciclo",
    "nome": "Novaggio",
    "luogo": "Novaggio, 620 m",
-   "codice": "meteo_u_76"
+   "codice": "meteo_u_76",
+   "parametro": "Prec",
+   "bacino": "Malcantone / Magliasina"
   }
  ],
  "previsione": {
@@ -952,5 +972,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-05T12:20:47+00:00"
+ "precedente": "2026-11-05T12:31:13+00:00"
 }
