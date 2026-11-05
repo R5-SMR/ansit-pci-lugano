@@ -24,19 +24,17 @@
   * { box-sizing: inherit; }
   html, body { margin: 0; height: 100%; background: var(--sfondo); color: var(--testo); }
   body { font: var(--base)/1.35 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; display: flex; flex-direction: column; overflow: hidden; }
-  header { display: flex; align-items: center; gap: 1.2em; padding: .45em 1em; background: var(--carta); border-bottom: 1px solid var(--linea); }
-  header h1 { font-size: 1.55em; margin: 0; font-weight: 700; white-space: nowrap; letter-spacing: -.01em; line-height: 1.1; }
-  header h1 small { display: block; font-size: .5em; font-weight: 500; color: var(--muto); text-transform: uppercase; letter-spacing: .06em; }
+  header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; padding: 10px 16px; background: var(--carta); border-bottom: 1px solid var(--linea); font-size: 15px; }
+  header h1 { font-size: 22px; margin: 0; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; }
+  header h1 small { display: block; font-size: 12px; font-weight: 500; color: var(--muto); text-transform: uppercase; letter-spacing: .06em; }
   .scelta { display: inline-flex; border: 1px solid var(--linea); border-radius: 8px; overflow: hidden; }
-  .scelta a { padding: .35em .9em; font-size: .95em; font-weight: 600; text-decoration: none; color: var(--muto); background: var(--carta); }
+  .scelta a { padding: 7px 14px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--muto); background: var(--carta); }
   .scelta a + a { border-left: 1px solid var(--linea); }
   .scelta a.attiva { background: var(--testo); color: var(--carta); }
-  header .ora { font-size: 1.15em; font-variant-numeric: tabular-nums; }
-  header .ora b { font-size: 1.3em; }
-  header .fonti { margin-left: auto; color: var(--muto); font-size: .8em; display: flex; gap: .6em; flex-wrap: wrap; }
-  header .fonti span { padding: .1em .5em; border-radius: 1em; border: 1px solid var(--linea); }
+  header .stato { font-size: 13px; color: var(--muto); font-variant-numeric: tabular-nums; }
+  header .fonti { margin-left: auto; color: var(--muto); font-size: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+  header .fonti span { padding: 1px 8px; border-radius: 1em; border: 1px solid var(--linea); }
   header .fonti span.ko { border-color: var(--allarme); color: var(--allarme); font-weight: 600; }
-  header a { color: var(--muto); font-size: .8em; }
   #banner { display: none; background: var(--allarme); color: #fff; font-weight: 700; text-align: center; padding: .4em; font-size: 1.15em; }
   #banner.on { display: block; }
   main { flex: 1; display: grid; grid-template-columns: 42fr 58fr; grid-template-rows: 1fr auto; gap: .6em; padding: .6em; min-height: 0; }
@@ -97,7 +95,7 @@
 <header>
   <h1><small>Protezione civile Regione Lugano Città</small>Analisi della situazione</h1>
   <nav class="scelta" aria-label="Area"><a href="index.html">Regione Lugano Città</a><a class="attiva" href="cantone.html" aria-current="page">Ticino</a></nav>
-  <div class="ora">Aggiornato <b id="ora">–</b> <span id="eta" style="color:var(--muto)"></span></div>
+  <div class="stato" id="stato">Caricamento dei dati…</div>
   <div class="fonti" id="fonti"></div>
 </header>
 <div id="banner">DATI NON AGGIORNATI – considerare non disponibili e consultare le fonti ufficiali</div>
@@ -186,7 +184,7 @@
       dati = await r.json();
       disegna();
     } catch (e) {
-      $("eta").textContent = "cantone.json non raggiungibile: " + e.message;
+      $("stato").textContent = "cantone.json non raggiungibile: " + e.message;
       $("banner").classList.add("on");
     }
   }
@@ -196,8 +194,7 @@
     const stantio = eta > dati.dati_stantii_minuti;
     const nuovo = ultimoGenerato && ultimoGenerato !== dati.generato;
     ultimoGenerato = dati.generato;
-    $("ora").textContent = dati.generato_locale;
-    $("eta").textContent = `(${eta} min fa)`;
+    $("stato").textContent = `Aggiornato ${dati.generato_locale} (${eta} min fa)`;
     $("banner").classList.toggle("on", stantio);
 
     // stato delle fonti
