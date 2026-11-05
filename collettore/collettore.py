@@ -270,7 +270,7 @@ OASI_BLOCCATO = {"stato": False, "motivo": ""}
 def oasi(st):
     cfg = CFG["oasi"]
     base_nd = {"nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"],
-               "parametro": st["param"], "bacino": st.get("bacino")}
+               "parametro": st["param"], "bacino": st.get("bacino"), "lat": st.get("lat"), "lon": st.get("lon")}
     if OASI_BLOCCATO["stato"]:
         return {**non_disp("OASI non raggiungibile in questo ciclo"), **base_nd}
     oggi = ADESSO.astimezone(TZ_OASI).date()
@@ -307,7 +307,8 @@ def oasi(st):
     base = {"disponibile": True, "nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"],
             "bacino": st.get("bacino"), "parametro": st["param"], "unita": st["unita"],
             "rilevamento": t_ult.astimezone(TZ).strftime("%d.%m. %H:%M"), "eta_minuti": eta,
-            "provvisorio": provv, "proprietario": st.get("proprietario", cfg["proprietario"])}
+            "provvisorio": provv, "proprietario": st.get("proprietario", cfg["proprietario"]),
+            "lat": st.get("lat"), "lon": st.get("lon")}
     if st["param"] == "Prec":
         # i valori sono quantità per intervallo (10 min): si sommano su finestre
         def somma(ore):
