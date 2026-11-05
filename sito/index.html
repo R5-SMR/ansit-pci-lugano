@@ -73,6 +73,10 @@
   .ctrl-carta a { font-size: 16px !important; }
   .ctrl-carta a:last-child { border-bottom: 0 !important; }
   .leaflet-container { font: inherit; }
+  .ctrl-carta a.testo { font-size: 11px !important; font-weight: 600; line-height: 36px !important; letter-spacing: .02em; }
+  .ctrl-carta a.on { background: var(--testo) !important; color: var(--carta) !important; }
+  .sfondo-bianco { background: var(--carta) !important; }
+  .nome-distretto { background: none; border: 0; box-shadow: none; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muto); text-shadow: 0 0 3px var(--carta), 0 0 4px var(--carta); white-space: nowrap; }
   @media (prefers-color-scheme: dark) { #mappa .leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); } #mappa { background: #1e2320; } }
   #carta svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; }
   #carta path.ctx { fill: var(--linea); stroke: var(--carta); stroke-width: 1; opacity: .35; }
@@ -194,8 +198,8 @@
       return;
     }
     mappa = L.map("mappa", {zoomSnap: .25, zoomControl: false, attributionControl: true, scrollWheelZoom: false});
-    L.tileLayer("https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg",
-      {attribution: "© swisstopo", maxZoom: 17, minZoom: 9}).addTo(mappa);
+    tileLayer = L.tileLayer("https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg",
+      {attribution: "© swisstopo", maxZoom: 17, minZoom: 9});
     strato = L.geoJSON(geo, {style: () => ({color: css("--testo"), weight: 1, fillOpacity: .45}),
       onEachFeature: (f, l) => {
         l.on("click", () => { $("scelta-comune").value = f.properties.nome; dettaglio(); stileComuni(); });
@@ -204,23 +208,34 @@
     stratoPunti = L.layerGroup().addTo(mappa);
     const inquadra = () => { mappa.invalidateSize(); mappa.fitBounds(strato.getBounds(), {padding: [6, 6]}); };
     inquadra(); setTimeout(inquadra, 300); setTimeout(inquadra, 1500); window.addEventListener("load", inquadra);
-    controlloCarta(mappa, inquadra);
+    controlloCarta(mappa, inquadra, $("mappa"));
   }
-  // controllo personalizzato: + / − / inquadra
-  function controlloCarta(m, inquadra) {
+  // controllo personalizzato: + / − / inquadra / sfondo
+  let tileLayer = null;
+  function sfondoAttivo() { try { return localStorage.getItem("ansit-sfondo") !== "bianco"; } catch (e) { return true; } }
+  function applicaSfondo(m, cont) {
+    const on = sfondoAttivo();
+    if (on && !m.hasLayer(tileLayer)) tileLayer.addTo(m);
+    if (!on && m.hasLayer(tileLayer)) m.removeLayer(tileLayer);
+    cont.classList.toggle("sfondo-bianco", !on);
+    document.querySelectorAll(".ctrl-carta a[data-sfondo]").forEach(a => a.classList.toggle("on", !on));
+    if (typeof dati !== "undefined" && dati) disegnaCarta(false);
+  }
+  function controlloCarta(m, inquadra, cont) {
     const C = L.Control.extend({options: {position: "topleft"}, onAdd: function () {
       const d = L.DomUtil.create("div", "ctrl-carta");
-      d.innerHTML = '<a href="#" title="Ingrandisci" aria-label="Ingrandisci">+</a><a href="#" title="Rimpicciolisci" aria-label="Rimpicciolisci">−</a><a href="#" title="Inquadra tutto" aria-label="Inquadra tutto">⌂</a>';
-      const [a1, a2, a3] = d.querySelectorAll("a");
-      L.DomEvent.on(a1, "click", e => { L.DomEvent.preventDefault(e); m.zoomIn(); });
-      L.DomEvent.on(a2, "click", e => { L.DomEvent.preventDefault(e); m.zoomOut(); });
-      L.DomEvent.on(a3, "click", e => { L.DomEvent.preventDefault(e); inquadra(); });
+      d.innerHTML = '<a href="#" title="Ingrandisci" aria-label="Ingrandisci">+</a><a href="#" title="Rimpicciolisci" aria-label="Rimpicciolisci">−</a><a href="#" title="Inquadra tutto" aria-label="Inquadra tutto">⌂</a><a href="#" class="testo" data-sfondo title="Sfondo bianco / carta swisstopo">BIANCO</a>';
+      const a = d.querySelectorAll("a");
+      L.DomEvent.on(a[0], "click", e => { L.DomEvent.preventDefault(e); m.zoomIn(); });
+      L.DomEvent.on(a[1], "click", e => { L.DomEvent.preventDefault(e); m.zoomOut(); });
+      L.DomEvent.on(a[2], "click", e => { L.DomEvent.preventDefault(e); inquadra(); });
+      L.DomEvent.on(a[3], "click", e => { L.DomEvent.preventDefault(e); try { localStorage.setItem("ansit-sfondo", sfondoAttivo() ? "bianco" : "carta"); } catch (x) {} applicaSfondo(m, cont); });
       L.DomEvent.disableClickPropagation(d);
       return d;
     }});
     m.addControl(new C());
+    applicaSfondo(m, cont);
   }
-
 
   function colore(l, nd) { return nd || l == null ? css("--muto") : css("--l" + l); }
 
@@ -229,8 +244,8 @@
     strato.eachLayer(l => {
       const n = l.feature.properties.nome, a = dati.allerte[n] || {};
       const nd = stantio || !a.disponibile, liv = a.livello_max;
-      l.setStyle({fillColor: colore(liv, nd), fillOpacity: nd ? .25 : (liv >= 2 ? .6 : .3), dashArray: nd ? "4 3" : null,
-                  weight: n === scelto ? 3 : 1, color: css("--testo")});
+      l.setStyle({fillColor: colore(liv, nd), fillOpacity: nd ? .25 : (liv >= 2 ? .6 : (sfondoAttivo() ? .3 : .15)), dashArray: nd ? "4 3" : null,
+                  weight: n === scelto ? 3 : (sfondoAttivo() ? 1 : 1.4), color: css("--testo")});
       l.bindTooltip(n + (a.disponibile ? " – livello " + liv : " – n/d"), {permanent: true, direction: "center", className: "nome-comune"});
     });
   }
