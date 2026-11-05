@@ -68,6 +68,11 @@
   #mappa .etichetta-peg.nd { background: var(--nd); }
   #mappa .etichetta-oasi { background: var(--carta); border: 1.5px solid var(--muto); border-radius: 3px; font-size: 11px; padding: 1px 4px; white-space: nowrap; color: var(--testo); }
   #mappa .nome-comune { background: none; border: 0; box-shadow: none; font-size: 11px; font-weight: 600; color: var(--testo); text-shadow: 0 0 3px var(--carta), 0 0 3px var(--carta); white-space: nowrap; }
+  .leaflet-control-zoom a, .ctrl-carta a { width: 36px !important; height: 36px !important; line-height: 36px !important; font-size: 20px !important; font-weight: 600; color: var(--testo) !important; background: var(--carta) !important; border-bottom: 1px solid var(--linea) !important; text-decoration: none; text-align: center; display: block; }
+  .ctrl-carta { background: var(--carta); border-radius: 4px; box-shadow: 0 1px 5px rgba(0,0,0,.4); overflow: hidden; }
+  .ctrl-carta a { font-size: 16px !important; }
+  .ctrl-carta a:last-child { border-bottom: 0 !important; }
+  .leaflet-container { font: inherit; }
   @media (prefers-color-scheme: dark) { #mappa .leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); } #mappa { background: #1e2320; } }
   #carta svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; }
   #carta path.ctx { fill: var(--linea); stroke: var(--carta); stroke-width: 1; opacity: .35; }
@@ -188,7 +193,7 @@
       $("mappa").hidden = true; $("carta").hidden = false;
       return;
     }
-    mappa = L.map("mappa", {zoomSnap: .25, attributionControl: true, scrollWheelZoom: false});
+    mappa = L.map("mappa", {zoomSnap: .25, zoomControl: false, attributionControl: true, scrollWheelZoom: false});
     L.tileLayer("https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg",
       {attribution: "© swisstopo", maxZoom: 17, minZoom: 9}).addTo(mappa);
     strato = L.geoJSON(geo, {style: () => ({color: css("--testo"), weight: 1, fillOpacity: .45}),
@@ -199,7 +204,23 @@
     stratoPunti = L.layerGroup().addTo(mappa);
     const inquadra = () => { mappa.invalidateSize(); mappa.fitBounds(strato.getBounds(), {padding: [6, 6]}); };
     inquadra(); setTimeout(inquadra, 300); setTimeout(inquadra, 1500); window.addEventListener("load", inquadra);
+    controlloCarta(mappa, inquadra);
   }
+  // controllo personalizzato: + / − / inquadra
+  function controlloCarta(m, inquadra) {
+    const C = L.Control.extend({options: {position: "topleft"}, onAdd: function () {
+      const d = L.DomUtil.create("div", "ctrl-carta");
+      d.innerHTML = '<a href="#" title="Ingrandisci" aria-label="Ingrandisci">+</a><a href="#" title="Rimpicciolisci" aria-label="Rimpicciolisci">−</a><a href="#" title="Inquadra tutto" aria-label="Inquadra tutto">⌂</a>';
+      const [a1, a2, a3] = d.querySelectorAll("a");
+      L.DomEvent.on(a1, "click", e => { L.DomEvent.preventDefault(e); m.zoomIn(); });
+      L.DomEvent.on(a2, "click", e => { L.DomEvent.preventDefault(e); m.zoomOut(); });
+      L.DomEvent.on(a3, "click", e => { L.DomEvent.preventDefault(e); inquadra(); });
+      L.DomEvent.disableClickPropagation(d);
+      return d;
+    }});
+    m.addControl(new C());
+  }
+
 
   function colore(l, nd) { return nd || l == null ? css("--muto") : css("--l" + l); }
 
