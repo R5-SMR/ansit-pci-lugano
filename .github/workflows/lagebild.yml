@@ -6,7 +6,7 @@ on:
   workflow_dispatch:            # avvio manuale dal pulsante "Run workflow"
   push:
     branches: [main]
-    paths: [collettore/**, config/**, sito/index.html, .github/workflows/**]
+    paths: [collettore/**, config/**, sito/index.html, sito/cantone.html, .github/workflows/**]
 
 permissions:
   contents: write
@@ -44,13 +44,15 @@ jobs:
           # metto da parte i risultati di questo ciclo
           mkdir -p /tmp/ciclo
           cp sito/dati.json /tmp/ciclo/dati.json
+          cp sito/cantone.json /tmp/ciclo/cantone.json 2>/dev/null || true
           cp -r archivio /tmp/ciclo/archivio
           # mi riallineo all'ultima versione del repository e riapplico i risultati
           git fetch origin main
           git reset --hard origin/main
           cp /tmp/ciclo/dati.json sito/dati.json
+          [ -f /tmp/ciclo/cantone.json ] && cp /tmp/ciclo/cantone.json sito/cantone.json
           mkdir -p archivio && cp -r /tmp/ciclo/archivio/. archivio/
-          git add archivio sito/dati.json
+          git add archivio sito/dati.json sito/cantone.json 2>/dev/null || git add archivio sito/dati.json
           if ! git diff --cached --quiet; then
             git commit -m "ciclo $(date -u +'%Y-%m-%d %H:%M') UTC"
             for i in 1 2 3; do
