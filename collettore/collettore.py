@@ -214,17 +214,20 @@ def pegel(st):
     if valore is None:
         return {**non_disp("valore non trovato nelle risposte"), "id": st["id"],
                 "nome": st["nome"], "luogo": st["luogo"]}
-    livello = 1
-    for liv, soglia in sorted(st["soglie"].items(), key=lambda kv: int(kv[0])):
-        if valore >= soglia:
-            livello = int(liv)
+    livello = None
+    if st.get("soglie"):
+        livello = 1
+        for liv, soglia in sorted(st["soglie"].items(), key=lambda kv: int(kv[0])):
+            if valore >= soglia:
+                livello = int(liv)
     trend = None
     if len(serie) >= 2:
         d = serie[-1] - serie[0]
         trend = "in aumento" if d > 0 else "in calo" if d < 0 else "stabile"
     return {"disponibile": True, "id": st["id"], "nome": st["nome"], "luogo": st["luogo"],
             "tipo": st["tipo"], "parametro": st["param"], "unita": st["unita"],
-            "valore": round(valore, 2), "livello": livello, "soglie": st["soglie"],
+            "valore": round(valore, 2), "livello": livello, "soglie": st.get("soglie"),
+            "lat": st.get("lat"), "lon": st.get("lon"),
             "trend_8h": trend, "serie_8h": [round(v, 2) for v in serie], "fonte": usato}
 
 
@@ -325,9 +328,9 @@ def oasi(st):
 
 
 # ---------------------------------------------------------------- Open-Meteo: previsione
-def previsione():
+def previsione(lat=None, lon=None):
     p = CFG["previsione"]
-    url = p["url"].format(lat=p["lat"], lon=p["lon"])
+    url = p["url"].format(lat=lat if lat is not None else p["lat"], lon=lon if lon is not None else p["lon"])
     try:
         js = scarica(url, "json")
     except Exception as e:
@@ -373,7 +376,8 @@ def variazioni(nuovo, vecchio):
                             "tipo": "peggiora" if nd["livello_max"] > vd["livello_max"] else "migliora"})
     vp = {p["id"]: p for p in vecchio.get("pegel", []) if p.get("disponibile")}
     for p in nuovo.get("pegel", []):
-        if p.get("disponibile") and p["id"] in vp and p["livello"] != vp[p["id"]]["livello"]:
+        if (p.get("disponibile") and p["id"] in vp and p["livello"] is not None
+                and vp[p["id"]].get("livello") is not None and p["livello"] != vp[p["id"]]["livello"]):
             out.append({"testo": f"{p['nome']} ({p['luogo']}): livello da {vp[p['id']]['livello']} a {p['livello']}",
                         "tipo": "peggiora" if p["livello"] > vp[p["id"]]["livello"] else "migliora"})
     vs, ns = vecchio.get("alertswiss", {}), nuovo.get("alertswiss", {})
@@ -398,6 +402,39 @@ def _ok(d, fonte):
     if isinstance(v, list):
         return any(x.get("disponibile") for x in v)
     return False
+
+
+# ---------------------------------------------------------------- quadro cantonale
+def cantone(dati_regione):
+    """Produce sito/cantone.json riusando le stesse funzioni, con la configurazione cantonale."""
+    cfg_path = BASE / "config" / "cantone.json"
+    if not cfg_path.exists():
+        return
+    C = json.loads(cfg_path.read_text(encoding="utf-8"))
+    log("Quadro cantonale: avvio")
+    d = {"generato": dati_regione["generato"], "generato_locale": dati_regione["generato_locale"],
+         "titolo": C["titolo"], "dati_stantii_minuti": CFG["dati_stantii_minuti"],
+         "comprensorio": C["comprensorio"], "regioni": [r["nome"] for r in C["regioni"]]}
+    d["allerte"] = {}
+    for r in C["regioni"]:
+        a = allerte_comune({"nome": r["rappresentante"], "plz": r["plz"]})
+        a.update(regione=r["nome"], rappresentante=r["rappresentante"], lat=r["lat"], lon=r["lon"])
+        d["allerte"][r["nome"]] = a
+    log("Quadro cantonale: allerte per regione lette")
+    d["pegel"] = [pegel(st) for st in C["pegel"]]
+    log("Quadro cantonale: pegel letti")
+    d["misure"] = {st["id"]: misure_smn(st) for st in C["stazioni_meteo"]}
+    log("Quadro cantonale: misure lette")
+    d["alertswiss"] = dati_regione["alertswiss"]
+    d["previsioni"] = {p["nome"]: previsione(p["lat"], p["lon"]) for p in C["previsioni"]}
+    log("Quadro cantonale: previsioni lette")
+    out = BASE / "sito" / "cantone.json"
+    vecchio = json.loads(out.read_text(encoding="utf-8")) if out.exists() else None
+    d["variazioni"] = variazioni(d, vecchio)
+    d["precedente"] = vecchio["generato"] if vecchio else None
+    out.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
+    GREZZI["cantone_allerte"] = {k: v for k, v in GREZZI.get("allerte", {}).items()}
+    log("Quadro cantonale: scritto")
 
 
 # ---------------------------------------------------------------- main
@@ -426,6 +463,11 @@ def main():
     dati["variazioni"] = variazioni(dati, vecchio)
     dati["precedente"] = vecchio["generato"] if vecchio else None
     sito.write_text(json.dumps(dati, ensure_ascii=False, indent=1), encoding="utf-8")
+
+    try:
+        cantone(dati)
+    except Exception as e:
+        log(f"Quadro cantonale: errore {e}")
 
     t = ADESSO.astimezone(TZ)
     arch = BASE / "archivio" / t.strftime("%Y/%m/%d")
