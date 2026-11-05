@@ -1,0 +1,57 @@
+{
+  "_nota": "Configurazione del quadro di situazione cantonale (pagina cantone.html). Le allerte MeteoSvizzera sono lette per regione tramite un Comune rappresentativo (PLZ); i Comuni della carta sono assegnati alla regione del rappresentante più vicino (approssimazione da verificare con le regioni di allerta ufficiali).",
+  "titolo": "Quadro di situazione cantonale – Ticino",
+  "regioni": [
+    {"nome": "Alta Leventina",        "rappresentante": "Airolo",       "plz": "6780", "lat": 46.528, "lon": 8.609},
+    {"nome": "Media Leventina",       "rappresentante": "Faido",        "plz": "6760", "lat": 46.477, "lon": 8.801},
+    {"nome": "Blenio",                "rappresentante": "Olivone",      "plz": "6718", "lat": 46.531, "lon": 8.942},
+    {"nome": "Riviera",               "rappresentante": "Biasca",       "plz": "6710", "lat": 46.359, "lon": 8.971},
+    {"nome": "Bellinzonese",          "rappresentante": "Bellinzona",   "plz": "6500", "lat": 46.195, "lon": 9.023},
+    {"nome": "Locarnese",             "rappresentante": "Locarno",      "plz": "6600", "lat": 46.170, "lon": 8.797},
+    {"nome": "Vallemaggia",           "rappresentante": "Cevio",        "plz": "6675", "lat": 46.316, "lon": 8.602},
+    {"nome": "Verzasca",              "rappresentante": "Sonogno",      "plz": "6637", "lat": 46.350, "lon": 8.786},
+    {"nome": "Gambarogno",            "rappresentante": "Magadino",     "plz": "6573", "lat": 46.148, "lon": 8.856},
+    {"nome": "Luganese",              "rappresentante": "Lugano",       "plz": "6900", "lat": 46.004, "lon": 8.951},
+    {"nome": "Malcantone / Vedeggio", "rappresentante": "Agno",         "plz": "6982", "lat": 45.998, "lon": 8.899},
+    {"nome": "Capriasca / Val Colla", "rappresentante": "Tesserete",    "plz": "6950", "lat": 46.066, "lon": 8.967},
+    {"nome": "Monte Ceneri",          "rappresentante": "Rivera",       "plz": "6802", "lat": 46.122, "lon": 8.924},
+    {"nome": "Mendrisiotto",          "rappresentante": "Mendrisio",    "plz": "6850", "lat": 45.870, "lon": 8.981},
+    {"nome": "Basso Mendrisiotto",    "rappresentante": "Chiasso",      "plz": "6830", "lat": 45.832, "lon": 9.031}
+  ],
+  "comprensorio": ["Lugano", "Paradiso", "Massagno", "Savosa", "Vezia", "Porza", "Comano", "Canobbio", "Sorengo", "Muzzano", "Collina d'Oro", "Grancia", "Melide", "Morcote", "Vico Morcote"],
+
+  "stazioni_meteo": [
+    {"id": "LUG", "nome": "Lugano"},
+    {"id": "OTL", "nome": "Locarno-Monti"},
+    {"id": "MAG", "nome": "Magadino-Cadenazzo"},
+    {"id": "SBO", "nome": "Stabio"},
+    {"id": "COM", "nome": "Acquarossa-Comprovasco"},
+    {"id": "PIO", "nome": "Piotta"},
+    {"id": "CEV", "nome": "Cevio"},
+    {"id": "ROE", "nome": "Robiei (1'900 m)"},
+    {"id": "CIM", "nome": "Cimetta (1'660 m)"},
+    {"id": "GEN", "nome": "Monte Generoso (1'600 m)"}
+  ],
+
+  "pegel": [
+    {"id": "2020", "nome": "Ticino",        "luogo": "Bellinzona",              "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.1966, "lon": 9.0094, "soglie": {"2": 700, "3": 1100, "4": 1450, "5": 1800}},
+    {"id": "2494", "nome": "Ticino",        "luogo": "Pollegio",                "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.3519, "lon": 8.9457, "soglie": {"2": 250, "3": 400, "4": 550, "5": 700}},
+    {"id": "2086", "nome": "Brenno",        "luogo": "Loderio",                 "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.3765, "lon": 8.9695, "soglie": {"2": 190, "3": 320, "4": 380, "5": 430}},
+    {"id": "2420", "nome": "Moesa",         "luogo": "Lumino",                  "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.2317, "lon": 9.0474, "soglie": null, "_nota": "soglie UFAM da inserire (grado 1 < 310 m3/s)"},
+    {"id": "2605", "nome": "Verzasca",      "luogo": "Lavertezzo",              "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.2490, "lon": 8.8446, "soglie": {"2": 380, "3": 570, "4": 650, "5": 710}},
+    {"id": "2475", "nome": "Maggia",        "luogo": "Bignasco",                "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.3378, "lon": 8.6089, "soglie": {"2": 310, "3": 530, "4": 630, "5": 720}},
+    {"id": "2368", "nome": "Maggia",        "luogo": "Locarno-Solduno",         "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.1714, "lon": 8.7724, "soglie": {"2": 800, "3": 2000, "4": 3200, "5": 4400}},
+    {"id": "2022", "nome": "Lago Maggiore", "luogo": "Locarno",                 "tipo": "lago",  "param": "P", "unita": "m s.l.m.", "lat": 46.1636, "lon": 8.8043, "soglie": {"2": 194.5, "3": 195.5, "4": 196.0, "5": 196.5}},
+    {"id": "2321", "nome": "Cassarate",     "luogo": "Pregassona",              "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.0177, "lon": 8.9625, "soglie": {"2": 40, "3": 80, "4": 120, "5": 170}},
+    {"id": "2629", "nome": "Vedeggio",      "luogo": "Agno",                    "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.0014, "lon": 8.9102, "soglie": {"2": 55, "3": 130, "4": 210, "5": 350}},
+    {"id": "2101", "nome": "Lago di Lugano","luogo": "Melide",                  "tipo": "lago",  "param": "P", "unita": "m s.l.m.", "lat": 45.9559, "lon": 8.9554, "soglie": {"2": 270.9, "3": 271.1, "4": 271.4, "5": 271.8}},
+    {"id": "2349", "nome": "Breggia",       "luogo": "Chiasso",                 "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 45.8456, "lon": 9.0131, "soglie": {"2": 50, "3": 100, "4": 140, "5": 200}}
+  ],
+  "_fonte_soglie": "UFAM, schede stazione hydrodaten.admin.ch, verificate il 05.11.2026",
+
+  "previsioni": [
+    {"nome": "Lugano",     "lat": 46.0037, "lon": 8.9511},
+    {"nome": "Bellinzona", "lat": 46.1950, "lon": 9.0230},
+    {"nome": "Locarno",    "lat": 46.1700, "lon": 8.7970}
+  ]
+}
