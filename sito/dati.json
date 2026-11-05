@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-05T07:42:13+00:00",
- "generato_locale": "05.11.2026 08:42",
+ "generato": "2026-11-05T07:50:53+00:00",
+ "generato_locale": "05.11.2026 08:50",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,16 +25,16 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "05.11.2026 07:30",
-   "temperatura": 8.7,
-   "umidita": 82.9,
+   "rilevamento": "05.11.2026 07:40",
+   "temperatura": 8.6,
+   "umidita": 83.0,
    "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 1.9,
-   "raffica_kmh": 2.7,
-   "direzione": 350.0,
-   "pressione": 992.7,
+   "vento_kmh": 1.7,
+   "raffica_kmh": 2.6,
+   "direzione": 343.0,
+   "pressione": 992.8,
    "serie_24h": {
     "temperatura": [
      9.7,
@@ -82,7 +82,8 @@
      8.4,
      8.7,
      8.6,
-     8.7
+     8.7,
+     8.6
     ],
     "raffica_kmh": [
      1.3,
@@ -130,7 +131,8 @@
      1.6,
      2.9,
      3.3,
-     2.7
+     2.7,
+     2.6
     ],
     "pioggia_oraria": [
      0.0,
@@ -148,16 +150,16 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "05.11.2026 07:30",
-   "temperatura": 1.3,
-   "umidita": 98.3,
+   "rilevamento": "05.11.2026 07:40",
+   "temperatura": 1.2,
+   "umidita": 98.9,
    "pioggia_10min": null,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 1.4,
-   "raffica_kmh": 2.9,
-   "direzione": 348.0,
-   "pressione": 846.7,
+   "vento_kmh": 1.1,
+   "raffica_kmh": 2.0,
+   "direzione": 353.0,
+   "pressione": 846.8,
    "serie_24h": {
     "temperatura": [
      0.6,
@@ -205,7 +207,8 @@
      1.2,
      0.8,
      1.2,
-     1.3
+     1.3,
+     1.2
     ],
     "raffica_kmh": [
      6.1,
@@ -253,7 +256,8 @@
      2.0,
      2.9,
      1.8,
-     2.9
+     2.9,
+     2.0
     ],
     "pioggia_oraria": [
      0.0,
@@ -360,7 +364,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 0.9,
+   "valore": 0.98,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -368,11 +372,9 @@
     "4": 120,
     "5": 170
    },
-   "trend_8h": "in calo",
+   "trend_8h": "in aumento",
    "serie_8h": [
     0.92,
-    0.92,
-    0.92,
     0.91,
     0.92,
     0.92,
@@ -417,7 +419,9 @@
     0.89,
     0.89,
     0.9,
-    0.9
+    0.9,
+    0.95,
+    0.98
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
@@ -429,7 +433,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 2.0,
+   "valore": 1.67,
    "livello": 1,
    "soglie": {
     "2": 55,
@@ -439,8 +443,6 @@
    },
    "trend_8h": "in aumento",
    "serie_8h": [
-    1.53,
-    1.55,
     1.61,
     1.56,
     1.43,
@@ -486,7 +488,9 @@
     1.77,
     1.69,
     1.77,
-    2.0
+    2.0,
+    1.87,
+    1.67
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
@@ -570,63 +574,63 @@
   },
   {
    "disponibile": false,
-   "motivo": "HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfacewater&resolution=h&parameter=Q&from=2026-11-04&to=2026-11-05&location=water_39w",
+   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
    "nome": "Vecchio Vedeggio",
    "luogo": "Agno",
    "codice": "water_39w"
   },
   {
    "disponibile": false,
-   "motivo": "HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfacewater&resolution=h&parameter=Q&from=2026-11-04&to=2026-11-05&location=water_14w",
+   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
    "nome": "Scairolo",
    "luogo": "Barbengo",
    "codice": "water_14w"
   },
   {
    "disponibile": false,
-   "motivo": "HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfacewater&resolution=h&parameter=WL&from=2026-11-04&to=2026-11-05&location=water_au",
+   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
    "nome": "Lago di Muzzano",
    "luogo": "Muzzano",
    "codice": "water_auto_2"
   },
   {
    "disponibile": false,
-   "motivo": "HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfacewater&resolution=h&parameter=WL&from=2026-11-04&to=2026-11-05&location=water_au",
+   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
    "nome": "Lago di Lugano",
    "luogo": "Morcote",
    "codice": "water_auto_743"
   },
   {
    "disponibile": false,
-   "motivo": "HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=meteo&resolution=h&parameter=Prec&from=2026-11-04&to=2026-11-05&location=meteo_u_78 (C",
+   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
    "nome": "Colla",
    "luogo": "Val Colla, 1140 m",
    "codice": "meteo_u_78"
   },
   {
    "disponibile": false,
-   "motivo": "HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=meteo&resolution=h&parameter=Prec&from=2026-11-04&to=2026-11-05&location=meteo_auto_92",
+   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
    "nome": "Sonvico",
    "luogo": "Sonvico",
    "codice": "meteo_auto_926"
   },
   {
    "disponibile": false,
-   "motivo": "HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=meteo&resolution=h&parameter=Prec&from=2026-11-04&to=2026-11-05&location=air_525%2001%",
+   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
    "nome": "Camignolo",
    "luogo": "Camignolo",
    "codice": "air_525 01 01"
   },
   {
    "disponibile": false,
-   "motivo": "HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=meteo&resolution=h&parameter=Prec&from=2026-11-04&to=2026-11-05&location=meteo_auto_18",
+   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
    "nome": "Grancia",
    "luogo": "Grancia",
    "codice": "meteo_auto_183"
   },
   {
    "disponibile": false,
-   "motivo": "HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=meteo&resolution=h&parameter=Prec&from=2026-11-04&to=2026-11-05&location=meteo_u_76 (C",
+   "motivo": "OASI non raggiungibile in questo ciclo: HTTPSConnectionPool(host='www.oasi.ti.ch', port=443): Max retries exceeded with url: /web/rest/measure/csv?domain=surfac",
    "nome": "Novaggio",
    "luogo": "Novaggio, 620 m",
    "codice": "meteo_u_76"
@@ -638,108 +642,108 @@
   "orario": [
    {
     "ora": "08:00",
-    "temperatura": 6.9,
+    "temperatura": 7.6,
     "umidita": 94,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 4.7,
+    "vento_kmh": 5.6,
     "raffica_kmh": 8.6,
     "codice": 2
    },
    {
     "ora": "09:00",
-    "temperatura": 8.7,
+    "temperatura": 9.0,
     "umidita": 90,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 1.9,
+    "vento_kmh": 1.3,
     "raffica_kmh": 5.0,
     "codice": 3
    },
    {
     "ora": "10:00",
-    "temperatura": 10.3,
+    "temperatura": 10.6,
     "umidita": 78,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 1.3,
+    "vento_kmh": 2.4,
     "raffica_kmh": 3.6,
     "codice": 2
    },
    {
     "ora": "11:00",
-    "temperatura": 11.8,
+    "temperatura": 12.1,
     "umidita": 71,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 1.1,
+    "vento_kmh": 1.8,
     "raffica_kmh": 3.6,
     "codice": 1
    },
    {
     "ora": "12:00",
-    "temperatura": 12.9,
+    "temperatura": 13.1,
     "umidita": 66,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 1.1,
+    "vento_kmh": 1.3,
     "raffica_kmh": 6.5,
     "codice": 1
    },
    {
     "ora": "13:00",
     "temperatura": 13.4,
-    "umidita": 67,
+    "umidita": 70,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
     "vento_kmh": 2.1,
-    "raffica_kmh": 5.0,
+    "raffica_kmh": 6.8,
     "codice": 2
    },
    {
     "ora": "14:00",
     "temperatura": 13.7,
-    "umidita": 65,
+    "umidita": 67,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
     "vento_kmh": 5.4,
-    "raffica_kmh": 6.8,
+    "raffica_kmh": 7.6,
     "codice": 2
    },
    {
     "ora": "15:00",
     "temperatura": 13.8,
-    "umidita": 66,
+    "umidita": 68,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
     "vento_kmh": 6.1,
-    "raffica_kmh": 7.9,
+    "raffica_kmh": 9.4,
     "codice": 2
    },
    {
     "ora": "16:00",
     "temperatura": 13.3,
-    "umidita": 70,
+    "umidita": 71,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
     "vento_kmh": 7.1,
-    "raffica_kmh": 9.0,
+    "raffica_kmh": 8.6,
     "codice": 3
    },
    {
     "ora": "17:00",
     "temperatura": 12.6,
-    "umidita": 75,
+    "umidita": 76,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
     "vento_kmh": 3.3,
-    "raffica_kmh": 10.1,
+    "raffica_kmh": 8.6,
     "codice": 3
    },
    {
     "ora": "18:00",
     "temperatura": 10.8,
-    "umidita": 91,
+    "umidita": 92,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
     "vento_kmh": 4.9,
@@ -749,11 +753,11 @@
    {
     "ora": "19:00",
     "temperatura": 9.6,
-    "umidita": 95,
+    "umidita": 96,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
     "vento_kmh": 3.1,
-    "raffica_kmh": 7.9,
+    "raffica_kmh": 7.6,
     "codice": 3
    }
   ],
@@ -761,9 +765,9 @@
    {
     "data": "2026-11-05",
     "tmax": 13.8,
-    "tmin": 6.8,
+    "tmin": 7.3,
     "pioggia_mm": 0.0,
-    "raffica_max": 10.1,
+    "raffica_max": 9.4,
     "codice": 3
    },
    {
@@ -771,7 +775,7 @@
     "tmax": 11.4,
     "tmin": 8.3,
     "pioggia_mm": 9.13,
-    "raffica_max": 5.8,
+    "raffica_max": 6.1,
     "codice": 63
    },
    {
@@ -808,7 +812,7 @@
    }
   ],
   "massimi_12h": {
-   "raffica_kmh": 10.1,
+   "raffica_kmh": 9.4,
    "pioggia_oraria_mm": 0.0,
    "pioggia_totale_mm": 0.0,
    "temperatura": 13.8
@@ -820,5 +824,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-05T06:48:13+00:00"
+ "precedente": "2026-11-05T07:42:13+00:00"
 }
