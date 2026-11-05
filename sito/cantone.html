@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Quadro di situazione cantonale · PCi Lugano Città</title>
+<style>
+  :root {
+    --sfondo: #f3f4f2; --carta: #ffffff; --testo: #1b1f1d; --muto: #5c645f; --linea: #d8dcd9;
+    --l1: #e4e8e5; --l2: #f5d442; --l3: #f08a1f; --l4: #d8322c; --l5: #7a1b3a;
+    --nd: repeating-linear-gradient(135deg,#dfe3e0 0 6px,#cfd4d0 6px 12px);
+    --ok: #2e7d4f; --allarme: #b3261e; --evidenza: #fff3c4;
+    --base: clamp(13px, 1.05vw, 20px);
+    box-sizing: border-box;
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    color-scheme: dark;
+    --sfondo: #141715; --carta: #1e2320; --testo: #ecefed; --muto: #a2aaa5; --linea: #38403b;
+    --l1: #2c332f; --evidenza: #4a3f12; --nd: repeating-linear-gradient(135deg,#2c332f 0 6px,#363d39 6px 12px);
+  }}
+  * { box-sizing: inherit; }
+  html, body { margin: 0; height: 100%; background: var(--sfondo); color: var(--testo); }
+  body { font: var(--base)/1.35 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; display: flex; flex-direction: column; overflow: hidden; }
+  header { display: flex; align-items: center; gap: 1.2em; padding: .45em 1em; background: var(--carta); border-bottom: 1px solid var(--linea); }
+  header h1 { font-size: 1.35em; margin: 0; font-weight: 600; white-space: nowrap; }
+  header .ora { font-size: 1.15em; font-variant-numeric: tabular-nums; }
+  header .ora b { font-size: 1.3em; }
+  header .fonti { margin-left: auto; color: var(--muto); font-size: .8em; display: flex; gap: .6em; flex-wrap: wrap; }
+  header .fonti span { padding: .1em .5em; border-radius: 1em; border: 1px solid var(--linea); }
+  header .fonti span.ko { border-color: var(--allarme); color: var(--allarme); font-weight: 600; }
+  header a { color: var(--muto); font-size: .8em; }
+  #banner { display: none; background: var(--allarme); color: #fff; font-weight: 700; text-align: center; padding: .4em; font-size: 1.15em; }
+  #banner.on { display: block; }
+  main { flex: 1; display: grid; grid-template-columns: 42fr 58fr; grid-template-rows: 1fr auto; gap: .6em; padding: .6em; min-height: 0; }
+  .pannello { background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: .5em .7em; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  .pannello h2 { font-size: .95em; margin: 0 0 .3em; font-weight: 600; color: var(--muto); text-transform: uppercase; letter-spacing: .03em; }
+  .pannello .corpo { flex: 1; min-height: 0; overflow: auto; }
+  #mappa { grid-row: 1 / 3; }
+  #mappa .corpo { display: flex; align-items: center; justify-content: center; }
+  #carta svg { width: 100%; height: 100%; max-height: 100%; }
+  #carta path.com { stroke: var(--carta); stroke-width: .5; }
+  #carta path.com.l1 { fill: var(--l1); } #carta path.com.l2 { fill: var(--l2); } #carta path.com.l3 { fill: var(--l3); }
+  #carta path.com.l4 { fill: var(--l4); } #carta path.com.l5 { fill: var(--l5); } #carta path.com.nd { fill: url(#tratteggio); }
+  #carta path.compr { fill: none; stroke: var(--testo); stroke-width: 1.6; }
+  #carta text.reg { font-size: 10px; fill: var(--testo); paint-order: stroke; stroke: var(--carta); stroke-width: 3px; pointer-events: none; }
+  #carta circle.peg { stroke: var(--testo); stroke-width: 1; }
+  #carta circle.peg.l1 { fill: var(--carta); } #carta circle.peg.l2 { fill: var(--l2); } #carta circle.peg.l3 { fill: var(--l3); } #carta circle.peg.l4 { fill: var(--l4); } #carta circle.peg.l5 { fill: var(--l5); } #carta circle.peg.nd { fill: var(--muto); }
+  #carta text.peg { font-size: 9px; font-weight: 700; fill: var(--testo); text-anchor: middle; pointer-events: none; paint-order: stroke; stroke: var(--carta); stroke-width: 2.5px; }
+  .legenda { display: flex; gap: .9em; justify-content: center; color: var(--muto); font-size: .8em; padding-top: .3em; flex-wrap: wrap; }
+  .legenda i { display: inline-block; width: 1em; height: 1em; border-radius: 3px; vertical-align: -2px; margin-right: .3em; border: 1px solid var(--linea); }
+  .legenda i.l1 { background: var(--l1); } .legenda i.l2 { background: var(--l2); } .legenda i.l3 { background: var(--l3); } .legenda i.l4 { background: var(--l4); } .legenda i.l5 { background: var(--l5); } .legenda i.nd { background: var(--nd); }
+  #destra { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: .6em; min-height: 0; }
+  #allerte { grid-row: 1 / 3; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: .25em .4em; border-top: 1px solid var(--linea); font-size: .92em; vertical-align: middle; }
+  th { border-top: 0; color: var(--muto); font-weight: 600; font-size: .8em; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .liv { display: inline-flex; align-items: center; justify-content: center; min-width: 1.9em; height: 1.9em; border-radius: 1em; font-weight: 700; color: #111; }
+  .liv.l1 { background: var(--l1); color: var(--muto); } .liv.l2 { background: var(--l2); } .liv.l3 { background: var(--l3); } .liv.l4 { background: var(--l4); color: #fff; } .liv.l5 { background: var(--l5); color: #fff; }
+  .liv.nd { background: var(--nd); color: var(--muto); font-size: .75em; }
+  ul.lista { margin: 0; padding: 0; list-style: none; display: grid; gap: .3em; }
+  ul.lista li { border: 1px solid var(--linea); border-left-width: 5px; border-radius: 5px; padding: .35em .6em; font-size: .92em; }
+  li.l2 { border-left-color: var(--l2); } li.l3 { border-left-color: var(--l3); } li.l4 { border-left-color: var(--l4); } li.l5 { border-left-color: var(--l5); }
+  li.peggiora { border-left-color: var(--allarme); } li.migliora { border-left-color: var(--ok); } li.info { border-left-color: var(--linea); }
+  li.nuovo { animation: lampeggio 1.2s ease-in-out 4; }
+  @keyframes lampeggio { 0%,100% { background: transparent; } 50% { background: var(--evidenza); } }
+  .vuoto { color: var(--muto); font-size: .92em; padding: .3em 0; }
+  svg.spark { width: 6em; height: 1.6em; display: block; }
+  svg.spark path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
+  svg.spark line { stroke: var(--l3); stroke-width: 1; stroke-dasharray: 3 3; }
+  #basso { grid-column: 2; display: grid; grid-template-columns: 2fr 1fr; gap: .6em; }
+  @media (max-width: 1000px), (orientation: portrait) {
+    body { overflow: auto; height: auto; }
+    main { grid-template-columns: 1fr; grid-template-rows: none; }
+    #mappa { grid-row: auto; } #mappa .corpo { max-height: 60vh; }
+    #destra { grid-template-columns: 1fr; grid-template-rows: none; } #allerte { grid-row: auto; }
+    #basso { grid-column: 1; grid-template-columns: 1fr; }
+    .pannello .corpo { overflow: visible; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titolo">Quadro di situazione cantonale – Ticino</h1>
+  <div class="ora">Aggiornato <b id="ora">–</b> <span id="eta" style="color:var(--muto)"></span></div>
+  <div class="fonti" id="fonti"></div>
+  <a href="index.html">Comprensorio ›</a>
+</header>
+<div id="banner">DATI NON AGGIORNATI – considerare non disponibili e consultare le fonti ufficiali</div>
+
+<main>
+  <section class="pannello" id="mappa">
+    <h2>Allerte MeteoSvizzera per regione · pegel UFAM</h2>
+    <div class="corpo"><div id="carta"></div></div>
+    <div class="legenda"><span><i class="l1"></i>1</span><span><i class="l2"></i>2</span><span><i class="l3"></i>3</span><span><i class="l4"></i>4</span><span><i class="l5"></i>5</span><span><i class="nd"></i>n/d</span><span>○ pegel, numero = grado</span><span>contorno nero = comprensorio</span></div>
+  </section>
+
+  <div id="destra">
+    <section class="pannello" id="allerte">
+      <h2>Allerte attive <small id="all-sub" style="font-weight:400;text-transform:none"></small></h2>
+      <div class="corpo"><ul class="lista" id="all-lista"></ul></div>
+    </section>
+    <section class="pannello" id="pegel-p">
+      <h2>Corsi d'acqua e laghi (UFAM)</h2>
+      <div class="corpo"><table id="pegel"></table></div>
+    </section>
+    <section class="pannello" id="aw-p">
+      <h2>Alertswiss Ticino <small id="aw-sub" style="font-weight:400;text-transform:none"></small></h2>
+      <div class="corpo" id="alertswiss"></div>
+    </section>
+  </div>
+
+  <div id="basso">
+    <section class="pannello">
+      <h2>Stazioni MeteoSvizzera · <small id="mis-sub" style="font-weight:400;text-transform:none"></small></h2>
+      <div class="corpo"><table id="misure"></table></div>
+    </section>
+    <section class="pannello">
+      <h2>Prossime 12 h (Open-Meteo, non ufficiale) · Cosa è cambiato</h2>
+      <div class="corpo"><table id="prev"></table><ul class="lista" id="var-lista" style="margin-top:.4em"></ul></div>
+    </section>
+  </div>
+</main>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const t = v => (v === null || v === undefined || Number.isNaN(v)) ? "—" : v;
+  const livHtml = (l, nd) => (nd || l == null) ? '<span class="liv nd">n/d</span>' : `<span class="liv l${l}">${l}</span>`;
+  let dati = null, carta = null, ultimoGenerato = null;
+
+  function spark(serie, soglia) {
+    const v = serie.filter(x => typeof x === "number");
+    if (v.length < 2) return "";
+    const W = 120, H = 32, p = 3;
+    let min = Math.min(...v), max = Math.max(...v);
+    if (soglia != null) { min = Math.min(min, soglia); max = Math.max(max, soglia); }
+    if (max === min) { max += 1; min -= 1; }
+    const x = i => p + i * (W - 2 * p) / (serie.length - 1), y = val => H - p - (val - min) * (H - 2 * p) / (max - min);
+    let d = "", pen = false;
+    serie.forEach((val, i) => { if (typeof val !== "number") { pen = false; return; } d += (pen ? "L" : "M") + x(i).toFixed(1) + " " + y(val).toFixed(1) + " "; pen = true; });
+    const sl = soglia != null ? `<line x1="0" x2="${W}" y1="${y(soglia).toFixed(1)}" y2="${y(soglia).toFixed(1)}"/>` : "";
+    return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${sl}<path d="${d}"/></svg>`;
+  }
+
+  async function caricaCarta() {
+    try { const r = await fetch("carta_ti.json", {cache: "force-cache"}); if (r.ok) carta = await r.json(); } catch (e) { carta = null; }
+  }
+
+  async function carica() {
+    try {
+      const r = await fetch("cantone.json?_=" + Date.now(), {cache: "no-store"});
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      dati = await r.json();
+      disegna();
+    } catch (e) {
+      $("eta").textContent = "cantone.json non raggiungibile: " + e.message;
+      $("banner").classList.add("on");
+    }
+  }
+
+  function disegna() {
+    const eta = Math.round((Date.now() - new Date(dati.generato).getTime()) / 60000);
+    const stantio = eta > dati.dati_stantii_minuti;
+    const nuovo = ultimoGenerato && ultimoGenerato !== dati.generato;
+    ultimoGenerato = dati.generato;
+    $("titolo").textContent = dati.titolo;
+    $("ora").textContent = dati.generato_locale;
+    $("eta").textContent = `(${eta} min fa)`;
+    $("banner").classList.toggle("on", stantio);
+
+    // stato delle fonti
+    const okAllerte = Object.values(dati.allerte).some(a => a.disponibile);
+    const okPegel = dati.pegel.some(p => p.disponibile);
+    const okMisure = Object.values(dati.misure).some(m => m.disponibile);
+    const okPrev = Object.values(dati.previsioni).some(p => p.disponibile);
+    $("fonti").innerHTML = [["Allerte", okAllerte], ["UFAM", okPegel], ["Alertswiss", dati.alertswiss.disponibile], ["Misure", okMisure], ["Previsione", okPrev]]
+      .map(([n, ok]) => `<span class="${ok ? "" : "ko"}">${n}${ok ? "" : " KO"}</span>`).join("");
+
+    // allerte attive (livello >= 2), raggruppate per regione
+    const attive = [];
+    for (const [reg, a] of Object.entries(dati.allerte)) {
+      if (!a.disponibile) continue;
+      for (const w of a.allerte) if ((w.livello || 0) >= 2) attive.push({reg, ...w});
+    }
+    attive.sort((x, y) => (y.livello || 0) - (x.livello || 0));
+    $("all-sub").textContent = `${attive.length} allerte di livello ≥ 2 su ${Object.keys(dati.allerte).length} regioni`;
+    $("all-lista").innerHTML = attive.length
+      ? attive.map(w => `<li class="l${w.livello}"><b>${w.reg}</b> · ${w.tipo} – livello ${w.livello}${w.preallerta ? " (preallerta)" : ""}<br><small style="color:var(--muto)">${t(w.dal)} → ${t(w.al)}</small>${w.testo ? `<br>${w.testo.slice(0, 220)}${w.testo.length > 220 ? "…" : ""}` : ""}</li>`).join("")
+      : `<li class="info">Nessuna allerta di livello 2 o superiore in Ticino.${okAllerte ? "" : " (fonte allerte non disponibile)"}</li>`;
+
+    // pegel
+    $("pegel").innerHTML = `<tr><th>Stazione</th><th class="num">Valore</th><th>8 h</th><th>Grado</th></tr>` +
+      dati.pegel.map(p => p.disponibile
+        ? `<tr><td>${p.nome} <small style="color:var(--muto)">${p.luogo}</small></td><td class="num">${t(p.valore)} ${p.unita}</td><td>${spark(p.serie_8h || [], p.soglie && p.soglie["2"])}</td><td>${livHtml(p.livello, stantio)}</td></tr>`
+        : `<tr><td>${p.nome} <small style="color:var(--muto)">${p.luogo || ""}</small></td><td colspan="2" style="color:var(--muto)">n/d</td><td>${livHtml(null, true)}</td></tr>`).join("");
+
+    // alertswiss
+    const aw = dati.alertswiss;
+    if (!aw.disponibile) { $("aw-sub").textContent = ""; $("alertswiss").innerHTML = `<div class="vuoto">Feed non disponibile. Verificare su alert.swiss.</div>`; }
+    else {
+      $("aw-sub").textContent = `${aw.notifiche.length} pertinenti su ${aw.totale_svizzera}`;
+      $("alertswiss").innerHTML = aw.notifiche.length
+        ? `<ul class="lista">${aw.notifiche.map(n => `<li class="peggiora"><b>${n.titolo}</b>${n.area ? `<br><small style="color:var(--muto)">${n.area}</small>` : ""}<br>${n.testo.slice(0, 200)}</li>`).join("")}</ul>`
+        : `<div class="vuoto">Nessuna notifica Alertswiss per il Ticino.</div>`;
+    }
+
+    // misure
+    const ms = Object.values(dati.misure);
+    const prima = ms.find(m => m.disponibile);
+    $("mis-sub").textContent = prima ? `rilevamento ${t(prima.rilevamento)} UTC` : "non disponibili";
+    $("misure").innerHTML = `<tr><th>Stazione</th><th class="num">°C</th><th class="num">Raffica</th><th class="num">Pioggia 1 h</th><th class="num">Pioggia 24 h</th></tr>` +
+      ms.map(m => m.disponibile
+        ? `<tr><td>${m.nome}</td><td class="num">${t(m.temperatura)}</td><td class="num">${t(m.raffica_kmh)} km/h</td><td class="num">${t(m.pioggia_1h)} mm</td><td class="num"${m.pioggia_24h >= 50 ? ' style="color:var(--allarme);font-weight:700"' : ""}>${t(m.pioggia_24h)} mm</td></tr>`
+        : `<tr><td>${m.nome || m.stazione || "?"}</td><td colspan="4" style="color:var(--muto)">n/d</td></tr>`).join("");
+
+    // previsioni: massimi 12 h per località
+    $("prev").innerHTML = `<tr><th>Località</th><th class="num">Raffica max</th><th class="num">Pioggia max/h</th><th class="num">Totale 12 h</th></tr>` +
+      Object.entries(dati.previsioni).map(([n, p]) => p.disponibile
+        ? `<tr><td>${n}</td><td class="num">${t(p.massimi_12h.raffica_kmh)} km/h</td><td class="num">${t(p.massimi_12h.pioggia_oraria_mm)} mm</td><td class="num">${t(p.massimi_12h.pioggia_totale_mm)} mm</td></tr>`
+        : `<tr><td>${n}</td><td colspan="3" style="color:var(--muto)">n/d</td></tr>`).join("");
+
+    // variazioni
+    $("var-lista").innerHTML = dati.variazioni.map(v => `<li class="${v.tipo}${nuovo ? " nuovo" : ""}">${v.testo}</li>`).join("");
+
+    disegnaCarta(stantio);
+  }
+
+  function disegnaCarta(stantio) {
+    if (!carta) { $("carta").innerHTML = ""; return; }
+    let s = `<svg viewBox="${carta.viewBox}" role="img" aria-label="Carta del Cantone Ticino con il livello di allerta per regione e i pegel">
+      <defs><pattern id="tratteggio" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="var(--l1)"/><rect width="4" height="8" fill="var(--linea)"/></pattern></defs>`;
+    for (const [n, d] of Object.entries(carta.comuni)) {
+      const a = dati.allerte[carta.regione_di[n]] || {};
+      const cls = (stantio || !a.disponibile) ? "nd" : "l" + a.livello_max;
+      s += `<path class="com ${cls}" d="${d}"><title>${n} – ${carta.regione_di[n]}: ${a.disponibile ? "livello " + a.livello_max : "n/d"}</title></path>`;
+    }
+    for (const n of dati.comprensorio) if (carta.comuni[n]) s += `<path class="compr" d="${carta.comuni[n]}"/>`;
+    for (const [n, [x, y]] of Object.entries(carta.regioni)) s += `<text class="reg" x="${x}" y="${y - 7}" text-anchor="middle">${n}</text>`;
+    for (const p of dati.pegel) {
+      const xy = carta.pegel[p.id]; if (!xy) continue;
+      const cls = (stantio || !p.disponibile || p.livello == null) ? "nd" : "l" + p.livello;
+      s += `<circle class="peg ${cls}" cx="${xy[0]}" cy="${xy[1]}" r="7"><title>${p.nome} – ${p.luogo}: ${p.disponibile ? p.valore + " " + p.unita : "n/d"}</title></circle>` +
+           `<text class="peg" x="${xy[0]}" y="${xy[1] + 3}">${p.disponibile && p.livello != null ? p.livello : "·"}</text>`;
+    }
+    $("carta").innerHTML = s + "</svg>";
+  }
+
+  caricaCarta().then(carica);
+  setInterval(carica, 5 * 60 * 1000);
+})();
+</script>
+</body>
+</html>
