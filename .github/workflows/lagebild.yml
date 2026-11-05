@@ -41,10 +41,26 @@ jobs:
         run: |
           git config user.name "collettore"
           git config user.email "collettore@users.noreply.github.com"
+          # metto da parte i risultati di questo ciclo
+          mkdir -p /tmp/ciclo
+          cp sito/dati.json /tmp/ciclo/dati.json
+          cp -r archivio /tmp/ciclo/archivio
+          # mi riallineo all'ultima versione del repository e riapplico i risultati
+          git fetch origin main
+          git reset --hard origin/main
+          cp /tmp/ciclo/dati.json sito/dati.json
+          mkdir -p archivio && cp -r /tmp/ciclo/archivio/. archivio/
           git add archivio sito/dati.json
-          git diff --cached --quiet || git commit -m "ciclo $(date -u +'%Y-%m-%d %H:%M') UTC"
-          git pull --rebase --autostash origin main
-          git push
+          if ! git diff --cached --quiet; then
+            git commit -m "ciclo $(date -u +'%Y-%m-%d %H:%M') UTC"
+            for i in 1 2 3; do
+              git push origin main && break
+              # qualcun altro ha scritto nel frattempo: rifaccio il commit sopra la versione più recente
+              git fetch origin main
+              git reset --soft origin/main
+              git commit -m "ciclo $(date -u +'%Y-%m-%d %H:%M') UTC"
+            done
+          fi
 
       - uses: actions/configure-pages@v5
 
