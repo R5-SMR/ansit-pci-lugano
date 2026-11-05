@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Quadro di situazione cantonale · PCi Lugano Città</title>
+<title>Analisi della situazione · Ticino · PCi Lugano Città</title>
 <style>
   :root {
     --sfondo: #f3f4f2; --carta: #ffffff; --testo: #1b1f1d; --muto: #5c645f; --linea: #d8dcd9;
@@ -23,7 +23,12 @@
   html, body { margin: 0; height: 100%; background: var(--sfondo); color: var(--testo); }
   body { font: var(--base)/1.35 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; display: flex; flex-direction: column; overflow: hidden; }
   header { display: flex; align-items: center; gap: 1.2em; padding: .45em 1em; background: var(--carta); border-bottom: 1px solid var(--linea); }
-  header h1 { font-size: 1.35em; margin: 0; font-weight: 600; white-space: nowrap; }
+  header h1 { font-size: 1.55em; margin: 0; font-weight: 700; white-space: nowrap; letter-spacing: -.01em; line-height: 1.1; }
+  header h1 small { display: block; font-size: .5em; font-weight: 500; color: var(--muto); text-transform: uppercase; letter-spacing: .06em; }
+  .scelta { display: inline-flex; border: 1px solid var(--linea); border-radius: 8px; overflow: hidden; }
+  .scelta a { padding: .35em .9em; font-size: .95em; font-weight: 600; text-decoration: none; color: var(--muto); background: var(--carta); }
+  .scelta a + a { border-left: 1px solid var(--linea); }
+  .scelta a.attiva { background: var(--testo); color: var(--carta); }
   header .ora { font-size: 1.15em; font-variant-numeric: tabular-nums; }
   header .ora b { font-size: 1.3em; }
   header .fonti { margin-left: auto; color: var(--muto); font-size: .8em; display: flex; gap: .6em; flex-wrap: wrap; }
@@ -82,10 +87,10 @@
 </head>
 <body>
 <header>
-  <h1 id="titolo">Quadro di situazione cantonale – Ticino</h1>
+  <h1><small>Protezione civile Regione Lugano Città</small>Analisi della situazione</h1>
+  <nav class="scelta" aria-label="Area"><a href="index.html">Regione Lugano Città</a><a class="attiva" href="cantone.html" aria-current="page">Ticino</a></nav>
   <div class="ora">Aggiornato <b id="ora">–</b> <span id="eta" style="color:var(--muto)"></span></div>
   <div class="fonti" id="fonti"></div>
-  <a href="index.html">Comprensorio ›</a>
 </header>
 <div id="banner">DATI NON AGGIORNATI – considerare non disponibili e consultare le fonti ufficiali</div>
 
@@ -165,7 +170,6 @@
     const stantio = eta > dati.dati_stantii_minuti;
     const nuovo = ultimoGenerato && ultimoGenerato !== dati.generato;
     ultimoGenerato = dati.generato;
-    $("titolo").textContent = dati.titolo;
     $("ora").textContent = dati.generato_locale;
     $("eta").textContent = `(${eta} min fa)`;
     $("banner").classList.toggle("on", stantio);
