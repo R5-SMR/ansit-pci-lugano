@@ -203,5 +203,103 @@
     "lat": 46.0037,
     "lon": 8.9511,
     "url": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,wind_speed_10m,wind_gusts_10m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_gusts_10m_max,weather_code&timezone=Europe%2FZurich&forecast_days=6&wind_speed_unit=kmh"
+  },
+  "oasi": {
+    "_nota": "OASI, Osservatorio ambientale della Svizzera italiana (www.ti.ch/oasi). Interfaccia REST ricavata dalle esportazioni; stazioni di proprietà UCA, pubblicabili con citazione. Latenza circa 1 h. Codici verificati il 05.11.2026. Pluviometri: Lugano (meteo_11), Scairolo (meteo_auto_801), Vedeggio ad Agno (803), Cassarate a Lugano (804) sono di MeteoSvizzera e non si possono ripubblicare via OASI.",
+    "url": "https://www.oasi.ti.ch/web/rest/measure/csv?domain={domain}&resolution=h&parameter={param}&from={da}&to={a}&location={codice}",
+    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
+    "stazioni": [
+      {
+        "codice": "water_31w",
+        "nome": "Vedeggio",
+        "luogo": "Isone",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Vedeggio (testata)"
+      },
+      {
+        "codice": "water_39w",
+        "nome": "Vecchio Vedeggio",
+        "luogo": "Agno",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Piana di Agno"
+      },
+      {
+        "codice": "water_14w",
+        "nome": "Scairolo",
+        "luogo": "Barbengo",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Pian Scairolo"
+      },
+      {
+        "codice": "water_auto_2",
+        "nome": "Lago di Muzzano",
+        "luogo": "Muzzano",
+        "dominio": "surfacewater",
+        "param": "WL",
+        "unita": "m s.l.m.",
+        "bacino": "Muzzano"
+      },
+      {
+        "codice": "water_auto_743",
+        "nome": "Lago di Lugano",
+        "luogo": "Morcote",
+        "dominio": "surfacewater",
+        "param": "WL",
+        "unita": "m s.l.m.",
+        "bacino": "Ceresio (conferma)"
+      },
+      {
+        "codice": "meteo_u_78",
+        "nome": "Colla",
+        "luogo": "Val Colla, 1140 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "Cassarate (testata)"
+      },
+      {
+        "codice": "meteo_auto_926",
+        "nome": "Sonvico",
+        "luogo": "Sonvico",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "Cassarate (medio)"
+      },
+      {
+        "codice": "air_525 01 01",
+        "nome": "Camignolo",
+        "luogo": "Camignolo",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "Vedeggio (alto)",
+        "proprietario": "UMAm"
+      },
+      {
+        "codice": "meteo_auto_183",
+        "nome": "Grancia",
+        "luogo": "Grancia",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "Pian Scairolo"
+      },
+      {
+        "codice": "meteo_u_76",
+        "nome": "Novaggio",
+        "luogo": "Novaggio, 620 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "Malcantone / Magliasina"
+      }
+    ]
   }
 }
