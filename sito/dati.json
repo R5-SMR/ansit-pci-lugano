@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-05T11:13:47+00:00",
- "generato_locale": "05.11.2026 12:13",
+ "generato": "2026-11-05T11:20:47+00:00",
+ "generato_locale": "05.11.2026 12:20",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,16 +25,16 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "05.11.2026 10:40",
-   "temperatura": 12.3,
-   "umidita": 70.5,
+   "rilevamento": "05.11.2026 11:10",
+   "temperatura": 12.7,
+   "umidita": 70.6,
    "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 1.0,
-   "raffica_kmh": 1.7,
-   "direzione": 119.0,
-   "pressione": 992.4,
+   "vento_kmh": 0.9,
+   "raffica_kmh": 1.9,
+   "direzione": 156.0,
+   "pressione": 992.1,
    "serie_24h": {
     "temperatura": [
      9.7,
@@ -101,7 +101,10 @@
      11.6,
      11.9,
      11.9,
-     12.3
+     12.3,
+     12.2,
+     12.4,
+     12.7
     ],
     "raffica_kmh": [
      1.3,
@@ -168,9 +171,13 @@
      1.6,
      1.5,
      1.5,
-     1.7
+     1.7,
+     1.7,
+     1.8,
+     1.9
     ],
     "pioggia_oraria": [
+     0.0,
      0.0,
      0.0,
      0.0,
@@ -189,16 +196,16 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "05.11.2026 10:50",
-   "temperatura": 2.9,
-   "umidita": 98.0,
-   "pioggia_10min": null,
+   "rilevamento": "05.11.2026 11:10",
+   "temperatura": 3.0,
+   "umidita": 97.8,
+   "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 1.3,
-   "raffica_kmh": 2.3,
-   "direzione": 328.0,
-   "pressione": 847.1,
+   "vento_kmh": 0.9,
+   "raffica_kmh": 1.8,
+   "direzione": 306.0,
+   "pressione": 847.0,
    "serie_24h": {
     "temperatura": [
      0.6,
@@ -266,7 +273,9 @@
      2.9,
      2.9,
      2.8,
-     2.9
+     2.9,
+     2.7,
+     3.0
     ],
     "raffica_kmh": [
      6.1,
@@ -334,9 +343,12 @@
      0.9,
      1.4,
      1.6,
-     2.3
+     2.3,
+     3.5,
+     1.8
     ],
     "pioggia_oraria": [
+     0.0,
      0.0,
      0.0,
      0.0,
@@ -579,11 +591,75 @@
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
   {
-   "disponibile": false,
-   "motivo": "valore non trovato nelle risposte",
+   "disponibile": true,
    "id": "2101",
    "nome": "Lago di Lugano",
-   "luogo": "Melide, Ferrera"
+   "luogo": "Melide, Ferrera",
+   "tipo": "lago",
+   "parametro": "P",
+   "unita": "m s.l.m.",
+   "valore": 270.43,
+   "livello": 1,
+   "soglie": {
+    "2": 270.9,
+    "3": 271.1,
+    "4": 271.4,
+    "5": 271.8
+   },
+   "lat": null,
+   "lon": null,
+   "trend_8h": "in calo",
+   "serie_8h": [
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43,
+    270.43
+   ],
+   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2101_p_q_7days_it.json"
   }
  ],
  "oasi": [
@@ -846,5 +922,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-05T11:10:48+00:00"
+ "precedente": "2026-11-05T11:13:47+00:00"
 }
