@@ -269,9 +269,10 @@ OASI_BLOCCATO = {"stato": False, "motivo": ""}
 
 def oasi(st):
     cfg = CFG["oasi"]
+    base_nd = {"nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"],
+               "parametro": st["param"], "bacino": st.get("bacino")}
     if OASI_BLOCCATO["stato"]:
-        return {**non_disp("OASI non raggiungibile in questo ciclo: " + OASI_BLOCCATO["motivo"]),
-                "nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"]}
+        return {**non_disp("OASI non raggiungibile in questo ciclo"), **base_nd}
     oggi = ADESSO.astimezone(TZ_OASI).date()
     url = cfg["url"].format(domain=st["dominio"], param=st["param"], codice=quote(st["codice"]),
                             da=(oggi - timedelta(days=1)).isoformat(), a=oggi.isoformat())
@@ -280,11 +281,11 @@ def oasi(st):
     except requests.exceptions.ConnectionError as e:
         # errore di rete (DNS, rifiuto, timeout di connessione): inutile insistere sulle altre stazioni
         OASI_BLOCCATO.update(stato=True, motivo=str(e)[:120])
-        log(f"OASI: connessione fallita, salto le stazioni successive ({str(e)[:120]})")
-        return {**non_disp(e), "nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"]}
+        log(f"OASI: connessione fallita, salto le stazioni successive ({str(e)[:160]})")
+        return {**non_disp("OASI non risponde (connessione rifiutata o timeout)"), **base_nd}
     except Exception as e:
         log(f"OASI {st['codice']}: {str(e)[:160]}")
-        return {**non_disp(e), "nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"]}
+        return {**non_disp(str(e)[:80]), **base_nd}
     GREZZI.setdefault("oasi", {})[st["codice"]] = testo[-30000:]
     punti = []
     for riga in testo.splitlines():
@@ -300,7 +301,7 @@ def oasi(st):
             continue
         punti.append((t, v, campi[2].strip() == "*" if len(campi) > 2 else False))
     if not punti:
-        return {**non_disp("nessun valore nel periodo"), "nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"]}
+        return {**non_disp("nessun valore nel periodo"), **base_nd}
     t_ult, v_ult, provv = punti[-1]
     eta = int((ADESSO - t_ult).total_seconds() // 60)
     base = {"disponibile": True, "nome": st["nome"], "luogo": st["luogo"], "codice": st["codice"],
