@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-06T08:01:19+00:00",
- "generato_locale": "06.11.2026 09:01",
+ "generato": "2026-11-06T08:10:50+00:00",
+ "generato_locale": "06.11.2026 09:10",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,16 +25,16 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "06.11.2026 07:50",
-   "temperatura": 9.3,
-   "umidita": 94.2,
-   "pioggia_10min": 0.2,
-   "pioggia_1h": 0.5,
-   "pioggia_24h": 0.6,
+   "rilevamento": "06.11.2026 08:00",
+   "temperatura": 9.4,
+   "umidita": 93.7,
+   "pioggia_10min": 0.3,
+   "pioggia_1h": 0.8,
+   "pioggia_24h": 0.9,
    "vento_kmh": 1.0,
-   "raffica_kmh": 1.7,
-   "direzione": 299.0,
-   "pressione": 988.0,
+   "raffica_kmh": 1.8,
+   "direzione": 303.0,
+   "pressione": 987.9,
    "serie_24h": {
     "temperatura": [
      10.4,
@@ -84,7 +84,8 @@
      9.4,
      9.4,
      9.3,
-     9.3
+     9.3,
+     9.4
     ],
     "raffica_kmh": [
      1.1,
@@ -134,7 +135,8 @@
      1.8,
      1.7,
      1.8,
-     1.7
+     1.7,
+     1.8
     ],
     "pioggia_oraria": [
      0.0,
@@ -144,7 +146,8 @@
      0.0,
      0.0,
      0.1,
-     0.5
+     0.5,
+     0.3
     ]
    }
   },
@@ -152,16 +155,16 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "06.11.2026 07:50",
-   "temperatura": 1.1,
+   "rilevamento": "06.11.2026 08:00",
+   "temperatura": 1.0,
    "umidita": 99.3,
    "pioggia_10min": null,
-   "pioggia_1h": 0.5,
-   "pioggia_24h": 0.6,
-   "vento_kmh": 3.4,
-   "raffica_kmh": 4.2,
-   "direzione": 322.0,
-   "pressione": 842.7,
+   "pioggia_1h": 0.8,
+   "pioggia_24h": 0.9,
+   "vento_kmh": 3.6,
+   "raffica_kmh": 4.3,
+   "direzione": 326.0,
+   "pressione": 842.6,
    "serie_24h": {
     "temperatura": [
      1.1,
@@ -211,7 +214,8 @@
      1.4,
      1.3,
      1.3,
-     1.1
+     1.1,
+     1.0
     ],
     "raffica_kmh": [
      3.3,
@@ -261,7 +265,8 @@
      4.1,
      3.4,
      3.9,
-     4.2
+     4.2,
+     4.3
     ],
     "pioggia_oraria": [
      0.0,
@@ -271,7 +276,8 @@
      0.0,
      0.0,
      0.1,
-     0.5
+     0.8,
+     0
     ]
    }
   }
@@ -361,11 +367,75 @@
  },
  "pegel": [
   {
-   "disponibile": false,
-   "motivo": "valore non trovato nelle risposte",
+   "disponibile": true,
    "id": "2321",
    "nome": "Cassarate",
-   "luogo": "Pregassona"
+   "luogo": "Pregassona",
+   "tipo": "fiume",
+   "parametro": "Q",
+   "unita": "m3/s",
+   "valore": 0.88,
+   "livello": 1,
+   "soglie": {
+    "2": 40,
+    "3": 80,
+    "4": 120,
+    "5": 170
+   },
+   "lat": 46.0177,
+   "lon": 8.9625,
+   "trend_8h": "in calo",
+   "serie_8h": [
+    0.91,
+    0.9,
+    0.9,
+    0.89,
+    0.88,
+    0.88,
+    0.87,
+    0.87,
+    0.88,
+    0.88,
+    0.88,
+    0.88,
+    0.88,
+    0.88,
+    0.89,
+    0.89,
+    0.89,
+    0.89,
+    0.89,
+    0.89,
+    0.89,
+    0.88,
+    0.89,
+    0.89,
+    0.88,
+    0.88,
+    0.88,
+    0.88,
+    0.88,
+    0.88,
+    0.88,
+    0.89,
+    0.88,
+    0.88,
+    0.88,
+    0.88,
+    0.88,
+    0.88,
+    0.88,
+    0.88,
+    0.89,
+    0.88,
+    0.88,
+    0.88,
+    0.87,
+    0.88,
+    0.88,
+    0.88
+   ],
+   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
   {
    "disponibile": true,
@@ -810,5 +880,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-06T07:58:26+00:00"
+ "precedente": "2026-11-06T08:01:19+00:00"
 }
