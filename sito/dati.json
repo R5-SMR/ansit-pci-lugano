@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-06T00:50:46+00:00",
- "generato_locale": "06.11.2026 01:50",
+ "generato": "2026-11-06T01:01:24+00:00",
+ "generato_locale": "06.11.2026 02:01",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,15 +25,15 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "06.11.2026 00:40",
-   "temperatura": 9.8,
-   "umidita": 84.3,
+   "rilevamento": "06.11.2026 00:50",
+   "temperatura": 9.7,
+   "umidita": 85.7,
    "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 1.0,
+   "vento_kmh": 1.1,
    "raffica_kmh": 1.6,
-   "direzione": 346.0,
+   "direzione": 350.0,
    "pressione": 989.4,
    "serie_24h": {
     "temperatura": [
@@ -41,13 +41,15 @@
      9.9,
      9.7,
      9.7,
-     9.8
+     9.8,
+     9.7
     ],
     "raffica_kmh": [
      1.1,
      1.2,
      0.6,
      1.3,
+     1.6,
      1.6
     ],
     "pioggia_oraria": [
@@ -59,15 +61,15 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "06.11.2026 00:40",
+   "rilevamento": "06.11.2026 00:50",
    "temperatura": 1.1,
    "umidita": 99.3,
    "pioggia_10min": null,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 2.5,
-   "raffica_kmh": 3.1,
-   "direzione": 324.0,
+   "vento_kmh": 2.8,
+   "raffica_kmh": 3.9,
+   "direzione": 323.0,
    "pressione": 844.0,
    "serie_24h": {
     "temperatura": [
@@ -75,6 +77,7 @@
      1.2,
      1.2,
      1.2,
+     1.1,
      1.1
     ],
     "raffica_kmh": [
@@ -82,7 +85,8 @@
      2.8,
      3.0,
      2.9,
-     3.1
+     3.1,
+     3.9
     ],
     "pioggia_oraria": [
      0.0
@@ -246,75 +250,11 @@
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
   {
-   "disponibile": true,
+   "disponibile": false,
+   "motivo": "valore non trovato nelle risposte",
    "id": "2629",
    "nome": "Vedeggio",
-   "luogo": "Agno, stazione principale",
-   "tipo": "fiume",
-   "parametro": "Q",
-   "unita": "m3/s",
-   "valore": 1.69,
-   "livello": 1,
-   "soglie": {
-    "2": 55,
-    "3": 130,
-    "4": 210,
-    "5": 350
-   },
-   "lat": 46.0014,
-   "lon": 8.9102,
-   "trend_8h": "in calo",
-   "serie_8h": [
-    1.77,
-    1.82,
-    1.75,
-    1.72,
-    1.6,
-    1.74,
-    1.8,
-    1.75,
-    1.75,
-    1.89,
-    1.8,
-    1.8,
-    1.84,
-    1.67,
-    1.66,
-    1.72,
-    1.71,
-    1.64,
-    1.93,
-    1.87,
-    1.67,
-    1.75,
-    1.8,
-    1.75,
-    1.72,
-    1.63,
-    1.67,
-    1.72,
-    1.64,
-    1.56,
-    1.61,
-    1.71,
-    1.69,
-    1.63,
-    1.67,
-    1.72,
-    1.64,
-    1.61,
-    1.84,
-    1.8,
-    1.72,
-    1.63,
-    1.66,
-    1.71,
-    1.64,
-    1.58,
-    1.6,
-    1.69
-   ],
-   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
+   "luogo": "Agno, stazione principale"
   },
   {
    "disponibile": true,
@@ -505,16 +445,6 @@
   "fonte": "Open-Meteo (non ufficiale)",
   "orario": [
    {
-    "ora": "01:00",
-    "temperatura": 8.4,
-    "umidita": 93,
-    "pioggia_mm": 0.0,
-    "prob_pioggia": 3,
-    "vento_kmh": 4.0,
-    "raffica_kmh": 6.8,
-    "codice": 3
-   },
-   {
     "ora": "02:00",
     "temperatura": 8.1,
     "umidita": 96,
@@ -623,6 +553,16 @@
     "vento_kmh": 2.9,
     "raffica_kmh": 4.7,
     "codice": 61
+   },
+   {
+    "ora": "13:00",
+    "temperatura": 11.3,
+    "umidita": 82,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 58,
+    "vento_kmh": 1.9,
+    "raffica_kmh": 5.0,
+    "codice": 61
    }
   ],
   "giorni": [
@@ -679,7 +619,7 @@
    "raffica_kmh": 6.8,
    "pioggia_oraria_mm": 0.2,
    "pioggia_totale_mm": 0.4,
-   "temperatura": 10.8
+   "temperatura": 11.3
   }
  },
  "variazioni": [
@@ -688,5 +628,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-06T00:40:54+00:00"
+ "precedente": "2026-11-06T00:50:46+00:00"
 }
