@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-06T07:58:26+00:00",
- "generato_locale": "06.11.2026 08:58",
+ "generato": "2026-11-06T08:01:19+00:00",
+ "generato_locale": "06.11.2026 09:01",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,15 +25,15 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "06.11.2026 07:40",
+   "rilevamento": "06.11.2026 07:50",
    "temperatura": 9.3,
-   "umidita": 92.3,
-   "pioggia_10min": 0.0,
-   "pioggia_1h": 0.4,
-   "pioggia_24h": 0.4,
+   "umidita": 94.2,
+   "pioggia_10min": 0.2,
+   "pioggia_1h": 0.5,
+   "pioggia_24h": 0.6,
    "vento_kmh": 1.0,
-   "raffica_kmh": 1.8,
-   "direzione": 292.0,
+   "raffica_kmh": 1.7,
+   "direzione": 299.0,
    "pressione": 988.0,
    "serie_24h": {
     "temperatura": [
@@ -83,6 +83,7 @@
      9.6,
      9.4,
      9.4,
+     9.3,
      9.3
     ],
     "raffica_kmh": [
@@ -132,7 +133,8 @@
      1.2,
      1.8,
      1.7,
-     1.8
+     1.8,
+     1.7
     ],
     "pioggia_oraria": [
      0.0,
@@ -142,7 +144,7 @@
      0.0,
      0.0,
      0.1,
-     0.3
+     0.5
     ]
    }
   },
@@ -150,16 +152,16 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "06.11.2026 07:40",
-   "temperatura": 1.3,
+   "rilevamento": "06.11.2026 07:50",
+   "temperatura": 1.1,
    "umidita": 99.3,
    "pioggia_10min": null,
-   "pioggia_1h": 0.4,
-   "pioggia_24h": 0.4,
-   "vento_kmh": 2.6,
-   "raffica_kmh": 3.9,
-   "direzione": 320.0,
-   "pressione": 842.8,
+   "pioggia_1h": 0.5,
+   "pioggia_24h": 0.6,
+   "vento_kmh": 3.4,
+   "raffica_kmh": 4.2,
+   "direzione": 322.0,
+   "pressione": 842.7,
    "serie_24h": {
     "temperatura": [
      1.1,
@@ -208,7 +210,8 @@
      1.6,
      1.4,
      1.3,
-     1.3
+     1.3,
+     1.1
     ],
     "raffica_kmh": [
      3.3,
@@ -257,7 +260,8 @@
      3.7,
      4.1,
      3.4,
-     3.9
+     3.9,
+     4.2
     ],
     "pioggia_oraria": [
      0.0,
@@ -267,7 +271,7 @@
      0.0,
      0.0,
      0.1,
-     0.3
+     0.5
     ]
    }
   }
@@ -357,75 +361,11 @@
  },
  "pegel": [
   {
-   "disponibile": true,
+   "disponibile": false,
+   "motivo": "valore non trovato nelle risposte",
    "id": "2321",
    "nome": "Cassarate",
-   "luogo": "Pregassona",
-   "tipo": "fiume",
-   "parametro": "Q",
-   "unita": "m3/s",
-   "valore": 0.88,
-   "livello": 1,
-   "soglie": {
-    "2": 40,
-    "3": 80,
-    "4": 120,
-    "5": 170
-   },
-   "lat": 46.0177,
-   "lon": 8.9625,
-   "trend_8h": "in calo",
-   "serie_8h": [
-    0.91,
-    0.9,
-    0.9,
-    0.89,
-    0.88,
-    0.88,
-    0.87,
-    0.87,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.89,
-    0.89,
-    0.89,
-    0.89,
-    0.89,
-    0.89,
-    0.89,
-    0.88,
-    0.89,
-    0.89,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.89,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.89,
-    0.88,
-    0.88,
-    0.88,
-    0.87,
-    0.88,
-    0.88,
-    0.88
-   ],
-   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
+   "luogo": "Pregassona"
   },
   {
    "disponibile": true,
@@ -687,16 +627,6 @@
   "fonte": "Open-Meteo (non ufficiale)",
   "orario": [
    {
-    "ora": "08:00",
-    "temperatura": 9.9,
-    "umidita": 90,
-    "pioggia_mm": 0.2,
-    "prob_pioggia": 50,
-    "vento_kmh": 3.8,
-    "raffica_kmh": 5.8,
-    "codice": 61
-   },
-   {
     "ora": "09:00",
     "temperatura": 10.1,
     "umidita": 89,
@@ -805,6 +735,16 @@
     "vento_kmh": 2.9,
     "raffica_kmh": 6.1,
     "codice": 3
+   },
+   {
+    "ora": "20:00",
+    "temperatura": 10.8,
+    "umidita": 85,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 35,
+    "vento_kmh": 2.5,
+    "raffica_kmh": 4.7,
+    "codice": 3
    }
   ],
   "giorni": [
@@ -860,7 +800,7 @@
   "massimi_12h": {
    "raffica_kmh": 8.6,
    "pioggia_oraria_mm": 1.9,
-   "pioggia_totale_mm": 7.6,
+   "pioggia_totale_mm": 7.4,
    "temperatura": 11.1
   }
  },
@@ -870,5 +810,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-06T07:50:49+00:00"
+ "precedente": "2026-11-06T07:58:26+00:00"
 }
