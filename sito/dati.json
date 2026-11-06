@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-06T01:01:24+00:00",
- "generato_locale": "06.11.2026 02:01",
+ "generato": "2026-11-06T01:10:46+00:00",
+ "generato_locale": "06.11.2026 02:10",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,15 +25,15 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "06.11.2026 00:50",
+   "rilevamento": "06.11.2026 01:00",
    "temperatura": 9.7,
-   "umidita": 85.7,
+   "umidita": 85.0,
    "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 1.1,
-   "raffica_kmh": 1.6,
-   "direzione": 350.0,
+   "vento_kmh": 1.0,
+   "raffica_kmh": 1.5,
+   "direzione": 349.0,
    "pressione": 989.4,
    "serie_24h": {
     "temperatura": [
@@ -42,6 +42,7 @@
      9.7,
      9.7,
      9.8,
+     9.7,
      9.7
     ],
     "raffica_kmh": [
@@ -50,9 +51,11 @@
      0.6,
      1.3,
      1.6,
-     1.6
+     1.6,
+     1.5
     ],
     "pioggia_oraria": [
+     0.0,
      0.0
     ]
    }
@@ -61,15 +64,15 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "06.11.2026 00:50",
-   "temperatura": 1.1,
+   "rilevamento": "06.11.2026 01:00",
+   "temperatura": 1.2,
    "umidita": 99.3,
    "pioggia_10min": null,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 2.8,
-   "raffica_kmh": 3.9,
-   "direzione": 323.0,
+   "vento_kmh": 2.7,
+   "raffica_kmh": 3.6,
+   "direzione": 333.0,
    "pressione": 844.0,
    "serie_24h": {
     "temperatura": [
@@ -78,7 +81,8 @@
      1.2,
      1.2,
      1.1,
-     1.1
+     1.1,
+     1.2
     ],
     "raffica_kmh": [
      3.3,
@@ -86,10 +90,12 @@
      3.0,
      2.9,
      3.1,
-     3.9
+     3.9,
+     3.6
     ],
     "pioggia_oraria": [
-     0.0
+     0.0,
+     0
     ]
    }
   }
@@ -186,7 +192,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 0.58,
+   "valore": 0.57,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -198,14 +204,6 @@
    "lon": 8.9625,
    "trend_8h": "in calo",
    "serie_8h": [
-    1.32,
-    1.27,
-    1.24,
-    1.23,
-    1.22,
-    1.26,
-    1.28,
-    1.24,
     1.17,
     1.11,
     1.07,
@@ -245,16 +243,88 @@
     0.57,
     0.57,
     0.58,
-    0.58
+    0.58,
+    0.58,
+    0.57,
+    0.58,
+    0.58,
+    0.58,
+    0.57,
+    0.57,
+    0.57
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
   {
-   "disponibile": false,
-   "motivo": "valore non trovato nelle risposte",
+   "disponibile": true,
    "id": "2629",
    "nome": "Vedeggio",
-   "luogo": "Agno, stazione principale"
+   "luogo": "Agno, stazione principale",
+   "tipo": "fiume",
+   "parametro": "Q",
+   "unita": "m3/s",
+   "valore": 1.66,
+   "livello": 1,
+   "soglie": {
+    "2": 55,
+    "3": 130,
+    "4": 210,
+    "5": 350
+   },
+   "lat": 46.0014,
+   "lon": 8.9102,
+   "trend_8h": "in calo",
+   "serie_8h": [
+    1.75,
+    1.89,
+    1.8,
+    1.8,
+    1.84,
+    1.67,
+    1.66,
+    1.72,
+    1.71,
+    1.64,
+    1.93,
+    1.87,
+    1.67,
+    1.75,
+    1.8,
+    1.75,
+    1.72,
+    1.63,
+    1.67,
+    1.72,
+    1.64,
+    1.56,
+    1.61,
+    1.71,
+    1.69,
+    1.63,
+    1.67,
+    1.72,
+    1.64,
+    1.61,
+    1.84,
+    1.8,
+    1.72,
+    1.63,
+    1.66,
+    1.71,
+    1.64,
+    1.58,
+    1.6,
+    1.69,
+    1.69,
+    1.6,
+    1.56,
+    1.58,
+    1.55,
+    1.49,
+    1.53,
+    1.66
+   ],
+   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
   {
    "disponibile": true,
@@ -278,10 +348,6 @@
    "serie_8h": [
     270.43,
     270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
     270.42,
     270.42,
     270.43,
@@ -318,6 +384,10 @@
     270.42,
     270.42,
     270.43,
+    270.42,
+    270.42,
+    270.42,
+    270.42,
     270.42,
     270.42,
     270.42,
@@ -628,5 +698,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-06T00:50:46+00:00"
+ "precedente": "2026-11-06T01:01:24+00:00"
 }
