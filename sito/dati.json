@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-06T05:38:32+00:00",
- "generato_locale": "06.11.2026 06:38",
+ "generato": "2026-11-06T05:40:48+00:00",
+ "generato_locale": "06.11.2026 06:40",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,15 +25,15 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "06.11.2026 05:20",
-   "temperatura": 9.9,
-   "umidita": 83.5,
+   "rilevamento": "06.11.2026 05:30",
+   "temperatura": 9.7,
+   "umidita": 85.2,
    "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 1.4,
-   "raffica_kmh": 2.5,
-   "direzione": 327.0,
+   "vento_kmh": 0.8,
+   "raffica_kmh": 2.2,
+   "direzione": 297.0,
    "pressione": 987.5,
    "serie_24h": {
     "temperatura": [
@@ -69,7 +69,8 @@
      9.7,
      9.8,
      9.7,
-     9.9
+     9.9,
+     9.7
     ],
     "raffica_kmh": [
      1.1,
@@ -104,7 +105,8 @@
      1.7,
      2.4,
      2.4,
-     2.5
+     2.5,
+     2.2
     ],
     "pioggia_oraria": [
      0.0,
@@ -294,80 +296,16 @@
  "alertswiss": {
   "disponibile": true,
   "fonte": "https://www.alert.swiss/content/alertswiss-internet/it/home/_jcr_content/polyalert.alertswiss_alerts.actual.json",
-  "totale_svizzera": 8,
+  "totale_svizzera": 7,
   "notifiche": []
  },
  "pegel": [
   {
-   "disponibile": true,
+   "disponibile": false,
+   "motivo": "valore non trovato nelle risposte",
    "id": "2321",
    "nome": "Cassarate",
-   "luogo": "Pregassona",
-   "tipo": "fiume",
-   "parametro": "Q",
-   "unita": "m3/s",
-   "valore": 0.89,
-   "livello": 1,
-   "soglie": {
-    "2": 40,
-    "3": 80,
-    "4": 120,
-    "5": 170
-   },
-   "lat": 46.0177,
-   "lon": 8.9625,
-   "trend_8h": "in aumento",
-   "serie_8h": [
-    0.58,
-    0.57,
-    0.56,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.61,
-    0.78,
-    0.88,
-    0.9,
-    0.91,
-    0.91,
-    0.91,
-    0.9,
-    0.9,
-    0.91,
-    0.9,
-    0.9,
-    0.89,
-    0.88,
-    0.88,
-    0.87,
-    0.87,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.89,
-    0.89,
-    0.89,
-    0.89,
-    0.89,
-    0.89,
-    0.89,
-    0.88,
-    0.89,
-    0.89
-   ],
-   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
+   "luogo": "Pregassona"
   },
   {
    "disponibile": true,
@@ -812,5 +750,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-06T05:31:05+00:00"
+ "precedente": "2026-11-06T05:38:32+00:00"
 }
