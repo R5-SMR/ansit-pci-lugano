@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-06T07:31:09+00:00",
- "generato_locale": "06.11.2026 08:31",
+ "generato": "2026-11-06T07:40:50+00:00",
+ "generato_locale": "06.11.2026 08:40",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,15 +25,15 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "06.11.2026 07:20",
+   "rilevamento": "06.11.2026 07:30",
    "temperatura": 9.4,
-   "umidita": 94.1,
+   "umidita": 92.8,
    "pioggia_10min": 0.1,
-   "pioggia_1h": 0.3,
-   "pioggia_24h": 0.3,
-   "vento_kmh": 1.0,
-   "raffica_kmh": 1.8,
-   "direzione": 274.0,
+   "pioggia_1h": 0.4,
+   "pioggia_24h": 0.4,
+   "vento_kmh": 0.9,
+   "raffica_kmh": 1.7,
+   "direzione": 289.0,
    "pressione": 987.9,
    "serie_24h": {
     "temperatura": [
@@ -81,6 +81,7 @@
      9.4,
      10.1,
      9.6,
+     9.4,
      9.4
     ],
     "raffica_kmh": [
@@ -128,7 +129,8 @@
      0.6,
      1.3,
      1.2,
-     1.8
+     1.8,
+     1.7
     ],
     "pioggia_oraria": [
      0.0,
@@ -138,7 +140,7 @@
      0.0,
      0.0,
      0.1,
-     0.2
+     0.3
     ]
    }
   },
@@ -146,15 +148,15 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "06.11.2026 07:20",
-   "temperatura": 1.4,
+   "rilevamento": "06.11.2026 07:30",
+   "temperatura": 1.3,
    "umidita": 99.3,
    "pioggia_10min": null,
-   "pioggia_1h": 0.2,
-   "pioggia_24h": 0.2,
-   "vento_kmh": 3.5,
-   "raffica_kmh": 4.1,
-   "direzione": 327.0,
+   "pioggia_1h": 0.3,
+   "pioggia_24h": 0.3,
+   "vento_kmh": 2.7,
+   "raffica_kmh": 3.4,
+   "direzione": 310.0,
    "pressione": 842.7,
    "serie_24h": {
     "temperatura": [
@@ -202,7 +204,8 @@
      2.1,
      2.0,
      1.6,
-     1.4
+     1.4,
+     1.3
     ],
     "raffica_kmh": [
      3.3,
@@ -249,7 +252,8 @@
      5.3,
      3.9,
      3.7,
-     4.1
+     4.1,
+     3.4
     ],
     "pioggia_oraria": [
      0.0,
@@ -259,7 +263,7 @@
      0.0,
      0.0,
      0.1,
-     0.1
+     0.2
     ]
    }
   }
@@ -349,75 +353,11 @@
  },
  "pegel": [
   {
-   "disponibile": true,
+   "disponibile": false,
+   "motivo": "valore non trovato nelle risposte",
    "id": "2321",
    "nome": "Cassarate",
-   "luogo": "Pregassona",
-   "tipo": "fiume",
-   "parametro": "Q",
-   "unita": "m3/s",
-   "valore": 0.88,
-   "livello": 1,
-   "soglie": {
-    "2": 40,
-    "3": 80,
-    "4": 120,
-    "5": 170
-   },
-   "lat": 46.0177,
-   "lon": 8.9625,
-   "trend_8h": "in calo",
-   "serie_8h": [
-    0.9,
-    0.9,
-    0.91,
-    0.9,
-    0.9,
-    0.89,
-    0.88,
-    0.88,
-    0.87,
-    0.87,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.89,
-    0.89,
-    0.89,
-    0.89,
-    0.89,
-    0.89,
-    0.89,
-    0.88,
-    0.89,
-    0.89,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.89,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.88,
-    0.89,
-    0.88,
-    0.88,
-    0.88,
-    0.87,
-    0.88
-   ],
-   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
+   "luogo": "Pregassona"
   },
   {
    "disponibile": true,
@@ -427,7 +367,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 1.69,
+   "valore": 1.61,
    "livello": 1,
    "soglie": {
     "2": 55,
@@ -439,8 +379,6 @@
    "lon": 8.9102,
    "trend_8h": "in aumento",
    "serie_8h": [
-    1.36,
-    1.35,
     1.53,
     1.55,
     1.49,
@@ -486,7 +424,9 @@
     1.55,
     1.5,
     1.58,
-    1.69
+    1.69,
+    1.69,
+    1.61
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
@@ -522,7 +462,6 @@
     270.42,
     270.42,
     270.42,
-    270.42,
     270.43,
     270.43,
     270.42,
@@ -556,6 +495,7 @@
     270.43,
     270.42,
     270.42,
+    270.43,
     270.43,
     270.43
    ],
@@ -862,5 +802,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-06T07:20:49+00:00"
+ "precedente": "2026-11-06T07:31:09+00:00"
 }
