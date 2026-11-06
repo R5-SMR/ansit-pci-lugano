@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-06T02:50:46+00:00",
- "generato_locale": "06.11.2026 03:50",
+ "generato": "2026-11-06T03:01:25+00:00",
+ "generato_locale": "06.11.2026 04:01",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -227,75 +227,11 @@
  },
  "pegel": [
   {
-   "disponibile": true,
+   "disponibile": false,
+   "motivo": "valore non trovato nelle risposte",
    "id": "2321",
    "nome": "Cassarate",
-   "luogo": "Pregassona",
-   "tipo": "fiume",
-   "parametro": "Q",
-   "unita": "m3/s",
-   "valore": 0.57,
-   "livello": 1,
-   "soglie": {
-    "2": 40,
-    "3": 80,
-    "4": 120,
-    "5": 170
-   },
-   "lat": 46.0177,
-   "lon": 8.9625,
-   "trend_8h": "in calo",
-   "serie_8h": [
-    0.73,
-    0.7,
-    0.68,
-    0.65,
-    0.62,
-    0.6,
-    0.59,
-    0.59,
-    0.58,
-    0.58,
-    0.58,
-    0.58,
-    0.58,
-    0.58,
-    0.58,
-    0.58,
-    0.58,
-    0.57,
-    0.57,
-    0.57,
-    0.58,
-    0.58,
-    0.58,
-    0.57,
-    0.58,
-    0.58,
-    0.58,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.58,
-    0.58,
-    0.58,
-    0.57,
-    0.56,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57,
-    0.57
-   ],
-   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
+   "luogo": "Pregassona"
   },
   {
    "disponibile": true,
@@ -369,75 +305,11 @@
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
   {
-   "disponibile": true,
+   "disponibile": false,
+   "motivo": "valore non trovato nelle risposte",
    "id": "2101",
    "nome": "Lago di Lugano",
-   "luogo": "Melide, Ferrera",
-   "tipo": "lago",
-   "parametro": "P",
-   "unita": "m s.l.m.",
-   "valore": 270.42,
-   "livello": 1,
-   "soglie": {
-    "2": 270.9,
-    "3": 271.1,
-    "4": 271.4,
-    "5": 271.8
-   },
-   "lat": 45.9559,
-   "lon": 8.9554,
-   "trend_8h": "stabile",
-   "serie_8h": [
-    270.42,
-    270.43,
-    270.43,
-    270.43,
-    270.42,
-    270.43,
-    270.43,
-    270.42,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.42,
-    270.42,
-    270.43,
-    270.42,
-    270.42,
-    270.42,
-    270.43,
-    270.43,
-    270.42,
-    270.42,
-    270.43,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.43,
-    270.43,
-    270.42,
-    270.43,
-    270.43,
-    270.42
-   ],
-   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2101_p_q_7days_it.json"
+   "luogo": "Melide, Ferrera"
   }
  ],
  "oasi": [
@@ -557,16 +429,6 @@
   "fonte": "Open-Meteo (non ufficiale)",
   "orario": [
    {
-    "ora": "03:00",
-    "temperatura": 9.7,
-    "umidita": 91,
-    "pioggia_mm": 0.0,
-    "prob_pioggia": 3,
-    "vento_kmh": 4.3,
-    "raffica_kmh": 6.8,
-    "codice": 3
-   },
-   {
     "ora": "04:00",
     "temperatura": 9.7,
     "umidita": 85,
@@ -675,6 +537,16 @@
     "vento_kmh": 2.5,
     "raffica_kmh": 5.0,
     "codice": 3
+   },
+   {
+    "ora": "15:00",
+    "temperatura": 11.7,
+    "umidita": 84,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 48,
+    "vento_kmh": 1.4,
+    "raffica_kmh": 4.3,
+    "codice": 61
    }
   ],
   "giorni": [
@@ -731,7 +603,7 @@
    "raffica_kmh": 7.6,
    "pioggia_oraria_mm": 0.3,
    "pioggia_totale_mm": 0.3,
-   "temperatura": 11.6
+   "temperatura": 11.7
   }
  },
  "variazioni": [
@@ -740,5 +612,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-06T02:42:49+00:00"
+ "precedente": "2026-11-06T02:50:46+00:00"
 }
