@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-06T06:20:46+00:00",
- "generato_locale": "06.11.2026 07:20",
+ "generato": "2026-11-06T06:31:04+00:00",
+ "generato_locale": "06.11.2026 07:31",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,16 +25,16 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "06.11.2026 06:10",
-   "temperatura": 9.6,
-   "umidita": 85.8,
+   "rilevamento": "06.11.2026 06:20",
+   "temperatura": 10.0,
+   "umidita": 84.0,
    "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 0.5,
-   "raffica_kmh": 1.0,
-   "direzione": 312.0,
-   "pressione": 987.4,
+   "vento_kmh": 0.9,
+   "raffica_kmh": 2.2,
+   "direzione": 290.0,
+   "pressione": 987.5,
    "serie_24h": {
     "temperatura": [
      10.4,
@@ -74,7 +74,8 @@
      9.7,
      9.6,
      9.6,
-     9.6
+     9.6,
+     10.0
     ],
     "raffica_kmh": [
      1.1,
@@ -114,7 +115,8 @@
      1.0,
      1.2,
      1.4,
-     1.0
+     1.0,
+     2.2
     ],
     "pioggia_oraria": [
      0.0,
@@ -131,16 +133,16 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "06.11.2026 06:10",
-   "temperatura": 2.0,
-   "umidita": 96.3,
+   "rilevamento": "06.11.2026 06:20",
+   "temperatura": 2.3,
+   "umidita": 92.9,
    "pioggia_10min": null,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 4.6,
-   "raffica_kmh": 5.2,
-   "direzione": 328.0,
-   "pressione": 842.3,
+   "vento_kmh": 4.5,
+   "raffica_kmh": 6.1,
+   "direzione": 331.0,
+   "pressione": 842.4,
    "serie_24h": {
     "temperatura": [
      1.1,
@@ -180,7 +182,8 @@
      2.0,
      2.1,
      2.0,
-     2.0
+     2.0,
+     2.3
     ],
     "raffica_kmh": [
      3.3,
@@ -220,7 +223,8 @@
      5.0,
      5.7,
      5.3,
-     5.2
+     5.2,
+     6.1
     ],
     "pioggia_oraria": [
      0.0,
@@ -326,7 +330,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 0.89,
+   "valore": 0.88,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -338,8 +342,6 @@
    "lon": 8.9625,
    "trend_8h": "in aumento",
    "serie_8h": [
-    0.57,
-    0.57,
     0.57,
     0.57,
     0.57,
@@ -385,7 +387,9 @@
     0.88,
     0.88,
     0.88,
-    0.89
+    0.89,
+    0.88,
+    0.88
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
@@ -397,7 +401,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 1.39,
+   "valore": 1.43,
    "livello": 1,
    "soglie": {
     "2": 55,
@@ -407,10 +411,8 @@
    },
    "lat": 46.0014,
    "lon": 8.9102,
-   "trend_8h": "in calo",
+   "trend_8h": "in aumento",
    "serie_8h": [
-    1.46,
-    1.45,
     1.39,
     1.45,
     1.45,
@@ -456,80 +458,18 @@
     1.56,
     1.56,
     1.46,
-    1.39
+    1.39,
+    1.41,
+    1.43
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
   {
-   "disponibile": true,
+   "disponibile": false,
+   "motivo": "valore non trovato nelle risposte",
    "id": "2101",
    "nome": "Lago di Lugano",
-   "luogo": "Melide, Ferrera",
-   "tipo": "lago",
-   "parametro": "P",
-   "unita": "m s.l.m.",
-   "valore": 270.43,
-   "livello": 1,
-   "soglie": {
-    "2": 270.9,
-    "3": 271.1,
-    "4": 271.4,
-    "5": 271.8
-   },
-   "lat": 45.9559,
-   "lon": 8.9554,
-   "trend_8h": "in aumento",
-   "serie_8h": [
-    270.42,
-    270.43,
-    270.43,
-    270.42,
-    270.42,
-    270.43,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.42,
-    270.43,
-    270.43,
-    270.42,
-    270.43,
-    270.43,
-    270.42,
-    270.42,
-    270.43,
-    270.43,
-    270.42,
-    270.42,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43,
-    270.43
-   ],
-   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2101_p_q_7days_it.json"
+   "luogo": "Melide, Ferrera"
   }
  ],
  "oasi": [
@@ -832,5 +772,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-06T06:10:51+00:00"
+ "precedente": "2026-11-06T06:20:46+00:00"
 }
