@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-06T18:50:56+00:00",
- "generato_locale": "06.11.2026 19:50",
+ "generato": "2026-11-06T19:01:29+00:00",
+ "generato_locale": "06.11.2026 20:01",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,15 +25,15 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "06.11.2026 18:40",
+   "rilevamento": "06.11.2026 18:50",
    "temperatura": 10.1,
-   "umidita": 94.2,
+   "umidita": 93.2,
    "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 7.4,
-   "vento_kmh": 0.2,
-   "raffica_kmh": 0.9,
-   "direzione": 255.0,
+   "vento_kmh": 0.5,
+   "raffica_kmh": 1.0,
+   "direzione": 37.0,
    "pressione": 985.5,
    "serie_24h": {
     "temperatura": [
@@ -149,6 +149,7 @@
      10.7,
      10.2,
      10.2,
+     10.1,
      10.1
     ],
     "raffica_kmh": [
@@ -264,7 +265,8 @@
      1.8,
      2.3,
      1.5,
-     0.9
+     0.9,
+     1.0
     ],
     "pioggia_oraria": [
      0.0,
@@ -293,15 +295,15 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "06.11.2026 18:40",
+   "rilevamento": "06.11.2026 18:50",
    "temperatura": 3.3,
-   "umidita": 81.1,
+   "umidita": 80.6,
    "pioggia_10min": null,
    "pioggia_1h": 0.0,
    "pioggia_24h": 6.9,
-   "vento_kmh": 1.2,
-   "raffica_kmh": 3.1,
-   "direzione": 105.0,
+   "vento_kmh": 0.9,
+   "raffica_kmh": 2.9,
+   "direzione": 72.0,
    "pressione": 841.2,
    "serie_24h": {
     "temperatura": [
@@ -416,6 +418,7 @@
      3.0,
      3.2,
      3.2,
+     3.3,
      3.3,
      3.3
     ],
@@ -532,7 +535,8 @@
      4.2,
      4.6,
      4.3,
-     3.1
+     3.1,
+     2.9
     ],
     "pioggia_oraria": [
      0.0,
@@ -650,7 +654,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 1.78,
+   "valore": 1.77,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -662,10 +666,6 @@
    "lon": 8.9625,
    "trend_8h": "in aumento",
    "serie_8h": [
-    0.74,
-    0.73,
-    0.74,
-    0.74,
     0.74,
     0.74,
     0.74,
@@ -709,7 +709,11 @@
     1.47,
     1.61,
     1.74,
-    1.78
+    1.78,
+    1.77,
+    1.75,
+    1.75,
+    1.77
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
@@ -721,7 +725,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 2.25,
+   "valore": 2.05,
    "livello": 1,
    "soglie": {
     "2": 55,
@@ -733,8 +737,6 @@
    "lon": 8.9102,
    "trend_8h": "in calo",
    "serie_8h": [
-    2.43,
-    2.37,
     2.35,
     2.41,
     2.41,
@@ -780,7 +782,9 @@
     2.19,
     2.29,
     2.27,
-    2.25
+    2.25,
+    2.13,
+    2.05
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
@@ -802,7 +806,7 @@
    },
    "lat": 45.9559,
    "lon": 8.9554,
-   "trend_8h": "stabile",
+   "trend_8h": "in calo",
    "serie_8h": [
     270.43,
     270.43,
@@ -816,7 +820,6 @@
     270.43,
     270.43,
     270.43,
-    270.43,
     270.44,
     270.43,
     270.43,
@@ -832,6 +835,7 @@
     270.44,
     270.43,
     270.44,
+    270.43,
     270.43,
     270.43,
     270.43,
@@ -973,16 +977,6 @@
   "fonte": "Open-Meteo (non ufficiale)",
   "orario": [
    {
-    "ora": "19:00",
-    "temperatura": 10.7,
-    "umidita": 91,
-    "pioggia_mm": 0.0,
-    "prob_pioggia": 23,
-    "vento_kmh": 4.2,
-    "raffica_kmh": 6.8,
-    "codice": 3
-   },
-   {
     "ora": "20:00",
     "temperatura": 10.8,
     "umidita": 90,
@@ -1091,6 +1085,16 @@
     "vento_kmh": 7.7,
     "raffica_kmh": 12.6,
     "codice": 80
+   },
+   {
+    "ora": "07:00",
+    "temperatura": 9.6,
+    "umidita": 90,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 58,
+    "vento_kmh": 8.8,
+    "raffica_kmh": 14.8,
+    "codice": 80
    }
   ],
   "giorni": [
@@ -1144,7 +1148,7 @@
    }
   ],
   "massimi_12h": {
-   "raffica_kmh": 13.0,
+   "raffica_kmh": 14.8,
    "pioggia_oraria_mm": 0.2,
    "pioggia_totale_mm": 0.2,
    "temperatura": 10.8
@@ -1156,5 +1160,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-06T18:40:55+00:00"
+ "precedente": "2026-11-06T18:50:56+00:00"
 }
