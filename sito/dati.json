@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-07T22:01:20+00:00",
- "generato_locale": "07.11.2026 23:01",
+ "generato": "2026-11-07T22:06:15+00:00",
+ "generato_locale": "07.11.2026 23:06",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -732,7 +732,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 0.83,
+   "valore": 0.8,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -744,8 +744,6 @@
    "lon": 8.9625,
    "trend_8h": "in calo",
    "serie_8h": [
-    1.56,
-    1.64,
     1.72,
     1.77,
     1.77,
@@ -791,7 +789,9 @@
     0.88,
     0.86,
     0.84,
-    0.83
+    0.83,
+    0.82,
+    0.8
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
@@ -803,7 +803,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 1.75,
+   "valore": 1.84,
    "livello": 1,
    "soglie": {
     "2": 55,
@@ -815,8 +815,6 @@
    "lon": 8.9102,
    "trend_8h": "in calo",
    "serie_8h": [
-    2.0,
-    2.19,
     2.01,
     1.85,
     1.82,
@@ -862,7 +860,9 @@
     1.72,
     1.66,
     1.72,
-    1.75
+    1.75,
+    1.93,
+    1.84
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
@@ -884,11 +884,11 @@
    },
    "lat": 45.9559,
    "lon": 8.9554,
-   "trend_8h": "stabile",
+   "trend_8h": "in aumento",
    "serie_8h": [
     270.42,
-    270.42,
     270.41,
+    270.42,
     270.42,
     270.42,
     270.42,
@@ -1056,78 +1056,78 @@
   "orario": [
    {
     "ora": "23:00",
-    "temperatura": 9.3,
-    "umidita": 82,
+    "temperatura": 9.2,
+    "umidita": 83,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 3.1,
-    "raffica_kmh": 5.0,
+    "vento_kmh": 4.0,
+    "raffica_kmh": 5.8,
     "codice": 3
    },
    {
     "ora": "00:00",
-    "temperatura": 8.9,
-    "umidita": 85,
+    "temperatura": 8.6,
+    "umidita": 89,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 4.0,
-    "raffica_kmh": 6.1,
-    "codice": 3
-   },
-   {
-    "ora": "01:00",
-    "temperatura": 8.5,
-    "umidita": 90,
-    "pioggia_mm": 0.0,
-    "prob_pioggia": 0,
-    "vento_kmh": 3.0,
+    "vento_kmh": 3.3,
     "raffica_kmh": 6.5,
     "codice": 2
    },
    {
-    "ora": "02:00",
+    "ora": "01:00",
     "temperatura": 8.5,
-    "umidita": 88,
+    "umidita": 94,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 1.8,
+    "vento_kmh": 2.5,
+    "raffica_kmh": 5.4,
+    "codice": 2
+   },
+   {
+    "ora": "02:00",
+    "temperatura": 8.4,
+    "umidita": 92,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 0,
+    "vento_kmh": 2.9,
     "raffica_kmh": 4.3,
     "codice": 3
    },
    {
     "ora": "03:00",
-    "temperatura": 8.5,
-    "umidita": 91,
+    "temperatura": 8.4,
+    "umidita": 92,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 2.9,
-    "raffica_kmh": 4.7,
+    "vento_kmh": 3.3,
+    "raffica_kmh": 5.0,
     "codice": 3
    },
    {
     "ora": "04:00",
     "temperatura": 8.5,
-    "umidita": 89,
+    "umidita": 92,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 2.9,
-    "raffica_kmh": 4.7,
+    "vento_kmh": 3.2,
+    "raffica_kmh": 5.0,
     "codice": 3
    },
    {
     "ora": "05:00",
     "temperatura": 8.4,
-    "umidita": 92,
+    "umidita": 91,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 3.5,
-    "raffica_kmh": 5.4,
+    "vento_kmh": 3.4,
+    "raffica_kmh": 4.7,
     "codice": 3
    },
    {
     "ora": "06:00",
-    "temperatura": 8.1,
-    "umidita": 98,
+    "temperatura": 8.3,
+    "umidita": 97,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
     "vento_kmh": 3.2,
@@ -1137,91 +1137,91 @@
    {
     "ora": "07:00",
     "temperatura": 8.3,
-    "umidita": 93,
+    "umidita": 95,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 2.4,
+    "vento_kmh": 3.1,
     "raffica_kmh": 4.7,
     "codice": 3
    },
    {
     "ora": "08:00",
     "temperatura": 8.5,
-    "umidita": 87,
+    "umidita": 94,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 2.9,
+    "vento_kmh": 3.5,
     "raffica_kmh": 4.3,
     "codice": 3
    },
    {
     "ora": "09:00",
-    "temperatura": 9.0,
-    "umidita": 85,
+    "temperatura": 9.1,
+    "umidita": 84,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 3.1,
-    "raffica_kmh": 5.4,
+    "vento_kmh": 2.6,
+    "raffica_kmh": 4.7,
     "codice": 3
    },
    {
     "ora": "10:00",
-    "temperatura": 9.8,
-    "umidita": 82,
+    "temperatura": 9.7,
+    "umidita": 84,
     "pioggia_mm": 0.0,
     "prob_pioggia": 0,
     "vento_kmh": 2.3,
-    "raffica_kmh": 5.4,
-    "codice": 2
+    "raffica_kmh": 4.3,
+    "codice": 3
    }
   ],
   "giorni": [
    {
     "data": "2026-11-07",
     "tmax": 10.7,
-    "tmin": 8.9,
+    "tmin": 8.6,
     "pioggia_mm": 0.1,
     "raffica_max": 15.1,
     "codice": 80
    },
    {
     "data": "2026-11-08",
-    "tmax": 12.2,
-    "tmin": 5.4,
+    "tmax": 12.4,
+    "tmin": 5.2,
     "pioggia_mm": 0.0,
-    "raffica_max": 9.7,
+    "raffica_max": 10.8,
     "codice": 45
    },
    {
     "data": "2026-11-09",
     "tmax": 12.3,
     "tmin": 4.6,
-    "pioggia_mm": 0.0,
+    "pioggia_mm": 0.5,
     "raffica_max": 15.5,
-    "codice": 45
+    "codice": 61
    },
    {
     "data": "2026-11-10",
-    "tmax": 13.7,
-    "tmin": 8.4,
-    "pioggia_mm": 0.7,
-    "raffica_max": 13.3,
+    "tmax": 13.4,
+    "tmin": 7.6,
+    "pioggia_mm": 1.8,
+    "raffica_max": 12.2,
     "codice": 61
    },
    {
     "data": "2026-11-11",
-    "tmax": 13.2,
-    "tmin": 6.2,
-    "pioggia_mm": 0.3,
-    "raffica_max": 10.1,
-    "codice": 61
+    "tmax": 12.3,
+    "tmin": 6.7,
+    "pioggia_mm": 0.0,
+    "raffica_max": 7.6,
+    "codice": 45
    },
    {
     "data": "2026-11-12",
-    "tmax": 14.4,
-    "tmin": 10.7,
+    "tmax": 14.1,
+    "tmin": 9.3,
     "pioggia_mm": 0.0,
-    "raffica_max": 8.3,
+    "raffica_max": 11.3,
     "codice": 45
    }
   ],
@@ -1229,7 +1229,7 @@
    "raffica_kmh": 6.5,
    "pioggia_oraria_mm": 0.0,
    "pioggia_totale_mm": 0.0,
-   "temperatura": 9.8
+   "temperatura": 9.7
   }
  },
  "variazioni": [
@@ -1238,5 +1238,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-07T21:50:56+00:00"
+ "precedente": "2026-11-07T22:01:20+00:00"
 }
