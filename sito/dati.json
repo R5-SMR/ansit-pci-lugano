@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-07T19:20:54+00:00",
- "generato_locale": "07.11.2026 20:20",
+ "generato": "2026-11-07T19:23:55+00:00",
+ "generato_locale": "07.11.2026 20:23",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -652,7 +652,7 @@
  "alertswiss": {
   "disponibile": true,
   "fonte": "https://www.alert.swiss/content/alertswiss-internet/it/home/_jcr_content/polyalert.alertswiss_alerts.actual.json",
-  "totale_svizzera": 6,
+  "totale_svizzera": 7,
   "notifiche": []
  },
  "pegel": [
@@ -664,7 +664,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 1.89,
+   "valore": 1.78,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -676,8 +676,6 @@
    "lon": 8.9625,
    "trend_8h": "in aumento",
    "serie_8h": [
-    1.0,
-    1.02,
     1.02,
     1.0,
     0.96,
@@ -723,7 +721,9 @@
     2.06,
     2.02,
     1.92,
-    1.89
+    1.89,
+    1.84,
+    1.78
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
@@ -735,7 +735,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 2.11,
+   "valore": 1.82,
    "livello": 1,
    "soglie": {
     "2": 55,
@@ -745,10 +745,8 @@
    },
    "lat": 46.0014,
    "lon": 8.9102,
-   "trend_8h": "in aumento",
+   "trend_8h": "in calo",
    "serie_8h": [
-    1.85,
-    1.84,
     1.85,
     1.84,
     1.84,
@@ -794,7 +792,9 @@
     2.05,
     1.89,
     2.05,
-    2.11
+    2.11,
+    1.89,
+    1.82
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
@@ -819,7 +819,6 @@
    "trend_8h": "in aumento",
    "serie_8h": [
     270.41,
-    270.41,
     270.42,
     270.41,
     270.41,
@@ -837,6 +836,7 @@
     270.42,
     270.42,
     270.41,
+    270.42,
     270.42,
     270.42,
     270.42,
@@ -1129,7 +1129,7 @@
     "tmax": 12.3,
     "tmin": 4.6,
     "pioggia_mm": 0.5,
-    "raffica_max": 13.7,
+    "raffica_max": 15.5,
     "codice": 61
    },
    {
@@ -1170,5 +1170,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-07T19:10:57+00:00"
+ "precedente": "2026-11-07T19:20:54+00:00"
 }
