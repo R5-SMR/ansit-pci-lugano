@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-07T19:10:57+00:00",
- "generato_locale": "07.11.2026 20:10",
+ "generato": "2026-11-07T19:20:54+00:00",
+ "generato_locale": "07.11.2026 20:20",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,16 +25,16 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "07.11.2026 18:50",
-   "temperatura": 8.9,
-   "umidita": 94.4,
-   "pioggia_10min": 0.1,
+   "rilevamento": "07.11.2026 19:10",
+   "temperatura": 8.7,
+   "umidita": 95.4,
+   "pioggia_10min": 0.0,
    "pioggia_1h": 0.1,
    "pioggia_24h": 1.5,
-   "vento_kmh": 0.8,
-   "raffica_kmh": 2.0,
-   "direzione": 5.0,
-   "pressione": 989.9,
+   "vento_kmh": 1.0,
+   "raffica_kmh": 1.7,
+   "direzione": 7.0,
+   "pressione": 990.0,
    "serie_24h": {
     "temperatura": [
      11.1,
@@ -150,7 +150,9 @@
      8.8,
      8.8,
      8.6,
-     8.9
+     8.9,
+     8.8,
+     8.7
     ],
     "raffica_kmh": [
      4.4,
@@ -266,7 +268,9 @@
      2.2,
      1.4,
      1.2,
-     2.0
+     2.0,
+     1.8,
+     1.7
     ],
     "pioggia_oraria": [
      0.0,
@@ -287,7 +291,8 @@
      0.0,
      0.0,
      0.0,
-     0.1
+     0.1,
+     0.0
     ]
    }
   },
@@ -295,16 +300,16 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "07.11.2026 18:50",
-   "temperatura": 1.0,
+   "rilevamento": "07.11.2026 19:10",
+   "temperatura": 0.8,
    "umidita": 99.3,
    "pioggia_10min": null,
    "pioggia_1h": 0.0,
    "pioggia_24h": 3.5,
-   "vento_kmh": 1.5,
-   "raffica_kmh": 1.9,
-   "direzione": 324.0,
-   "pressione": 843.9,
+   "vento_kmh": 2.2,
+   "raffica_kmh": 2.8,
+   "direzione": 330.0,
+   "pressione": 844.0,
    "serie_24h": {
     "temperatura": [
      1.7,
@@ -420,7 +425,9 @@
      0.9,
      0.9,
      1.0,
-     1.0
+     1.0,
+     0.8,
+     0.8
     ],
     "raffica_kmh": [
      3.3,
@@ -536,7 +543,9 @@
      1.7,
      1.6,
      1.1,
-     1.9
+     1.9,
+     2.4,
+     2.8
     ],
     "pioggia_oraria": [
      0.0,
@@ -550,6 +559,7 @@
      0.8,
      1.2,
      0.5,
+     0.0,
      0.0,
      0.0,
      0.0,
@@ -654,7 +664,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 2.02,
+   "valore": 1.89,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -666,8 +676,6 @@
    "lon": 8.9625,
    "trend_8h": "in aumento",
    "serie_8h": [
-    1.06,
-    1.0,
     1.0,
     1.02,
     1.02,
@@ -713,7 +721,9 @@
     1.92,
     2.0,
     2.06,
-    2.02
+    2.02,
+    1.92,
+    1.89
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
@@ -725,7 +735,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 1.89,
+   "valore": 2.11,
    "livello": 1,
    "soglie": {
     "2": 55,
@@ -737,8 +747,6 @@
    "lon": 8.9102,
    "trend_8h": "in aumento",
    "serie_8h": [
-    1.85,
-    1.84,
     1.85,
     1.84,
     1.85,
@@ -784,7 +792,9 @@
     1.82,
     2.0,
     2.05,
-    1.89
+    1.89,
+    2.05,
+    2.11
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
@@ -806,9 +816,8 @@
    },
    "lat": 45.9559,
    "lon": 8.9554,
-   "trend_8h": "stabile",
+   "trend_8h": "in aumento",
    "serie_8h": [
-    270.42,
     270.41,
     270.41,
     270.42,
@@ -828,6 +837,7 @@
     270.42,
     270.42,
     270.41,
+    270.42,
     270.42,
     270.42,
     270.42,
@@ -1109,15 +1119,15 @@
    {
     "data": "2026-11-08",
     "tmax": 12.3,
-    "tmin": 5.2,
+    "tmin": 5.1,
     "pioggia_mm": 0.0,
     "raffica_max": 10.8,
     "codice": 80
    },
    {
     "data": "2026-11-09",
-    "tmax": 12.7,
-    "tmin": 5.1,
+    "tmax": 12.3,
+    "tmin": 4.6,
     "pioggia_mm": 0.5,
     "raffica_max": 13.7,
     "codice": 61
@@ -1160,5 +1170,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-07T19:01:21+00:00"
+ "precedente": "2026-11-07T19:10:57+00:00"
 }
