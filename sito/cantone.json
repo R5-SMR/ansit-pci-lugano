@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-08T05:28:21+00:00",
- "generato_locale": "08.11.2026 06:28",
+ "generato": "2026-11-08T05:31:14+00:00",
+ "generato_locale": "08.11.2026 06:31",
  "titolo": "Quadro di situazione cantonale – Ticino",
  "dati_stantii_minuti": 30,
  "comprensorio": [
@@ -952,11 +952,75 @@
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2101_p_q_7days_it.json"
   },
   {
-   "disponibile": false,
-   "motivo": "valore non trovato nelle risposte",
+   "disponibile": true,
    "id": "2349",
    "nome": "Breggia",
-   "luogo": "Chiasso"
+   "luogo": "Chiasso",
+   "tipo": "fiume",
+   "parametro": "Q",
+   "unita": "m3/s",
+   "valore": 0.04,
+   "livello": 1,
+   "soglie": {
+    "2": 50,
+    "3": 100,
+    "4": 140,
+    "5": 200
+   },
+   "lat": 45.8456,
+   "lon": 9.0131,
+   "trend_8h": "in calo",
+   "serie_8h": [
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04,
+    0.04
+   ],
+   "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2349_p_q_7days_it.json"
   }
  ],
  "misure": {
@@ -2301,7 +2365,7 @@
      "temperatura": 10.1,
      "umidita": 87,
      "pioggia_mm": 0.1,
-     "prob_pioggia": 5,
+     "prob_pioggia": 18,
      "vento_kmh": 6.7,
      "raffica_kmh": 7.6,
      "codice": 80
@@ -2311,7 +2375,7 @@
      "temperatura": 10.1,
      "umidita": 86,
      "pioggia_mm": 0.1,
-     "prob_pioggia": 10,
+     "prob_pioggia": 18,
      "vento_kmh": 2.6,
      "raffica_kmh": 7.6,
      "codice": 80
@@ -2321,7 +2385,7 @@
      "temperatura": 10.4,
      "umidita": 84,
      "pioggia_mm": 0.0,
-     "prob_pioggia": 3,
+     "prob_pioggia": 18,
      "vento_kmh": 5.1,
      "raffica_kmh": 5.4,
      "codice": 80
@@ -2341,7 +2405,7 @@
      "temperatura": 10.8,
      "umidita": 83,
      "pioggia_mm": 0.0,
-     "prob_pioggia": 0,
+     "prob_pioggia": 3,
      "vento_kmh": 1.9,
      "raffica_kmh": 4.7,
      "codice": 3
@@ -2471,5 +2535,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-08T05:21:00+00:00"
+ "precedente": "2026-11-08T05:28:21+00:00"
 }
