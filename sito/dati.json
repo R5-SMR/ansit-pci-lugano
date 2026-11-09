@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-09T04:50:59+00:00",
- "generato_locale": "09.11.2026 05:50",
+ "generato": "2026-11-09T05:01:32+00:00",
+ "generato_locale": "09.11.2026 06:01",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,15 +25,15 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "09.11.2026 04:40",
-   "temperatura": 6.3,
-   "umidita": 87.3,
+   "rilevamento": "09.11.2026 04:50",
+   "temperatura": 6.4,
+   "umidita": 86.3,
    "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 1.9,
-   "raffica_kmh": 3.0,
-   "direzione": 332.0,
+   "vento_kmh": 2.0,
+   "raffica_kmh": 3.1,
+   "direzione": 328.0,
    "pressione": 989.1,
    "serie_24h": {
     "temperatura": [
@@ -65,7 +65,8 @@
      6.4,
      6.3,
      6.2,
-     6.3
+     6.3,
+     6.4
     ],
     "raffica_kmh": [
      3.0,
@@ -96,7 +97,8 @@
      1.5,
      1.7,
      1.7,
-     3.0
+     3.0,
+     3.1
     ],
     "pioggia_oraria": [
      0.0,
@@ -111,15 +113,15 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "09.11.2026 04:40",
-   "temperatura": 0.6,
-   "umidita": 82.9,
+   "rilevamento": "09.11.2026 04:50",
+   "temperatura": 0.7,
+   "umidita": 80.8,
    "pioggia_10min": null,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 3.8,
-   "raffica_kmh": 5.0,
-   "direzione": 107.0,
+   "vento_kmh": 3.3,
+   "raffica_kmh": 4.1,
+   "direzione": 105.0,
    "pressione": 843.3,
    "serie_24h": {
     "temperatura": [
@@ -151,7 +153,8 @@
      0.4,
      0.5,
      0.4,
-     0.6
+     0.6,
+     0.7
     ],
     "raffica_kmh": [
      1.8,
@@ -182,7 +185,8 @@
      5.5,
      5.5,
      5.4,
-     5.0
+     5.0,
+     4.1
     ],
     "pioggia_oraria": [
      0.0,
@@ -286,7 +290,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 0.76,
+   "valore": 0.92,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -302,8 +306,6 @@
     0.57,
     0.58,
     0.57,
-    0.58,
-    0.57,
     0.57,
     0.57,
     0.57,
@@ -345,7 +347,9 @@
     0.57,
     0.57,
     0.59,
-    0.76
+    0.76,
+    0.89,
+    0.92
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
@@ -357,7 +361,7 @@
    "tipo": "fiume",
    "parametro": "Q",
    "unita": "m3/s",
-   "valore": 1.31,
+   "valore": 1.46,
    "livello": 1,
    "soglie": {
     "2": 55,
@@ -369,8 +373,6 @@
    "lon": 8.9102,
    "trend_8h": "in calo",
    "serie_8h": [
-    1.56,
-    1.64,
     1.6,
     1.56,
     1.56,
@@ -416,7 +418,9 @@
     1.41,
     1.38,
     1.36,
-    1.31
+    1.31,
+    1.38,
+    1.46
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
@@ -457,7 +461,6 @@
     270.41,
     270.41,
     270.41,
-    270.41,
     270.4,
     270.41,
     270.41,
@@ -487,6 +490,7 @@
     270.4,
     270.4,
     270.41,
+    270.4,
     270.4
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2101_p_q_7days_it.json"
@@ -609,16 +613,6 @@
   "fonte": "Open-Meteo (non ufficiale)",
   "orario": [
    {
-    "ora": "05:00",
-    "temperatura": 4.7,
-    "umidita": 95,
-    "pioggia_mm": 0.0,
-    "prob_pioggia": 0,
-    "vento_kmh": 2.8,
-    "raffica_kmh": 7.2,
-    "codice": 3
-   },
-   {
     "ora": "06:00",
     "temperatura": 4.6,
     "umidita": 97,
@@ -727,6 +721,16 @@
     "vento_kmh": 2.1,
     "raffica_kmh": 4.7,
     "codice": 3
+   },
+   {
+    "ora": "17:00",
+    "temperatura": 11.5,
+    "umidita": 64,
+    "pioggia_mm": 0.0,
+    "prob_pioggia": 13,
+    "vento_kmh": 2.8,
+    "raffica_kmh": 4.7,
+    "codice": 3
    }
   ],
   "giorni": [
@@ -780,7 +784,7 @@
    }
   ],
   "massimi_12h": {
-   "raffica_kmh": 7.2,
+   "raffica_kmh": 6.8,
    "pioggia_oraria_mm": 0.0,
    "pioggia_totale_mm": 0.0,
    "temperatura": 11.9
@@ -792,5 +796,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-09T04:42:21+00:00"
+ "precedente": "2026-11-09T04:50:59+00:00"
 }
