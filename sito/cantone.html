@@ -32,6 +32,10 @@
   .scelta a + a { border-left: 1px solid var(--linea); }
   .scelta a.attiva { background: var(--testo); color: var(--carta); }
   header .stato { font-size: 13px; color: var(--muto); font-variant-numeric: tabular-nums; }
+  #messaggio { display: none; padding: 10px 16px; font-size: 16px; border-left: 6px solid var(--muto); background: var(--carta); border-bottom: 1px solid var(--linea); }
+  #messaggio.on { display: block; } #messaggio.attenzione { border-left-color: var(--l3); background: var(--evidenza, #fff3c4); }
+  #messaggio.urgente { border-left-color: var(--l4); background: var(--l4); color: #fff; font-weight: 600; }
+  #messaggio small { opacity: .8; margin-left: 10px; font-size: 13px; }
   header .fonti { margin-left: auto; color: var(--muto); font-size: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
   header .fonti span { padding: 1px 8px; border-radius: 1em; border: 1px solid var(--linea); }
   header .fonti span.ko { border-color: var(--allarme); color: var(--allarme); font-weight: 600; }
@@ -111,6 +115,7 @@
   <div class="stato" id="stato">Caricamento dei dati…</div>
   <div class="fonti" id="fonti"></div>
 </header>
+<div id="messaggio"></div>
 <div id="banner">DATI NON AGGIORNATI – considerare non disponibili e consultare le fonti ufficiali</div>
 
 <main>
@@ -307,10 +312,13 @@
         : `<tr><td>${m.nome || m.stazione || "?"}</td><td colspan="4" style="color:var(--muto)">n/d</td></tr>`).join("");
 
     // previsioni: massimi 12 h per località
-    $("prev").innerHTML = `<tr><th>Località</th><th class="num">Raffica max</th><th class="num">Pioggia max/h</th><th class="num">Totale 12 h</th></tr>` +
+    $("prev").innerHTML = `<tr><th>Località</th><th class="num">Raffica max</th><th class="num">Pioggia 12 h</th><th class="num">Zero termico 48 h</th><th class="num">Limite neve</th><th class="num">Neve 48 h</th></tr>` +
       Object.entries(dati.previsioni).map(([n, p]) => p.disponibile
-        ? `<tr><td>${n}</td><td class="num">${t(p.massimi_12h.raffica_kmh)} km/h</td><td class="num">${t(p.massimi_12h.pioggia_oraria_mm)} mm</td><td class="num">${t(p.massimi_12h.pioggia_totale_mm)} mm</td></tr>`
-        : `<tr><td>${n}</td><td colspan="3" style="color:var(--muto)">n/d</td></tr>`).join("");
+        ? `<tr><td>${n}</td><td class="num">${t(p.massimi_12h.raffica_kmh)} km/h</td><td class="num">${t(p.massimi_12h.pioggia_totale_mm)} mm</td><td class="num">${p.neve_48h ? p.neve_48h.zero_termico_min + "–" + p.neve_48h.zero_termico_max + " m" : "—"}</td><td class="num">${p.neve_48h && p.neve_48h.limite_neve_min != null ? "≈ " + p.neve_48h.limite_neve_min + " m" : "—"}</td><td class="num">${p.neve_48h && p.neve_48h.neve_48h_cm ? p.neve_48h.neve_48h_cm + " cm" : "—"}</td></tr>`
+        : `<tr><td>${n}</td><td colspan="5" style="color:var(--muto)">n/d</td></tr>`).join("");
+    const lu = ((dati.previsioni["Lugano"] || {}).luce || [])[0];
+    if (lu) $("prev").insertAdjacentHTML("afterend", "");
+    document.querySelector("#basso .pannello:last-child h2").textContent = "Prossime 12–48 h (Open-Meteo, non ufficiale)" + (lu ? ` · luce ${lu.alba}–${lu.tramonto}, crepuscolo ${lu.crepuscolo_mattino}/${lu.crepuscolo_sera}` : "") + " · cosa è cambiato";
 
     // variazioni
     $("var-lista").innerHTML = dati.variazioni.map(v => `<li class="${v.tipo}${nuovo ? " nuovo" : ""}">${v.testo}</li>`).join("");
@@ -382,7 +390,21 @@
     $("carta").innerHTML = s + "</svg>";
   }
 
-  caricaCarta().then(carica);
+
+  // messaggio in evidenza dello stato maggiore (letto in diretta dal server svizzero; riserva: copia nel JSON del collettore)
+  async function caricaMessaggio() {
+    let m = null;
+    try { const r = await fetch("https://179-237-106-60.sslip.io/messaggio.json?_=" + Date.now(), {cache: "no-store"}); if (r.ok) m = await r.json(); } catch (e) { m = null; }
+    if (!m && dati && dati.messaggio) m = dati.messaggio;
+    const el = document.getElementById("messaggio");
+    if (!el) return;
+    if (m && m.testo) {
+      el.className = "on " + (m.livello || "info");
+      el.innerHTML = `<b>${m.testo.replace(/</g, "&lt;")}</b><small>${(m.autore || "").replace(/</g, "&lt;")} · ${m.aggiornato_locale || ""}</small>`;
+    } else { el.className = ""; el.innerHTML = ""; }
+  }
+  setInterval(caricaMessaggio, 60 * 1000);
+  caricaCarta().then(carica).then(caricaMessaggio);
   setInterval(carica, 5 * 60 * 1000);
 })();
 </script>

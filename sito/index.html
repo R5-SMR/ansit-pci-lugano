@@ -32,6 +32,10 @@
   .scelta a.attiva { background: var(--testo); color: var(--carta); }
   .scelta a:hover:not(.attiva) { background: var(--sfondo); }
   header .stato { font-size: 13px; color: var(--muto); font-variant-numeric: tabular-nums; }
+  #messaggio { display: none; padding: 10px 16px; font-size: 16px; border-left: 6px solid var(--muto); background: var(--carta); border-bottom: 1px solid var(--linea); }
+  #messaggio.on { display: block; } #messaggio.attenzione { border-left-color: var(--l3); background: #fff3c4; }
+  #messaggio.urgente { border-left-color: var(--l4); background: var(--l4); color: #fff; font-weight: 600; }
+  #messaggio small { opacity: .8; margin-left: 10px; font-size: 13px; }
   header .stato.vecchio { color: var(--allarme); font-weight: 600; }
   main { max-width: 1100px; margin: 0 auto; padding: 14px 16px 60px; display: grid; gap: 22px; }
   section h2 { font-size: 15px; font-weight: 600; margin: 0 0 8px; }
@@ -111,6 +115,7 @@
   <div class="stato" id="stato">Caricamento dei dati…</div>
   <button id="aggiorna" type="button" style="margin-left:auto">Aggiorna</button>
 </header>
+<div id="messaggio"></div>
 
 <main>
   <section id="variazioni">
@@ -422,7 +427,10 @@
       $("prev-sub").textContent = pv.fonte + ", Lugano";
       const mx = pv.massimi_12h;
       const box = (v, u, l) => `<div class="misura"><b>${t(v)}${v == null ? "" : u}</b><span>${l}</span></div>`;
-      $("massimi").innerHTML = box(mx.raffica_kmh, " km/h", "Raffica massima") + box(mx.pioggia_oraria_mm, " mm", "Pioggia oraria massima") + box(mx.pioggia_totale_mm, " mm", "Pioggia totale 12 h") + box(mx.temperatura, " °C", "Temperatura massima");
+      const nv = pv.neve_48h || {}, lu = (pv.luce || [])[0] || {};
+      $("massimi").innerHTML = box(mx.raffica_kmh, " km/h", "Raffica massima") + box(mx.pioggia_oraria_mm, " mm", "Pioggia oraria massima") + box(mx.pioggia_totale_mm, " mm", "Pioggia totale 12 h") + box(mx.temperatura, " °C", "Temperatura massima") +
+        (nv.zero_termico_min != null ? `<div class="misura"><b>${nv.zero_termico_min}–${nv.zero_termico_max} m</b><span>Zero termico 48 h</span></div><div class="misura"><b>≈ ${nv.limite_neve_min} m</b><span>Limite neve minimo 48 h${nv.neve_48h_cm ? `, ${nv.neve_48h_cm} cm attesi` : ""}</span></div>` : "") +
+        (lu.alba ? `<div class="misura"><b>${lu.alba} – ${lu.tramonto}</b><span>Luce oggi (crepuscolo ${lu.crepuscolo_mattino} / ${lu.crepuscolo_sera})</span></div>` : "");
       $("orario").innerHTML = `<tr><th>Ora</th><th>Tempo</th><th class="num">°C</th><th class="num">Pioggia</th><th class="num">Prob.</th><th class="num">Vento</th><th class="num">Raffica</th></tr>` +
         pv.orario.map(o => `<tr><td>${o.ora}</td><td>${CODICI[o.codice] || o.codice}</td><td class="num">${t(o.temperatura)}</td><td class="num">${t(o.pioggia_mm)} mm</td><td class="num">${t(o.prob_pioggia)} %</td><td class="num">${t(o.vento_kmh)}</td><td class="num">${t(o.raffica_kmh)}</td></tr>`).join("");
       $("giorni").innerHTML = `<tr><th>Giorno</th><th>Tempo</th><th class="num">Min / Max</th><th class="num">Pioggia</th><th class="num">Raffica max</th></tr>` +
@@ -438,8 +446,22 @@
     $("dettaglio").innerHTML = a.allerte.map(w => `<li class="allerta l${w.livello}"><b>${w.tipo} – livello ${t(w.livello)}${w.preallerta ? " (preallerta)" : ""}</b><small>${t(w.dal)} → ${t(w.al)}</small>${w.testo}</li>`).join("");
   }
 
+
+  // messaggio in evidenza dello stato maggiore (letto in diretta dal server svizzero; riserva: copia nel JSON del collettore)
+  async function caricaMessaggio() {
+    let m = null;
+    try { const r = await fetch("https://179-237-106-60.sslip.io/messaggio.json?_=" + Date.now(), {cache: "no-store"}); if (r.ok) m = await r.json(); } catch (e) { m = null; }
+    if (!m && dati && dati.messaggio) m = dati.messaggio;
+    const el = document.getElementById("messaggio");
+    if (!el) return;
+    if (m && m.testo) {
+      el.className = "on " + (m.livello || "info");
+      el.innerHTML = `<b>${m.testo.replace(/</g, "&lt;")}</b><small>${(m.autore || "").replace(/</g, "&lt;")} · ${m.aggiornato_locale || ""}</small>`;
+    } else { el.className = ""; el.innerHTML = ""; }
+  }
+  setInterval(caricaMessaggio, 60 * 1000);
   $("aggiorna").addEventListener("click", carica);
-  caricaCarta().then(carica);
+  caricaCarta().then(carica).then(caricaMessaggio);
   setInterval(carica, 5 * 60 * 1000);
 })();
 </script>
