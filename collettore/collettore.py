@@ -441,6 +441,26 @@ def _ok(d, fonte):
     return False
 
 
+# ---------------------------------------------------------------- UFAM: scoperta dei dati di previsione (diagnostica)
+def scopri_previsione_ufam(id_stazione="2020"):
+    """Legge la pagina della stazione e registra nel log gli indirizzi dei file dati che contiene
+    (previsioni comprese). Serve a individuare l'endpoint delle previsioni, non ancora documentato."""
+    url = f"https://www.hydrodaten.admin.ch/it/seen-und-fluesse/stationen-und-daten/{id_stazione}"
+    try:
+        html = scarica(url, timeout=20)
+    except Exception as e:
+        log(f"UFAM pagina {id_stazione}: {str(e)[:120]}")
+        return
+    GREZZI[f"ufam_pagina_{id_stazione}"] = html[:400000]
+    trovati = sorted(set(re.findall(r'["\'(]((?:https?://[^"\')\s]+|/[^"\')\s]+)\.(?:json|csv|xml))["\')]', html)))
+    parole = [t for t in trovati if re.search(r"forecast|prognos|vorhersag|previs|plot", t, re.I)] or trovati
+    log(f"UFAM pagina {id_stazione}: {len(trovati)} riferimenti a file dati; candidati previsione: " + " | ".join(parole[:12]))
+    # attributi data-* che puntano a dati
+    attr = sorted(set(re.findall(r'(data-[a-z\-]*(?:url|src|source|json)[a-z\-]*)="([^"]+)"', html)))
+    if attr:
+        log("UFAM pagina: attributi dati: " + " | ".join(f"{a}={v[:80]}" for a, v in attr[:10]))
+
+
 # ---------------------------------------------------------------- quadro cantonale
 def cantone(dati_regione):
     """Produce sito/cantone.json riusando le stesse funzioni, con la configurazione cantonale."""
@@ -502,6 +522,10 @@ def main():
     dati["previsione"] = previsione()
     log("Previsione letta")
     dati["messaggio"] = messaggio()
+    try:
+        scopri_previsione_ufam("2020")
+    except Exception as e:
+        log(f"UFAM scoperta previsione: errore {e}")
 
     sito = BASE / "sito" / "dati.json"
     vecchio = json.loads(sito.read_text(encoding="utf-8")) if sito.exists() else None
