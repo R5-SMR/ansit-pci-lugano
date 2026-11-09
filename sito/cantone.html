@@ -57,6 +57,8 @@
   .ctrl-carta a.testo { font-size: 11px !important; font-weight: 600; line-height: 36px !important; letter-spacing: .02em; }
   .ctrl-carta a.on { background: var(--testo) !important; color: var(--carta) !important; }
   .sfondo-bianco { background: var(--carta) !important; }
+  .etichetta-oasi { background: var(--carta); border: 1.5px solid var(--muto); border-radius: 3px; font-size: 11px; font-weight: 600; padding: 1px 4px; white-space: nowrap; color: var(--testo); }
+  .etichetta-oasi.p1 { border-color: var(--l2); background: var(--l2); } .etichetta-oasi.p2 { border-color: var(--l3); background: var(--l3); } .etichetta-oasi.p3 { border-color: var(--l4); background: var(--l4); color: #fff; }
   .nome-distretto { background: none; border: 0; box-shadow: none; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muto); text-shadow: 0 0 3px var(--carta), 0 0 4px var(--carta); white-space: nowrap; }
   @media (prefers-color-scheme: dark) { #mappa-l .leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); } #mappa-l { background: #1e2320; } }
   #carta path.com { stroke: var(--carta); stroke-width: .5; }
@@ -164,7 +166,8 @@
     return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${sl}<path d="${d}"/></svg>`;
   }
 
-  let mappa = null, strato = null, stratoPunti = null, geo = null, regLabel = null, distretti = null, stratoDistretti = null;
+  let mappa = null, strato = null, stratoPunti = null, geo = null, regLabel = null, distretti = null, stratoDistretti = null, stratoOasi = null;
+  function oasiAttivo() { try { return localStorage.getItem("ansit-oasi") !== "off"; } catch (e) { return true; } }
   function distrettiAttivi() { try { return localStorage.getItem("ansit-distretti") === "on"; } catch (e) { return false; } }
   function applicaDistretti() {
     if (!mappa || !distretti) return;
@@ -214,13 +217,14 @@
   function controlloCarta(m, inquadra, cont) {
     const C = L.Control.extend({options: {position: "topleft"}, onAdd: function () {
       const d = L.DomUtil.create("div", "ctrl-carta");
-      d.innerHTML = '<a href="#" title="Ingrandisci" aria-label="Ingrandisci">+</a><a href="#" title="Rimpicciolisci" aria-label="Rimpicciolisci">−</a><a href="#" title="Inquadra tutto" aria-label="Inquadra tutto">⌂</a><a href="#" class="testo" data-sfondo title="Sfondo bianco / carta swisstopo">BIANCO</a><a href="#" class="testo" data-distretti title="Mostra i distretti">DISTR.</a>';
+      d.innerHTML = '<a href="#" title="Ingrandisci" aria-label="Ingrandisci">+</a><a href="#" title="Rimpicciolisci" aria-label="Rimpicciolisci">−</a><a href="#" title="Inquadra tutto" aria-label="Inquadra tutto">⌂</a><a href="#" class="testo" data-sfondo title="Sfondo bianco / carta swisstopo">BIANCO</a><a href="#" class="testo" data-distretti title="Mostra i distretti">DISTR.</a><a href="#" class="testo" data-oasi title="Stazioni cantonali OASI">OASI</a>';
       const a = d.querySelectorAll("a");
       L.DomEvent.on(a[0], "click", e => { L.DomEvent.preventDefault(e); m.zoomIn(); });
       L.DomEvent.on(a[1], "click", e => { L.DomEvent.preventDefault(e); m.zoomOut(); });
       L.DomEvent.on(a[2], "click", e => { L.DomEvent.preventDefault(e); inquadra(); });
       L.DomEvent.on(a[3], "click", e => { L.DomEvent.preventDefault(e); try { localStorage.setItem("ansit-sfondo", sfondoAttivo() ? "bianco" : "carta"); } catch (x) {} applicaSfondo(m, cont); });
       L.DomEvent.on(a[4], "click", e => { L.DomEvent.preventDefault(e); try { localStorage.setItem("ansit-distretti", distrettiAttivi() ? "off" : "on"); } catch (x) {} applicaDistretti(); });
+      L.DomEvent.on(a[5], "click", e => { L.DomEvent.preventDefault(e); try { localStorage.setItem("ansit-oasi", oasiAttivo() ? "off" : "on"); } catch (x) {} if (dati) disegnaCarta(false); });
       L.DomEvent.disableClickPropagation(d);
       return d;
     }});
@@ -255,7 +259,8 @@
     const okPegel = dati.pegel.some(p => p.disponibile);
     const okMisure = Object.values(dati.misure).some(m => m.disponibile);
     const okPrev = Object.values(dati.previsioni).some(p => p.disponibile);
-    $("fonti").innerHTML = [["Allerte", okAllerte], ["UFAM", okPegel], ["Alertswiss", dati.alertswiss.disponibile], ["Misure", okMisure], ["Previsione", okPrev]]
+    const okOasi = (dati.oasi || []).some(o => o.disponibile);
+    $("fonti").innerHTML = [["Allerte", okAllerte], ["UFAM", okPegel], ["OASI", okOasi], ["Alertswiss", dati.alertswiss.disponibile], ["Misure", okMisure], ["Previsione", okPrev]]
       .map(([n, ok]) => `<span class="${ok ? "" : "ko"}">${n}${ok ? "" : " KO"}</span>`).join("");
 
     // allerte attive (livello >= 2), raggruppate per regione
@@ -327,6 +332,28 @@
         const cls = (stantio || !p.disponibile || p.livello == null) ? "nd" : "l" + p.livello;
         L.marker([p.lat, p.lon], {icon: L.divIcon({className: "", html: `<div class="etichetta-peg ${cls}">${p.disponibile && p.livello != null ? p.livello : "·"}</div>`, iconSize: [24, 24], iconAnchor: [12, 12]})})
           .bindTooltip(`${p.nome} – ${p.luogo}: ${p.disponibile ? p.valore + " " + p.unita : "n/d"}`).addTo(stratoPunti);
+      }
+      // rete cantonale OASI: pluviometri (mm nell'ultima ora, colore per intensità) e idrometri (valore)
+      if (stratoOasi) { mappa.removeLayer(stratoOasi); stratoOasi = null; }
+      document.querySelectorAll(".ctrl-carta a[data-oasi]").forEach(a => a.classList.toggle("on", oasiAttivo()));
+      if (oasiAttivo()) {
+        stratoOasi = L.layerGroup().addTo(mappa);
+        let n = 0;
+        for (const o of (dati.oasi || [])) {
+          if (!o.lat || !o.lon || !o.disponibile || stantio) continue;
+          n++;
+          let cls = "", testo;
+          if (o.parametro === "Prec") {
+            const mm = o.pioggia_1h || 0;
+            cls = mm >= 20 ? "p3" : mm >= 10 ? "p2" : mm >= 3 ? "p1" : "";
+            testo = `${o.pioggia_1h} mm`;
+          } else testo = `${o.valore} ${o.unita}`;
+          L.marker([o.lat, o.lon], {icon: L.divIcon({className: "", html: `<div class="etichetta-oasi ${cls}">${o.nome} ${testo}</div>`, iconAnchor: [0, 8]})})
+            .bindTooltip(o.parametro === "Prec" ? `${o.nome} (${o.luogo}): ${o.pioggia_1h} mm/1 h · ${o.pioggia_3h} mm/3 h · ${o.pioggia_24h} mm/24 h · ${o.rilevamento}` : `${o.nome} – ${o.luogo}: ${o.valore} ${o.unita}, ${o.trend_8h || ""} · ${o.rilevamento}`).addTo(stratoOasi);
+        }
+        if (!n) { // nessun dato OASI: lo dico una volta sola nel titolo del pannello
+          document.querySelector("#mappa h2").textContent = "Allerte MeteoSvizzera per regione · pegel UFAM · OASI non disponibile";
+        } else document.querySelector("#mappa h2").textContent = "Allerte MeteoSvizzera per regione · pegel UFAM · rete cantonale OASI";
       }
       return;
     }
