@@ -28,7 +28,7 @@ GREZZI = {}   # risposte grezze da archiviare
 
 
 def log(msg):
-    print(f"[{ADESSO.astimezone(TZ):%H:%M:%S}] {msg}", flush=True)
+    print(f"[{datetime.now(TZ):%H:%M:%S}] {msg}", flush=True)
 
 
 def scarica(url, tipo="text", accept_lang=None, timeout=25):
@@ -276,13 +276,20 @@ def oasi(st):
     oggi = ADESSO.astimezone(TZ_OASI).date()
     url = cfg["url"].format(domain=st["dominio"], param=st["param"], codice=quote(st["codice"]),
                             da=(oggi - timedelta(days=1)).isoformat(), a=oggi.isoformat())
+    tentativi = []
+    ponte = (CFG["oasi"].get("ponte_url") or "").strip()
+    if ponte and "INDIRIZZO-IP" not in ponte:
+        tentativi.append(ponte.rstrip("/") + "/" + f"{st['codice'].replace(' ', '_')}_{st['param']}.csv")
+    tentativi += [url, url.replace("https://", "http://", 1)]
     testo, errori = None, []
-    for tentativo in (url, url.replace("https://", "http://", 1)):
+    for tentativo in tentativi:
         try:
             testo = scarica(tentativo, timeout=8)
             break
         except requests.exceptions.ConnectionError as e:
-            errori.append(f"{tentativo[:5]}: {type(e).__name__} – {str(e)[:140]}")
+            errori.append(f"{tentativo[:30]}: {type(e).__name__} – {str(e)[:100]}")
+        except requests.exceptions.HTTPError as e:
+            errori.append(f"{tentativo[:30]}: HTTP {e.response.status_code if e.response is not None else '?'}")
         except Exception as e:
             log(f"OASI {st['codice']}: {str(e)[:160]}")
             return {**non_disp(str(e)[:80]), **base_nd}
