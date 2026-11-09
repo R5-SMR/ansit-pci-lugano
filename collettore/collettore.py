@@ -276,16 +276,21 @@ def oasi(st):
     oggi = ADESSO.astimezone(TZ_OASI).date()
     url = cfg["url"].format(domain=st["dominio"], param=st["param"], codice=quote(st["codice"]),
                             da=(oggi - timedelta(days=1)).isoformat(), a=oggi.isoformat())
-    try:
-        testo = scarica(url, timeout=8)
-    except requests.exceptions.ConnectionError as e:
-        # errore di rete (DNS, rifiuto, timeout di connessione): inutile insistere sulle altre stazioni
-        OASI_BLOCCATO.update(stato=True, motivo=str(e)[:120])
-        log(f"OASI: connessione fallita, salto le stazioni successive ({str(e)[:160]})")
+    testo, errori = None, []
+    for tentativo in (url, url.replace("https://", "http://", 1)):
+        try:
+            testo = scarica(tentativo, timeout=8)
+            break
+        except requests.exceptions.ConnectionError as e:
+            errori.append(f"{tentativo[:5]}: {type(e).__name__} – {str(e)[:140]}")
+        except Exception as e:
+            log(f"OASI {st['codice']}: {str(e)[:160]}")
+            return {**non_disp(str(e)[:80]), **base_nd}
+    if testo is None:
+        # nessuna connessione né in https né in http: inutile insistere sulle altre stazioni
+        OASI_BLOCCATO.update(stato=True, motivo=" | ".join(errori)[:200])
+        log("OASI: connessione fallita, salto le stazioni successive. " + " | ".join(errori))
         return {**non_disp("OASI non risponde (connessione rifiutata o timeout)"), **base_nd}
-    except Exception as e:
-        log(f"OASI {st['codice']}: {str(e)[:160]}")
-        return {**non_disp(str(e)[:80]), **base_nd}
     GREZZI.setdefault("oasi", {})[st["codice"]] = testo[-30000:]
     punti = []
     for riga in testo.splitlines():
