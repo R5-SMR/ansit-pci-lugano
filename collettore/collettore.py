@@ -433,6 +433,13 @@ def cantone(dati_regione):
     d["misure"] = {st["id"]: misure_smn(st) for st in C["stazioni_meteo"]}
     log("Quadro cantonale: misure lette")
     d["alertswiss"] = dati_regione["alertswiss"]
+    if "oasi" in C and not OASI_BLOCCATO["stato"]:
+        d["oasi"] = [oasi(st) for st in C["oasi"]["stazioni"]]
+        log("Quadro cantonale: rete OASI letta")
+    else:
+        d["oasi"] = [{**non_disp("OASI non raggiungibile in questo ciclo"), "nome": st["nome"], "luogo": st["luogo"],
+                      "codice": st["codice"], "parametro": st["param"], "bacino": st.get("bacino"), "lat": st.get("lat"), "lon": st.get("lon")}
+                     for st in C.get("oasi", {}).get("stazioni", [])]
     d["previsioni"] = {p["nome"]: previsione(p["lat"], p["lon"]) for p in C["previsioni"]}
     log("Quadro cantonale: previsioni lette")
     out = BASE / "sito" / "cantone.json"
