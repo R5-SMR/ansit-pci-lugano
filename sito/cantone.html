@@ -131,7 +131,7 @@
       <div class="corpo"><ul class="lista" id="all-lista"></ul></div>
     </section>
     <section class="pannello" id="pegel-p">
-      <h2>Corsi d'acqua e laghi (UFAM)</h2>
+      <h2>Corsi d'acqua e laghi (UFAM) <small style="font-weight:400;text-transform:none">· prev. 48 h = mediana UFAM, Att. = grado atteso</small></h2>
       <div class="corpo"><table id="pegel"></table></div>
     </section>
     <section class="pannello" id="aw-p">
@@ -287,10 +287,16 @@
       : `<li class="info">Nessuna allerta di livello 2 o superiore in Ticino.${okAllerte ? "" : " (fonte allerte non disponibile)"}</li>`;
 
     // pegel
-    $("pegel").innerHTML = `<tr><th>Stazione</th><th class="num">Valore</th><th>8 h</th><th>Grado</th></tr>` +
+    const prevCella = p => {
+      const f = p.previsione;
+      if (!f || !f.disponibile) return `<td class="num" style="color:var(--muto)">${f === null || f === undefined ? "—" : "n/d"}</td><td></td>`;
+      const fr = f.mediana_48h != null && p.valore != null ? (f.mediana_48h > p.valore * 1.15 ? "↗" : f.mediana_48h < p.valore * 0.85 ? "↘" : "→") : "";
+      return `<td class="num" title="scenario peggiore ${t(f.peggiore_48h)} ${p.unita}${f.emessa ? " · emessa " + f.emessa : ""}">${t(f.mediana_48h)} ${fr}</td><td>${f.grado_peggiore_48h != null && f.grado_peggiore_48h >= 2 ? livHtml(f.grado_peggiore_48h) : (f.grado_mediana_48h != null ? livHtml(f.grado_mediana_48h) : "")}</td>`;
+    };
+    $("pegel").innerHTML = `<tr><th>Stazione</th><th class="num">Valore</th><th>8 h</th><th>Grado</th><th class="num">Prev. 48 h</th><th title="grado atteso (scenario peggiore se ≥ 2)">Att.</th></tr>` +
       dati.pegel.map(p => p.disponibile
-        ? `<tr><td>${p.nome} <small style="color:var(--muto)">${p.luogo}</small></td><td class="num">${t(p.valore)} ${p.unita}</td><td>${spark(p.serie_8h || [], p.soglie && p.soglie["2"])}</td><td>${livHtml(p.livello, stantio)}</td></tr>`
-        : `<tr><td>${p.nome} <small style="color:var(--muto)">${p.luogo || ""}</small></td><td colspan="2" style="color:var(--muto)">n/d</td><td>${livHtml(null, true)}</td></tr>`).join("");
+        ? `<tr><td>${p.nome} <small style="color:var(--muto)">${p.luogo}</small></td><td class="num">${t(p.valore)} ${p.unita}</td><td>${spark(p.serie_8h || [], p.soglie && p.soglie["2"])}</td><td>${livHtml(p.livello, stantio)}</td>${prevCella(p)}</tr>`
+        : `<tr><td>${p.nome} <small style="color:var(--muto)">${p.luogo || ""}</small></td><td colspan="2" style="color:var(--muto)">n/d</td><td>${livHtml(null, true)}</td><td></td><td></td></tr>`).join("");
 
     // alertswiss
     const aw = dati.alertswiss;

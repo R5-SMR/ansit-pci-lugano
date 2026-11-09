@@ -317,6 +317,15 @@
     return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${sl}<path d="${d}"/></svg>`;
   }
 
+  // Previsione UFAM: mediana a 48 h con grado, scenario peggiore in piccolo
+  function prevHtml(p) {
+    const f = p.previsione;
+    if (f === null || f === undefined) return '<small style="color:var(--muto)">—</small>';
+    if (!f.disponibile) return `<small style="color:var(--muto)">n/d</small>`;
+    const u = p.unita, freccia = f.mediana_48h != null && p.valore != null ? (f.mediana_48h > p.valore * 1.15 ? " ↗" : f.mediana_48h < p.valore * 0.85 ? " ↘" : " →") : "";
+    return `<span style="white-space:nowrap">mediana <b>${t(f.mediana_48h)} ${u}</b>${freccia} ${f.grado_mediana_48h != null ? livHtml(f.grado_mediana_48h) : ""}</span><br><small style="color:var(--muto)">scenario peggiore ${t(f.peggiore_48h)} ${u}${f.grado_peggiore_48h != null && f.grado_peggiore_48h >= 2 ? ` (grado ${f.grado_peggiore_48h})` : ""}${f.emessa ? ` · emessa ${f.emessa}` : ""}</small>`;
+  }
+
   // Sparkline a barre: per la pioggia oraria
   function barre(serie) {
     const v = serie.filter(x => typeof x === "number");
@@ -381,10 +390,10 @@
     }
 
     // pegel
-    $("pegel").innerHTML = `<tr><th>Stazione</th><th>Misura</th><th class="num">Valore</th><th>Andamento 8 h</th><th>Livello</th></tr>` +
+    $("pegel").innerHTML = `<tr><th>Stazione</th><th>Misura</th><th class="num">Valore</th><th>Andamento 8 h</th><th>Livello</th><th>Previsione UFAM 48 h</th></tr>` +
       dati.pegel.map(p => p.disponibile
-        ? `<tr><td>${p.nome}<br><small style="color:var(--muto)">${p.luogo}</small></td><td>${p.parametro === "Q" ? "Portata" : "Livello"}</td><td class="num">${t(p.valore)} ${p.unita}</td><td>${spark(p.serie_8h || [], p.soglie && p.soglie["2"])}<small style="color:var(--muto)">${t(p.trend_8h)}</small></td><td>${livHtml(p.livello, stantio)}</td></tr>`
-        : `<tr><td>${p.nome || "?"}</td><td colspan="3" style="color:var(--muto)">non disponibile – ${p.motivo}</td><td>${livHtml(null, true)}</td></tr>`).join("");
+        ? `<tr><td>${p.nome}<br><small style="color:var(--muto)">${p.luogo}</small></td><td>${p.parametro === "Q" ? "Portata" : "Livello"}</td><td class="num">${t(p.valore)} ${p.unita}</td><td>${spark(p.serie_8h || [], p.soglie && p.soglie["2"])}<small style="color:var(--muto)">${t(p.trend_8h)}</small></td><td>${livHtml(p.livello, stantio)}</td><td>${prevHtml(p)}</td></tr>`
+        : `<tr><td>${p.nome || "?"}</td><td colspan="3" style="color:var(--muto)">non disponibile – ${p.motivo}</td><td>${livHtml(null, true)}</td><td></td></tr>`).join("");
 
     // rete cantonale OASI
     const oa = (dati.oasi || []).filter(o => o.parametro !== "Prec");
