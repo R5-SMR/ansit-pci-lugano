@@ -2,56 +2,946 @@
   "_nota": "Configurazione del quadro di situazione cantonale (pagina cantone.html). Le allerte MeteoSvizzera sono lette per regione tramite un Comune rappresentativo (PLZ); i Comuni della carta sono assegnati alla regione del rappresentante più vicino (approssimazione da verificare con le regioni di allerta ufficiali).",
   "titolo": "Quadro di situazione cantonale – Ticino",
   "regioni": [
-    {"nome": "Alta Leventina",        "rappresentante": "Airolo",       "plz": "6780", "lat": 46.528, "lon": 8.609},
-    {"nome": "Media Leventina",       "rappresentante": "Faido",        "plz": "6760", "lat": 46.477, "lon": 8.801},
-    {"nome": "Blenio",                "rappresentante": "Olivone",      "plz": "6718", "lat": 46.531, "lon": 8.942},
-    {"nome": "Riviera",               "rappresentante": "Biasca",       "plz": "6710", "lat": 46.359, "lon": 8.971},
-    {"nome": "Bellinzonese",          "rappresentante": "Bellinzona",   "plz": "6500", "lat": 46.195, "lon": 9.023},
-    {"nome": "Locarnese",             "rappresentante": "Locarno",      "plz": "6600", "lat": 46.170, "lon": 8.797},
-    {"nome": "Vallemaggia",           "rappresentante": "Cevio",        "plz": "6675", "lat": 46.316, "lon": 8.602},
-    {"nome": "Verzasca",              "rappresentante": "Sonogno",      "plz": "6637", "lat": 46.350, "lon": 8.786},
-    {"nome": "Gambarogno",            "rappresentante": "Magadino",     "plz": "6573", "lat": 46.148, "lon": 8.856},
-    {"nome": "Luganese",              "rappresentante": "Lugano",       "plz": "6900", "lat": 46.004, "lon": 8.951},
-    {"nome": "Malcantone / Vedeggio", "rappresentante": "Agno",         "plz": "6982", "lat": 45.998, "lon": 8.899},
-    {"nome": "Capriasca / Val Colla", "rappresentante": "Tesserete",    "plz": "6950", "lat": 46.066, "lon": 8.967},
-    {"nome": "Monte Ceneri",          "rappresentante": "Rivera",       "plz": "6802", "lat": 46.122, "lon": 8.924},
-    {"nome": "Mendrisiotto",          "rappresentante": "Mendrisio",    "plz": "6850", "lat": 45.870, "lon": 8.981},
-    {"nome": "Basso Mendrisiotto",    "rappresentante": "Chiasso",      "plz": "6830", "lat": 45.832, "lon": 9.031}
+    {
+      "nome": "Alta Leventina",
+      "rappresentante": "Airolo",
+      "plz": "6780",
+      "lat": 46.528,
+      "lon": 8.609
+    },
+    {
+      "nome": "Media Leventina",
+      "rappresentante": "Faido",
+      "plz": "6760",
+      "lat": 46.477,
+      "lon": 8.801
+    },
+    {
+      "nome": "Blenio",
+      "rappresentante": "Olivone",
+      "plz": "6718",
+      "lat": 46.531,
+      "lon": 8.942
+    },
+    {
+      "nome": "Riviera",
+      "rappresentante": "Biasca",
+      "plz": "6710",
+      "lat": 46.359,
+      "lon": 8.971
+    },
+    {
+      "nome": "Bellinzonese",
+      "rappresentante": "Bellinzona",
+      "plz": "6500",
+      "lat": 46.195,
+      "lon": 9.023
+    },
+    {
+      "nome": "Locarnese",
+      "rappresentante": "Locarno",
+      "plz": "6600",
+      "lat": 46.17,
+      "lon": 8.797
+    },
+    {
+      "nome": "Vallemaggia",
+      "rappresentante": "Cevio",
+      "plz": "6675",
+      "lat": 46.316,
+      "lon": 8.602
+    },
+    {
+      "nome": "Verzasca",
+      "rappresentante": "Sonogno",
+      "plz": "6637",
+      "lat": 46.35,
+      "lon": 8.786
+    },
+    {
+      "nome": "Gambarogno",
+      "rappresentante": "Magadino",
+      "plz": "6573",
+      "lat": 46.148,
+      "lon": 8.856
+    },
+    {
+      "nome": "Luganese",
+      "rappresentante": "Lugano",
+      "plz": "6900",
+      "lat": 46.004,
+      "lon": 8.951
+    },
+    {
+      "nome": "Malcantone / Vedeggio",
+      "rappresentante": "Agno",
+      "plz": "6982",
+      "lat": 45.998,
+      "lon": 8.899
+    },
+    {
+      "nome": "Capriasca / Val Colla",
+      "rappresentante": "Tesserete",
+      "plz": "6950",
+      "lat": 46.066,
+      "lon": 8.967
+    },
+    {
+      "nome": "Monte Ceneri",
+      "rappresentante": "Rivera",
+      "plz": "6802",
+      "lat": 46.122,
+      "lon": 8.924
+    },
+    {
+      "nome": "Mendrisiotto",
+      "rappresentante": "Mendrisio",
+      "plz": "6850",
+      "lat": 45.87,
+      "lon": 8.981
+    },
+    {
+      "nome": "Basso Mendrisiotto",
+      "rappresentante": "Chiasso",
+      "plz": "6830",
+      "lat": 45.832,
+      "lon": 9.031
+    }
   ],
-  "comprensorio": ["Lugano", "Paradiso", "Massagno", "Savosa", "Vezia", "Porza", "Comano", "Canobbio", "Sorengo", "Muzzano", "Collina d'Oro", "Grancia", "Melide", "Morcote", "Vico Morcote"],
-
+  "comprensorio": [
+    "Lugano",
+    "Paradiso",
+    "Massagno",
+    "Savosa",
+    "Vezia",
+    "Porza",
+    "Comano",
+    "Canobbio",
+    "Sorengo",
+    "Muzzano",
+    "Collina d'Oro",
+    "Grancia",
+    "Melide",
+    "Morcote",
+    "Vico Morcote"
+  ],
   "stazioni_meteo": [
-    {"id": "LUG", "nome": "Lugano"},
-    {"id": "OTL", "nome": "Locarno-Monti"},
-    {"id": "MAG", "nome": "Magadino-Cadenazzo"},
-    {"id": "SBO", "nome": "Stabio"},
-    {"id": "COM", "nome": "Acquarossa-Comprovasco"},
-    {"id": "PIO", "nome": "Piotta"},
-    {"id": "CEV", "nome": "Cevio"},
-    {"id": "ROE", "nome": "Robiei (1'900 m)"},
-    {"id": "CIM", "nome": "Cimetta (1'660 m)"},
-    {"id": "GEN", "nome": "Monte Generoso (1'600 m)"}
+    {
+      "id": "LUG",
+      "nome": "Lugano"
+    },
+    {
+      "id": "OTL",
+      "nome": "Locarno-Monti"
+    },
+    {
+      "id": "MAG",
+      "nome": "Magadino-Cadenazzo"
+    },
+    {
+      "id": "SBO",
+      "nome": "Stabio"
+    },
+    {
+      "id": "COM",
+      "nome": "Acquarossa-Comprovasco"
+    },
+    {
+      "id": "PIO",
+      "nome": "Piotta"
+    },
+    {
+      "id": "CEV",
+      "nome": "Cevio"
+    },
+    {
+      "id": "ROE",
+      "nome": "Robiei (1'900 m)"
+    },
+    {
+      "id": "CIM",
+      "nome": "Cimetta (1'660 m)"
+    },
+    {
+      "id": "GEN",
+      "nome": "Monte Generoso (1'600 m)"
+    }
   ],
-
   "pegel": [
-    {"id": "2020", "nome": "Ticino",        "luogo": "Bellinzona",              "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.1966, "lon": 9.0094, "soglie": {"2": 700, "3": 1100, "4": 1450, "5": 1800}},
-    {"id": "2494", "nome": "Ticino",        "luogo": "Pollegio",                "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.3519, "lon": 8.9457, "soglie": {"2": 250, "3": 400, "4": 550, "5": 700}},
-    {"id": "2086", "nome": "Brenno",        "luogo": "Loderio",                 "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.3765, "lon": 8.9695, "soglie": {"2": 190, "3": 320, "4": 380, "5": 430}},
-    {"id": "2420", "nome": "Moesa",         "luogo": "Lumino",                  "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.2317, "lon": 9.0474, "soglie": null, "_nota": "soglie UFAM da inserire (grado 1 < 310 m3/s)"},
-    {"id": "2605", "nome": "Verzasca",      "luogo": "Lavertezzo",              "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.2490, "lon": 8.8446, "soglie": {"2": 380, "3": 570, "4": 650, "5": 710}},
-    {"id": "2475", "nome": "Maggia",        "luogo": "Bignasco",                "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.3378, "lon": 8.6089, "soglie": {"2": 310, "3": 530, "4": 630, "5": 720}},
-    {"id": "2368", "nome": "Maggia",        "luogo": "Locarno-Solduno",         "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.1714, "lon": 8.7724, "soglie": {"2": 800, "3": 2000, "4": 3200, "5": 4400}},
-    {"id": "2022", "nome": "Lago Maggiore", "luogo": "Locarno",                 "tipo": "lago",  "param": "P", "unita": "m s.l.m.", "lat": 46.1636, "lon": 8.8043, "soglie": {"2": 194.5, "3": 195.5, "4": 196.0, "5": 196.5}},
-    {"id": "2321", "nome": "Cassarate",     "luogo": "Pregassona",              "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.0177, "lon": 8.9625, "soglie": {"2": 40, "3": 80, "4": 120, "5": 170}},
-    {"id": "2629", "nome": "Vedeggio",      "luogo": "Agno",                    "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 46.0014, "lon": 8.9102, "soglie": {"2": 55, "3": 130, "4": 210, "5": 350}},
-    {"id": "2101", "nome": "Lago di Lugano","luogo": "Melide",                  "tipo": "lago",  "param": "P", "unita": "m s.l.m.", "lat": 45.9559, "lon": 8.9554, "soglie": {"2": 270.9, "3": 271.1, "4": 271.4, "5": 271.8}},
-    {"id": "2349", "nome": "Breggia",       "luogo": "Chiasso",                 "tipo": "fiume", "param": "Q", "unita": "m3/s",     "lat": 45.8456, "lon": 9.0131, "soglie": {"2": 50, "3": 100, "4": 140, "5": 200}}
+    {
+      "id": "2020",
+      "nome": "Ticino",
+      "luogo": "Bellinzona",
+      "tipo": "fiume",
+      "param": "Q",
+      "unita": "m3/s",
+      "lat": 46.1966,
+      "lon": 9.0094,
+      "soglie": {
+        "2": 700,
+        "3": 1100,
+        "4": 1450,
+        "5": 1800
+      }
+    },
+    {
+      "id": "2494",
+      "nome": "Ticino",
+      "luogo": "Pollegio",
+      "tipo": "fiume",
+      "param": "Q",
+      "unita": "m3/s",
+      "lat": 46.3519,
+      "lon": 8.9457,
+      "soglie": {
+        "2": 250,
+        "3": 400,
+        "4": 550,
+        "5": 700
+      }
+    },
+    {
+      "id": "2086",
+      "nome": "Brenno",
+      "luogo": "Loderio",
+      "tipo": "fiume",
+      "param": "Q",
+      "unita": "m3/s",
+      "lat": 46.3765,
+      "lon": 8.9695,
+      "soglie": {
+        "2": 190,
+        "3": 320,
+        "4": 380,
+        "5": 430
+      }
+    },
+    {
+      "id": "2420",
+      "nome": "Moesa",
+      "luogo": "Lumino",
+      "tipo": "fiume",
+      "param": "Q",
+      "unita": "m3/s",
+      "lat": 46.2317,
+      "lon": 9.0474,
+      "soglie": null,
+      "_nota": "soglie UFAM da inserire (grado 1 < 310 m3/s)"
+    },
+    {
+      "id": "2605",
+      "nome": "Verzasca",
+      "luogo": "Lavertezzo",
+      "tipo": "fiume",
+      "param": "Q",
+      "unita": "m3/s",
+      "lat": 46.249,
+      "lon": 8.8446,
+      "soglie": {
+        "2": 380,
+        "3": 570,
+        "4": 650,
+        "5": 710
+      }
+    },
+    {
+      "id": "2475",
+      "nome": "Maggia",
+      "luogo": "Bignasco",
+      "tipo": "fiume",
+      "param": "Q",
+      "unita": "m3/s",
+      "lat": 46.3378,
+      "lon": 8.6089,
+      "soglie": {
+        "2": 310,
+        "3": 530,
+        "4": 630,
+        "5": 720
+      }
+    },
+    {
+      "id": "2368",
+      "nome": "Maggia",
+      "luogo": "Locarno-Solduno",
+      "tipo": "fiume",
+      "param": "Q",
+      "unita": "m3/s",
+      "lat": 46.1714,
+      "lon": 8.7724,
+      "soglie": {
+        "2": 800,
+        "3": 2000,
+        "4": 3200,
+        "5": 4400
+      }
+    },
+    {
+      "id": "2022",
+      "nome": "Lago Maggiore",
+      "luogo": "Locarno",
+      "tipo": "lago",
+      "param": "P",
+      "unita": "m s.l.m.",
+      "lat": 46.1636,
+      "lon": 8.8043,
+      "soglie": {
+        "2": 194.5,
+        "3": 195.5,
+        "4": 196.0,
+        "5": 196.5
+      }
+    },
+    {
+      "id": "2321",
+      "nome": "Cassarate",
+      "luogo": "Pregassona",
+      "tipo": "fiume",
+      "param": "Q",
+      "unita": "m3/s",
+      "lat": 46.0177,
+      "lon": 8.9625,
+      "soglie": {
+        "2": 40,
+        "3": 80,
+        "4": 120,
+        "5": 170
+      }
+    },
+    {
+      "id": "2629",
+      "nome": "Vedeggio",
+      "luogo": "Agno",
+      "tipo": "fiume",
+      "param": "Q",
+      "unita": "m3/s",
+      "lat": 46.0014,
+      "lon": 8.9102,
+      "soglie": {
+        "2": 55,
+        "3": 130,
+        "4": 210,
+        "5": 350
+      }
+    },
+    {
+      "id": "2101",
+      "nome": "Lago di Lugano",
+      "luogo": "Melide",
+      "tipo": "lago",
+      "param": "P",
+      "unita": "m s.l.m.",
+      "lat": 45.9559,
+      "lon": 8.9554,
+      "soglie": {
+        "2": 270.9,
+        "3": 271.1,
+        "4": 271.4,
+        "5": 271.8
+      }
+    },
+    {
+      "id": "2349",
+      "nome": "Breggia",
+      "luogo": "Chiasso",
+      "tipo": "fiume",
+      "param": "Q",
+      "unita": "m3/s",
+      "lat": 45.8456,
+      "lon": 9.0131,
+      "soglie": {
+        "2": 50,
+        "3": 100,
+        "4": 140,
+        "5": 200
+      }
+    }
   ],
   "_fonte_soglie": "UFAM, schede stazione hydrodaten.admin.ch, verificate il 05.11.2026",
-
   "previsioni": [
-    {"nome": "Lugano",     "lat": 46.0037, "lon": 8.9511},
-    {"nome": "Bellinzona", "lat": 46.1950, "lon": 9.0230},
-    {"nome": "Locarno",    "lat": 46.1700, "lon": 8.7970}
-  ]
+    {
+      "nome": "Lugano",
+      "lat": 46.0037,
+      "lon": 8.9511
+    },
+    {
+      "nome": "Bellinzona",
+      "lat": 46.195,
+      "lon": 9.023
+    },
+    {
+      "nome": "Locarno",
+      "lat": 46.17,
+      "lon": 8.797
+    }
+  ],
+  "oasi": {
+    "_nota": "Rete cantonale per la pagina Ticino: idrometri e pluviometri di proprietà UCA/UMAm (pubblicabili con citazione), da docs/oasi_stazioni_*.json. Esclusi i dati MeteoSvizzera.",
+    "stazioni": [
+      {
+        "codice": "water_37w",
+        "nome": "Ticino",
+        "luogo": "Ronco Bedretto",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Alto Ticino",
+        "lat": 46.4975,
+        "lon": 8.4978,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_30",
+        "nome": "Calcaccia",
+        "luogo": "Airolo",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Alta Leventina",
+        "lat": 46.518,
+        "lon": 8.6383,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_auto_763w",
+        "nome": "Piumogna",
+        "luogo": "Dalpe",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Leventina",
+        "lat": 46.4569,
+        "lon": 8.7714,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_auto_1w",
+        "nome": "Maggia",
+        "luogo": "Lodano",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Vallemaggia",
+        "lat": 46.2616,
+        "lon": 8.6892,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_36",
+        "nome": "Salto",
+        "luogo": "Maggia",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Vallemaggia",
+        "lat": 46.2515,
+        "lon": 8.7071,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "auto_68",
+        "nome": "Brima",
+        "luogo": "Losone",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Locarnese",
+        "lat": 46.1632,
+        "lon": 8.7582,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_28w",
+        "nome": "Riale di Gnosca",
+        "luogo": "Gnosca",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Riviera / Bellinzonese",
+        "lat": 46.2335,
+        "lon": 9.0194,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_auto_42w",
+        "nome": "Morobbia",
+        "luogo": "Giubiasco",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Bellinzonese",
+        "lat": 46.1694,
+        "lon": 9.0001,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_29",
+        "nome": "Canale Bonifica",
+        "luogo": "Quartino",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Piano di Magadino",
+        "lat": 46.1602,
+        "lon": 8.9092,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_31w",
+        "nome": "Vedeggio",
+        "luogo": "Isone",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Vedeggio",
+        "lat": 46.1321,
+        "lon": 8.9946,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_14w",
+        "nome": "Scairolo",
+        "luogo": "Barbengo",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Luganese",
+        "lat": 45.9522,
+        "lon": 8.9089,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_auto_343w",
+        "nome": "Mara",
+        "luogo": "Maroggia",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Luganese",
+        "lat": 45.9349,
+        "lon": 8.9732,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_auto_904",
+        "nome": "Lisora",
+        "luogo": "Monteggio",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Malcantone",
+        "lat": 45.9937,
+        "lon": 8.8253,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_38w",
+        "nome": "Laveggio",
+        "luogo": "Mendrisio",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Mendrisiotto",
+        "lat": 45.8794,
+        "lon": 8.9773,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_auto_583",
+        "nome": "Faloppia",
+        "luogo": "Chiasso",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Mendrisiotto",
+        "lat": 45.8323,
+        "lon": 9.0171,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_33w",
+        "nome": "Cuccio",
+        "luogo": "Porlezza (IT)",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Immissario Ceresio",
+        "lat": 46.0425,
+        "lon": 9.1404,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_35w",
+        "nome": "Bolletta",
+        "luogo": "Porto Ceresio (IT)",
+        "dominio": "surfacewater",
+        "param": "Q",
+        "unita": "m3/s",
+        "bacino": "Immissario Ceresio",
+        "lat": 45.9007,
+        "lon": 8.8904,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "water_auto_743",
+        "nome": "Lago di Lugano",
+        "luogo": "Morcote",
+        "dominio": "surfacewater",
+        "param": "WL",
+        "unita": "m s.l.m.",
+        "bacino": "Ceresio",
+        "lat": 45.9245,
+        "lon": 8.9096,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_70",
+        "nome": "Bedretto",
+        "luogo": "1390 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.5054,
+        "lon": 8.5102,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "air_auto_275",
+        "nome": "Airolo",
+        "luogo": "1157 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.528,
+        "lon": 8.612,
+        "proprietario": "UMAm"
+      },
+      {
+        "codice": "meteo_auto_641",
+        "nome": "Piora",
+        "luogo": "1960 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.5469,
+        "lon": 8.716,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_128",
+        "nome": "Fusio",
+        "luogo": "1300 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.4442,
+        "lon": 8.6631,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_129",
+        "nome": "Olivone",
+        "luogo": "930 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.5284,
+        "lon": 8.9429,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_74",
+        "nome": "Diga Luzzone",
+        "luogo": "1617 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.565,
+        "lon": 8.9606,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_auto_161",
+        "nome": "Chironico Cala",
+        "luogo": "1452 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.4164,
+        "lon": 8.8076,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_auto_221",
+        "nome": "Biasca",
+        "luogo": "293 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.3573,
+        "lon": 8.9589,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_122",
+        "nome": "Biasca Val Pontirone",
+        "luogo": "1405 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.3807,
+        "lon": 9.0489,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_121",
+        "nome": "Cavergno",
+        "luogo": "450 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.343,
+        "lon": 8.609,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_127",
+        "nome": "Maggia",
+        "luogo": "327 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.2441,
+        "lon": 8.7044,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_126",
+        "nome": "Camedo",
+        "luogo": "570 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.1544,
+        "lon": 8.6043,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_auto_162",
+        "nome": "Sonogno",
+        "luogo": "913 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.3485,
+        "lon": 8.7849,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_auto_661",
+        "nome": "Lavertezzo",
+        "luogo": "635 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.2644,
+        "lon": 8.8281,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_124",
+        "nome": "Gnosca",
+        "luogo": "247 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.238,
+        "lon": 9.0196,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "auto_65",
+        "nome": "Parusciana",
+        "luogo": "1265 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.2425,
+        "lon": 9.0552,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_75",
+        "nome": "Carena",
+        "luogo": "960 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.1675,
+        "lon": 9.0859,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_123",
+        "nome": "Giubiasco",
+        "luogo": "215 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.1741,
+        "lon": 8.9813,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_auto_842",
+        "nome": "Alpe di Neggia",
+        "luogo": "1395 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.1105,
+        "lon": 8.8454,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_79",
+        "nome": "Isone",
+        "luogo": "810 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.1337,
+        "lon": 8.9938,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "air_525 01 01",
+        "nome": "Camignolo",
+        "luogo": "435 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.1038,
+        "lon": 8.9315,
+        "proprietario": "UMAm"
+      },
+      {
+        "codice": "meteo_u_78",
+        "nome": "Colla",
+        "luogo": "1020 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.0975,
+        "lon": 9.0551,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_auto_926",
+        "nome": "Sonvico",
+        "luogo": "578 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.0597,
+        "lon": 8.9839,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_130",
+        "nome": "Arosio",
+        "luogo": "860 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.0475,
+        "lon": 8.9002,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_76",
+        "nome": "Novaggio",
+        "luogo": "620 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 46.008,
+        "lon": 8.8585,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_auto_183",
+        "nome": "Grancia",
+        "luogo": "310 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 45.9763,
+        "lon": 8.925,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_auto_463",
+        "nome": "Cabbio",
+        "luogo": "612 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 45.8964,
+        "lon": 9.0445,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_u_132",
+        "nome": "Mendrisio",
+        "luogo": "290 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 45.8881,
+        "lon": 8.9743,
+        "proprietario": "UCA"
+      },
+      {
+        "codice": "meteo_auto_966",
+        "nome": "Novazzano",
+        "luogo": "248 m",
+        "dominio": "meteo",
+        "param": "Prec",
+        "unita": "mm",
+        "bacino": "",
+        "lat": 45.8352,
+        "lon": 8.998,
+        "proprietario": "UCA"
+      }
+    ]
+  }
 }
