@@ -208,7 +208,7 @@
     "_nota": "Open-Meteo, servizio open non ufficiale; usato per la previsione puntuale su Lugano.",
     "lat": 46.0037,
     "lon": 8.9511,
-    "url": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,wind_speed_10m,wind_gusts_10m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_gusts_10m_max,weather_code&timezone=Europe%2FZurich&forecast_days=6&wind_speed_unit=kmh"
+    "url": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,wind_speed_10m,wind_gusts_10m,weather_code,freezing_level_height,snowfall&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_gusts_10m_max,weather_code,sunrise,sunset&timezone=Europe%2FZurich&forecast_days=6&wind_speed_unit=kmh"
   },
   "oasi": {
     "_nota": "OASI, Osservatorio ambientale della Svizzera italiana (www.ti.ch/oasi). Interfaccia REST ricavata dalle esportazioni; stazioni di proprietà UCA, pubblicabili con citazione. Latenza circa 1 h. Codici verificati il 05.11.2026. Pluviometri: Lugano (meteo_11), Scairolo (meteo_auto_801), Vedeggio ad Agno (803), Cassarate a Lugano (804) sono di MeteoSvizzera e non si possono ripubblicare via OASI.",
@@ -340,5 +340,6 @@
     "_elenco_stazioni": "docs/oasi_stazioni_*.json (da /web/rest/locations, 09.11.2026)",
     "ponte_url": "http://179.237.106.60/oasi/",
     "_nota_ponte": "ponte_url: server svizzero che rende disponibili i CSV OASI (vedi docs/vps.md). Vuoto o assente = lettura diretta da OASI."
-  }
+  },
+  "messaggio_url": "https://179-237-106-60.sslip.io/messaggio.json"
 }
