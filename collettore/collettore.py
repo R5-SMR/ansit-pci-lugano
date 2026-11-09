@@ -224,8 +224,9 @@ def pegel(st):
     if len(serie) >= 2:
         d = serie[-1] - serie[0]
         trend = "in aumento" if d > 0 else "in calo" if d < 0 else "stabile"
+    prev = previsione_ufam(st)
     return {"disponibile": True, "id": st["id"], "nome": st["nome"], "luogo": st["luogo"],
-            "tipo": st["tipo"], "parametro": st["param"], "unita": st["unita"],
+            "tipo": st["tipo"], "parametro": st["param"], "unita": st["unita"], "previsione": prev,
             "valore": round(valore, 2), "livello": livello, "soglie": st.get("soglie"),
             "lat": st.get("lat"), "lon": st.get("lon"),
             "trend_8h": trend, "serie_8h": [round(v, 2) for v in serie], "fonte": usato}
@@ -341,6 +342,78 @@ def oasi(st):
     return {**base, "valore": round(v_ult, 2), "serie_8h": [round(v, 2) for v in serie], "trend_8h": trend}
 
 
+# ---------------------------------------------------------------- UFAM: previsione idrologica (mediana, 25–75 %, min/max)
+def previsione_ufam(st):
+    """Legge il file del grafico delle previsioni (q_forecast per i fiumi, p_forecast per i laghi).
+    Restituisce i massimi attesi a 24 e 48 h della mediana e dello scenario peggiore, con il grado di pericolo."""
+    tipo = "p" if st["param"] == "P" else "q"
+    url = f"https://www.hydrodaten.admin.ch/plots/{tipo}_forecast/{st['id']}_{tipo}_forecast_it.json"
+    try:
+        js = scarica(url, "json", timeout=15)
+    except requests.exceptions.HTTPError as e:
+        if e.response is not None and e.response.status_code == 404:
+            return None          # nessuna previsione pubblicata per questa stazione
+        return {"disponibile": False, "motivo": f"HTTP {e.response.status_code if e.response is not None else '?'}"}
+    except Exception as e:
+        return {"disponibile": False, "motivo": str(e)[:80]}
+    GREZZI.setdefault("ufam_previsioni", {})[st["id"]] = js
+    serie = {}
+    try:
+        for tr in js["plot"]["data"]:
+            nome = str(tr.get("name", "")).lower()
+            xs, ys = tr.get("x", []), tr.get("y", [])
+            punti = [(_tempo(x), y) for x, y in zip(xs, ys) if isinstance(y, (int, float))]
+            punti = [(t, y) for t, y in punti if t is not None]
+            if "median" in nome or "mediana" in nome:
+                serie["mediana"] = punti
+            elif "max" in nome and "min" not in nome:
+                serie["max"] = punti
+            elif "75" in nome:
+                serie["p75"] = punti
+            elif "min" in nome and "max" in nome:
+                # una sola traccia min/max: tengo il massimo per sicurezza
+                serie.setdefault("max", punti)
+    except (KeyError, TypeError):
+        return {"disponibile": False, "motivo": "formato non riconosciuto"}
+    if not serie.get("mediana"):
+        return {"disponibile": False, "motivo": "mediana non trovata"}
+
+    def massimo(nome, ore):
+        fin = ADESSO + timedelta(hours=ore)
+        vals = [y for t, y in serie.get(nome, []) if ADESSO <= t <= fin]
+        return round(max(vals), 2) if vals else None
+
+    def grado(v):
+        if v is None or not st.get("soglie"):
+            return None
+        g = 1
+        for liv, soglia in sorted(st["soglie"].items(), key=lambda kv: int(kv[0])):
+            if v >= soglia:
+                g = int(liv)
+        return g
+
+    med24, med48 = massimo("mediana", 24), massimo("mediana", 48)
+    peggio48 = massimo("max", 48) or massimo("p75", 48)
+    futuro = [(t, y) for t, y in serie["mediana"] if t >= ADESSO]
+    passo = max(1, len(futuro) // 48)
+    emessa = re.search(r"\d{2}\.\d{2}\.\d{2,4} \d{2}:\d{2}", json.dumps(js.get("plot", {}).get("layout", {}), ensure_ascii=False))
+    return {"disponibile": True, "mediana_24h": med24, "mediana_48h": med48, "peggiore_48h": peggio48,
+            "grado_mediana_48h": grado(med48), "grado_peggiore_48h": grado(peggio48),
+            "serie_mediana_48h": [round(y, 2) for _, y in futuro[:96][::passo]],
+            "emessa": emessa.group(0) if emessa else None, "fonte": "UFAM, previsione d'insieme (21 corse)"}
+
+
+def _tempo(x):
+    """Converte l'asse temporale del grafico (ISO o epoch) in datetime UTC."""
+    try:
+        if isinstance(x, (int, float)):
+            return datetime.fromtimestamp(x / 1000 if x > 1e11 else x, timezone.utc)
+        t = datetime.fromisoformat(str(x).replace("Z", "+00:00"))
+        return t if t.tzinfo else t.replace(tzinfo=TZ).astimezone(timezone.utc)
+    except Exception:
+        return None
+
+
 # ---------------------------------------------------------------- Open-Meteo: previsione
 def previsione(lat=None, lon=None):
     p = CFG["previsione"]
@@ -441,26 +514,6 @@ def _ok(d, fonte):
     return False
 
 
-# ---------------------------------------------------------------- UFAM: scoperta dei dati di previsione (diagnostica)
-def scopri_previsione_ufam(id_stazione="2020"):
-    """Legge la pagina della stazione e registra nel log gli indirizzi dei file dati che contiene
-    (previsioni comprese). Serve a individuare l'endpoint delle previsioni, non ancora documentato."""
-    url = f"https://www.hydrodaten.admin.ch/it/seen-und-fluesse/stationen-und-daten/{id_stazione}"
-    try:
-        html = scarica(url, timeout=20)
-    except Exception as e:
-        log(f"UFAM pagina {id_stazione}: {str(e)[:120]}")
-        return
-    GREZZI[f"ufam_pagina_{id_stazione}"] = html[:400000]
-    trovati = sorted(set(re.findall(r'["\'(]((?:https?://[^"\')\s]+|/[^"\')\s]+)\.(?:json|csv|xml))["\')]', html)))
-    parole = [t for t in trovati if re.search(r"forecast|prognos|vorhersag|previs|plot", t, re.I)] or trovati
-    log(f"UFAM pagina {id_stazione}: {len(trovati)} riferimenti a file dati; candidati previsione: " + " | ".join(parole[:12]))
-    # attributi data-* che puntano a dati
-    attr = sorted(set(re.findall(r'(data-[a-z\-]*(?:url|src|source|json)[a-z\-]*)="([^"]+)"', html)))
-    if attr:
-        log("UFAM pagina: attributi dati: " + " | ".join(f"{a}={v[:80]}" for a, v in attr[:10]))
-
-
 # ---------------------------------------------------------------- quadro cantonale
 def cantone(dati_regione):
     """Produce sito/cantone.json riusando le stesse funzioni, con la configurazione cantonale."""
@@ -522,10 +575,6 @@ def main():
     dati["previsione"] = previsione()
     log("Previsione letta")
     dati["messaggio"] = messaggio()
-    try:
-        scopri_previsione_ufam("2020")
-    except Exception as e:
-        log(f"UFAM scoperta previsione: errore {e}")
 
     sito = BASE / "sito" / "dati.json"
     vecchio = json.loads(sito.read_text(encoding="utf-8")) if sito.exists() else None
