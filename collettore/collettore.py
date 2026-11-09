@@ -366,6 +366,19 @@ def previsione(lat=None, lon=None):
     giorni = [{"data": d["time"][i], "tmax": d["temperature_2m_max"][i], "tmin": d["temperature_2m_min"][i],
                "pioggia_mm": d["precipitation_sum"][i], "raffica_max": d["wind_gusts_10m_max"][i],
                "codice": d["weather_code"][i]} for i in range(len(d.get("time", [])))]
+    # zero termico e limite delle nevicate nelle prossime 48 ore (limite neve ≈ zero termico − 300 m)
+    zt = [v for v in h.get("freezing_level_height", [])[i0:i0 + 48] if isinstance(v, (int, float))]
+    nv = [v for v in h.get("snowfall", [])[i0:i0 + 48] if isinstance(v, (int, float))]
+    neve = {"zero_termico_min": round(min(zt)) if zt else None, "zero_termico_max": round(max(zt)) if zt else None,
+            "zero_termico_ora": round(zt[0]) if zt else None,
+            "limite_neve_min": max(0, round(min(zt) - 300, -1)) if zt else None,
+            "neve_48h_cm": round(sum(nv), 1) if nv else None, "nota": "limite neve stimato: zero termico − 300 m"}
+    # ore di luce di oggi e domani
+    luce = []
+    for i in range(min(2, len(d.get("time", [])))):
+        alba, tram = d["sunrise"][i][11:16], d["sunset"][i][11:16]
+        luce.append({"data": d["time"][i], "alba": alba, "tramonto": tram,
+                     "crepuscolo_mattino": _sposta(alba, -32), "crepuscolo_sera": _sposta(tram, 32)})
     massimi = {
         "raffica_kmh": max((o["raffica_kmh"] for o in orario), default=None),
         "pioggia_oraria_mm": max((o["pioggia_mm"] for o in orario), default=None),
@@ -373,7 +386,17 @@ def previsione(lat=None, lon=None):
         "temperatura": max((o["temperatura"] for o in orario), default=None),
     }
     return {"disponibile": True, "fonte": "Open-Meteo (non ufficiale)", "orario": orario,
-            "giorni": giorni, "massimi_12h": massimi}
+            "giorni": giorni, "massimi_12h": massimi, "neve_48h": neve, "luce": luce}
+
+
+def _sposta(hhmm, minuti):
+    """Sposta un orario HH:MM di n minuti (crepuscolo civile ≈ 32 min prima dell'alba / dopo il tramonto alle nostre latitudini in inverno)."""
+    try:
+        hh, mm = map(int, hhmm.split(":"))
+        t = (hh * 60 + mm + minuti) % 1440
+        return f"{t // 60:02d}:{t % 60:02d}"
+    except Exception:
+        return None
 
 
 # ---------------------------------------------------------------- variazioni rispetto al ciclo precedente
@@ -478,6 +501,7 @@ def main():
     log("Rete cantonale OASI letta")
     dati["previsione"] = previsione()
     log("Previsione letta")
+    dati["messaggio"] = messaggio()
 
     sito = BASE / "sito" / "dati.json"
     vecchio = json.loads(sito.read_text(encoding="utf-8")) if sito.exists() else None
@@ -489,6 +513,17 @@ def main():
         cantone(dati)
     except Exception as e:
         log(f"Quadro cantonale: errore {e}")
+
+
+def messaggio():
+    url = CFG.get("messaggio_url")
+    if not url:
+        return None
+    try:
+        return scarica(url, "json", timeout=8)
+    except Exception as e:
+        log(f"Messaggio in evidenza non letto: {str(e)[:100]}")
+        return None
 
     t = ADESSO.astimezone(TZ)
     arch = BASE / "archivio" / t.strftime("%Y/%m/%d")
