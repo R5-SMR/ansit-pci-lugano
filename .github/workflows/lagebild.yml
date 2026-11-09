@@ -6,7 +6,7 @@ on:
   workflow_dispatch:            # avvio manuale dal pulsante "Run workflow"
   push:
     branches: [main]
-    paths: [collettore/**, config/**, sito/index.html, sito/cantone.html, .github/workflows/**]
+    paths: [collettore/**, config/**, sito/*.html, sito/*.geojson, sito/carta.json, sito/carta_ti.json, .github/workflows/**]
 
 permissions:
   contents: write
@@ -64,11 +64,16 @@ jobs:
             done
           fi
 
-      - uses: actions/configure-pages@v5
+      # Pubblicazione su GitHub Pages solo quando cambiano le pagine (caricamento di file):
+      # i dati di ogni ciclo vengono letti dal cockpit direttamente dal repository.
+      - if: github.event_name == 'push'
+        uses: actions/configure-pages@v5
 
-      - uses: actions/upload-pages-artifact@v3
+      - if: github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: sito
 
-      - id: deploy
+      - if: github.event_name == 'push'
+        id: deploy
         uses: actions/deploy-pages@v4
