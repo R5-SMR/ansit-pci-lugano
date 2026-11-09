@@ -73,7 +73,9 @@
   .ctrl-carta a { font-size: 16px !important; }
   .ctrl-carta a:last-child { border-bottom: 0 !important; }
   .leaflet-container { font: inherit; }
-  .ctrl-carta a.testo { font-size: 11px !important; font-weight: 600; line-height: 36px !important; letter-spacing: .02em; }
+  .ctrl-carta a.testo { font-size: 11px !important; font-weight: 600; line-height: 36px !important; letter-spacing: .02em; width: 60px !important; }
+  .ctrl-carta { display: flex; flex-direction: column; align-items: stretch; }
+  .ctrl-carta a:not(.testo) { width: 60px !important; }
   .ctrl-carta a.on { background: var(--testo) !important; color: var(--carta) !important; }
   .sfondo-bianco { background: var(--carta) !important; }
   .nome-distretto { background: none; border: 0; box-shadow: none; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muto); text-shadow: 0 0 3px var(--carta), 0 0 4px var(--carta); white-space: nowrap; }
@@ -179,6 +181,7 @@
 <script>
 (function () {
   const $ = id => document.getElementById(id);
+  const BASE_DATI = "https://raw.githubusercontent.com/R5-SMR/ansit-pci-lugano/main/sito/";
   const t = v => (v === null || v === undefined || Number.isNaN(v)) ? "—" : v;
   const livHtml = (l, nd) => nd ? '<span class="liv nd">n/d</span>' : `<span class="liv l${l}">${l}</span>`;
   const CODICI = {0:"Sereno",1:"Poco nuvoloso",2:"Parz. nuvoloso",3:"Coperto",45:"Nebbia",48:"Nebbia",51:"Pioviggine",53:"Pioviggine",55:"Pioviggine",61:"Pioggia debole",63:"Pioggia",65:"Pioggia forte",71:"Neve debole",73:"Neve",75:"Neve forte",80:"Rovesci",81:"Rovesci",82:"Rovesci forti",95:"Temporale",96:"Temporale con grandine",99:"Temporale con grandine"};
@@ -322,7 +325,10 @@
 
   async function carica() {
     try {
-      const r = await fetch("dati.json?_=" + Date.now(), {cache: "no-store"});
+      // i dati vengono letti dal repository (aggiornati al commit del collettore); se non raggiungibile, dalla copia pubblicata
+      let r = null;
+      try { r = await fetch(BASE_DATI + "dati.json?_=" + Date.now(), {cache: "no-store"}); } catch (e) { r = null; }
+      if (!r || !r.ok) r = await fetch("dati.json?_=" + Date.now(), {cache: "no-store"});
       if (!r.ok) throw new Error("HTTP " + r.status);
       dati = await r.json();
       disegna();
