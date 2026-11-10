@@ -294,6 +294,7 @@
   const t = v => (v === null || v === undefined || Number.isNaN(v)) ? "—" : v;
   const livHtml = (l, nd) => nd ? '<span class="liv nd">n/d</span>' : `<span class="liv l${l}">${l}</span>`;
   const CODICI = {0:"Sereno",1:"Poco nuvoloso",2:"Parz. nuvoloso",3:"Coperto",45:"Nebbia",48:"Nebbia",51:"Pioviggine",53:"Pioviggine",55:"Pioviggine",61:"Pioggia debole",63:"Pioggia",65:"Pioggia forte",71:"Neve debole",73:"Neve",75:"Neve forte",80:"Rovesci",81:"Rovesci",82:"Rovesci forti",95:"Temporale",96:"Temporale con grandine",99:"Temporale con grandine"};
+  let eraStantio = null;
   let dati = null, carta = null;
   // spostamenti manuali delle etichette per i Comuni piccoli (dx, dy in unità della carta)
   const OFFSET = {"Vezia": [-22, -4], "Savosa": [14, -12], "Massagno": [-4, 8], "Porza": [10, -6], "Canobbio": [18, 4], "Comano": [-8, -10],
@@ -473,11 +474,16 @@
     }
   }
 
+  function intestazione(eta, stantio) {
+    $("stato").textContent = `Aggiornato ${dati.generato_locale} (${eta} min fa)` + (stantio ? " – DATI NON AGGIORNATI, considerare non disponibili" : "");
+    $("stato").className = "stato" + (stantio ? " vecchio" : "");
+  }
+
   function disegna() {
     const eta = Math.round((Date.now() - new Date(dati.generato).getTime()) / 60000);
     const stantio = eta > dati.dati_stantii_minuti;
-    $("stato").textContent = `Aggiornato ${dati.generato_locale} (${eta} min fa)` + (stantio ? " – DATI NON AGGIORNATI, considerare non disponibili" : "");
-    $("stato").className = "stato" + (stantio ? " vecchio" : "");
+    eraStantio = stantio;
+    intestazione(eta, stantio);
     $("minuti-stantio").textContent = dati.dati_stantii_minuti;
 
     // variazioni
@@ -633,7 +639,23 @@
   setInterval(caricaMessaggio, 60 * 1000);
   $("aggiorna").addEventListener("click", carica);
   caricaCarta().then(carica).then(caricaMessaggio);
-  setInterval(carica, 5 * 60 * 1000);
+  // Aggiornamento automatico: ogni 2 minuti, e subito quando la pagina torna in primo piano o la rete ritorna
+  // (su telefoni, tablet e schede in secondo piano il browser sospende i timer).
+  let ultimoTentativo = Date.now();
+  const ricarica = () => { ultimoTentativo = Date.now(); carica(); caricaMessaggio(); };
+  setInterval(ricarica, 2 * 60 * 1000);
+  const alRitorno = () => { if (document.visibilityState === "visible" && Date.now() - ultimoTentativo > 60 * 1000) ricarica(); };
+  document.addEventListener("visibilitychange", alRitorno);
+  window.addEventListener("focus", alRitorno);
+  window.addEventListener("pageshow", alRitorno);
+  window.addEventListener("online", alRitorno);
+  // Il contatore «min fa» avanza da solo; se nel frattempo i dati superano la soglia, la pagina passa a «non aggiornati».
+  setInterval(() => {
+    if (!dati) return;
+    const eta = Math.round((Date.now() - new Date(dati.generato).getTime()) / 60000);
+    const stantio = eta > dati.dati_stantii_minuti;
+    if (stantio !== eraStantio) disegna(); else intestazione(eta, stantio);
+  }, 30 * 1000);
 })();
 </script>
 </body>

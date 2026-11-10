@@ -159,6 +159,7 @@
   const BASE_DATI = "https://raw.githubusercontent.com/R5-SMR/ansit-pci-lugano/main/sito/";
   const t = v => (v === null || v === undefined || Number.isNaN(v)) ? "—" : v;
   const livHtml = (l, nd) => (nd || l == null) ? '<span class="liv nd">n/d</span>' : `<span class="liv l${l}">${l}</span>`;
+  let eraStantio = null;
   let dati = null, carta = null, ultimoGenerato = null;
 
   function spark(serie, soglia) {
@@ -258,13 +259,18 @@
     }
   }
 
+  function intestazione(eta, stantio) {
+    $("stato").textContent = `Aggiornato ${dati.generato_locale} (${eta} min fa)`;
+    $("banner").classList.toggle("on", stantio);
+  }
+
   function disegna() {
     const eta = Math.round((Date.now() - new Date(dati.generato).getTime()) / 60000);
     const stantio = eta > dati.dati_stantii_minuti;
     const nuovo = ultimoGenerato && ultimoGenerato !== dati.generato;
     ultimoGenerato = dati.generato;
-    $("stato").textContent = `Aggiornato ${dati.generato_locale} (${eta} min fa)`;
-    $("banner").classList.toggle("on", stantio);
+    eraStantio = stantio;
+    intestazione(eta, stantio);
 
     // stato delle fonti
     const okAllerte = Object.values(dati.allerte).some(a => a.disponibile);
@@ -412,7 +418,23 @@
   }
   setInterval(caricaMessaggio, 60 * 1000);
   caricaCarta().then(carica).then(caricaMessaggio);
-  setInterval(carica, 5 * 60 * 1000);
+  // Aggiornamento automatico: ogni 2 minuti, e subito quando la pagina torna in primo piano o la rete ritorna
+  // (su telefoni, tablet e schede in secondo piano il browser sospende i timer).
+  let ultimoTentativo = Date.now();
+  const ricarica = () => { ultimoTentativo = Date.now(); carica(); caricaMessaggio(); };
+  setInterval(ricarica, 2 * 60 * 1000);
+  const alRitorno = () => { if (document.visibilityState === "visible" && Date.now() - ultimoTentativo > 60 * 1000) ricarica(); };
+  document.addEventListener("visibilitychange", alRitorno);
+  window.addEventListener("focus", alRitorno);
+  window.addEventListener("pageshow", alRitorno);
+  window.addEventListener("online", alRitorno);
+  // Il contatore «min fa» avanza da solo; se nel frattempo i dati superano la soglia, la pagina passa a «non aggiornati».
+  setInterval(() => {
+    if (!dati) return;
+    const eta = Math.round((Date.now() - new Date(dati.generato).getTime()) / 60000);
+    const stantio = eta > dati.dati_stantii_minuti;
+    if (stantio !== eraStantio) disegna(); else intestazione(eta, stantio);
+  }, 30 * 1000);
 })();
 </script>
 </body>
