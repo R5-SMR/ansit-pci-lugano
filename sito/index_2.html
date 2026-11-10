@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Analisi della situazione · PCi Lugano Città</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin=""></script>
+<style>
+  :root {
+    --sfondo: #f3f4f2; --carta: #ffffff; --testo: #1b1f1d; --muto: #5c645f; --linea: #d8dcd9;
+    --l1: #e4e8e5; --l2: #f5d442; --l3: #f08a1f; --l4: #d8322c; --l5: #7a1b3a;
+    --nd: repeating-linear-gradient(135deg,#dfe3e0 0 6px,#cfd4d0 6px 12px);
+    --ok: #2e7d4f; --attenzione: #b35c00; --allarme: #b3261e;
+    box-sizing: border-box; padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    color-scheme: dark;
+    --sfondo: #161917; --carta: #202522; --testo: #ecefed; --muto: #a2aaa5; --linea: #38403b;
+    --l1: #2c332f; --nd: repeating-linear-gradient(135deg,#2c332f 0 6px,#363d39 6px 12px);
+  }}
+  * { box-sizing: inherit; }
+  html, body { margin: 0; background: var(--sfondo); color: var(--testo); }
+  body { font: 15px/1.45 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  header { position: sticky; top: env(safe-area-inset-top,0px); z-index: 5; background: var(--carta); border-bottom: 1px solid var(--linea); padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+  header h1 { font-size: 22px; margin: 0; font-weight: 700; letter-spacing: -.01em; }
+  header h1 small { display: block; font-size: 12px; font-weight: 500; color: var(--muto); text-transform: uppercase; letter-spacing: .06em; }
+  .scelta { display: inline-flex; border: 1px solid var(--linea); border-radius: 8px; overflow: hidden; }
+  .scelta a { padding: 7px 14px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--muto); background: var(--carta); }
+  .scelta a + a { border-left: 1px solid var(--linea); }
+  .scelta a.attiva { background: var(--testo); color: var(--carta); }
+  .scelta a:hover:not(.attiva) { background: var(--sfondo); }
+  header .stato { font-size: 13px; color: var(--muto); font-variant-numeric: tabular-nums; }
+  #messaggio { display: none; padding: 10px 16px; font-size: 16px; border-left: 6px solid var(--muto); background: var(--carta); border-bottom: 1px solid var(--linea); }
+  #messaggio.on { display: block; } #messaggio.attenzione { border-left-color: var(--l3); background: #fff3c4; color: #1b1f1d; }
+  #messaggio.urgente { border-left-color: var(--l4); background: var(--l4); color: #fff; font-weight: 600; }
+  #messaggio small { opacity: .8; margin-left: 10px; font-size: 13px; }
+  header .stato.vecchio { color: var(--allarme); font-weight: 600; }
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 16px 60px; display: grid; gap: 22px; }
+  section h2 { font-size: 15px; font-weight: 600; margin: 0 0 8px; }
+  section h2 small { font-weight: 400; color: var(--muto); margin-left: 8px; font-size: 13px; }
+  .riga-comuni { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+  .comune { background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; min-height: 46px; }
+  .comune span { font-weight: 500; }
+  .liv { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; border-radius: 15px; font-weight: 700; font-size: 14px; color: #111; }
+  .liv.l1 { background: var(--l1); color: var(--muto); } .liv.l2 { background: var(--l2); } .liv.l3 { background: var(--l3); }
+  .liv.l4 { background: var(--l4); color: #fff; } .liv.l5 { background: var(--l5); color: #fff; }
+  .liv.nd { background: var(--nd); color: var(--muto); font-size: 12px; }
+  .tabella { width: 100%; border-collapse: collapse; background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; overflow: hidden; }
+  .tabella th, .tabella td { text-align: left; padding: 7px 10px; border-top: 1px solid var(--linea); font-size: 14px; vertical-align: top; }
+  .tabella th { font-weight: 600; border-top: 0; color: var(--muto); font-size: 13px; }
+  .tabella td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .scorri { overflow-x: auto; }
+  .nd-box { background: var(--nd); border-radius: 6px; padding: 10px 12px; color: var(--muto); font-size: 14px; }
+  .ok-box { background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 10px 12px; }
+  .misure { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 6px; }
+  .misura { background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 8px 10px; }
+  .misura b { display: block; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .misura span { color: var(--muto); font-size: 13px; }
+  ul.lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+  ul.lista li { background: var(--carta); border: 1px solid var(--linea); border-left-width: 5px; border-radius: 6px; padding: 8px 12px; }
+  li.peggiora { border-left-color: var(--allarme); } li.migliora { border-left-color: var(--ok); } li.info { border-left-color: var(--linea); }
+  .allerta { border-left-width: 5px; }
+  .allerta.l2 { border-left-color: var(--l2); } .allerta.l3 { border-left-color: var(--l3); } .allerta.l4 { border-left-color: var(--l4); } .allerta.l5 { border-left-color: var(--l5); }
+  .allerta small { color: var(--muto); display: block; }
+  .nota { color: var(--muto); font-size: 13px; margin-top: 6px; }
+  .carta-box { background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 8px; }
+  #mappa { height: min(70vh, 560px); border-radius: 4px; background: #e6e9e7; position: relative; z-index: 0; }
+  #mappa .etichetta-peg { background: var(--carta); border: 1.5px solid var(--testo); border-radius: 50%; width: 22px; height: 22px; line-height: 20px; text-align: center; font-weight: 700; font-size: 12px; color: var(--testo); }
+  #mappa .etichetta-peg.l2 { background: var(--l2); } #mappa .etichetta-peg.l3 { background: var(--l3); } #mappa .etichetta-peg.l4 { background: var(--l4); color: #fff; } #mappa .etichetta-peg.l5 { background: var(--l5); color: #fff; }
+  #mappa .etichetta-peg.nd { background: var(--nd); }
+  #mappa .etichetta-oasi.punto { width: 9px; height: 9px; padding: 0; border-radius: 50%; background: var(--muto); border-color: var(--carta); }
+  #mappa .etichetta-oasi { background: var(--carta); border: 1.5px solid var(--muto); border-radius: 3px; font-size: 11px; padding: 1px 4px; white-space: nowrap; color: var(--testo); }
+  #mappa .nome-comune { background: none; border: 0; box-shadow: none; font-size: 11px; font-weight: 600; color: var(--testo); text-shadow: 0 0 3px var(--carta), 0 0 3px var(--carta); white-space: nowrap; }
+  .leaflet-control-zoom a, .ctrl-carta a { width: 36px !important; height: 36px !important; line-height: 36px !important; font-size: 20px !important; font-weight: 600; color: var(--testo) !important; background: var(--carta) !important; border-bottom: 1px solid var(--linea) !important; text-decoration: none; text-align: center; display: block; }
+  .ctrl-carta { background: var(--carta); border-radius: 4px; box-shadow: 0 1px 5px rgba(0,0,0,.4); overflow: hidden; }
+  .ctrl-carta a { font-size: 16px !important; }
+  .ctrl-carta a:last-child { border-bottom: 0 !important; }
+  .leaflet-container { font: inherit; }
+  .leaflet-interactive:focus, .leaflet-interactive:focus-visible { outline: none; }
+  .ctrl-carta a.testo { font-size: 11px !important; font-weight: 600; line-height: 36px !important; letter-spacing: .02em; width: 60px !important; }
+  .ctrl-carta { display: flex; flex-direction: column; align-items: stretch; }
+  .ctrl-carta a:not(.testo) { width: 60px !important; }
+  .ctrl-carta a.on { background: var(--testo) !important; color: var(--carta) !important; }
+  .sfondo-bianco { background: var(--carta) !important; }
+  .nome-distretto { background: none; border: 0; box-shadow: none; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muto); text-shadow: 0 0 3px var(--carta), 0 0 4px var(--carta); white-space: nowrap; }
+  @media (prefers-color-scheme: dark) { #mappa .leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); } #mappa { background: #1e2320; } }
+  #carta svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; }
+  #carta path.ctx { fill: var(--linea); stroke: var(--carta); stroke-width: 1; opacity: .35; }
+  #carta path.com { stroke: var(--testo); stroke-width: .8; cursor: pointer; }
+  #carta path.com.l1 { fill: var(--carta); } #carta path.com.l2 { fill: var(--l2); } #carta path.com.l3 { fill: var(--l3); }
+  #carta path.com.l4 { fill: var(--l4); } #carta path.com.l5 { fill: var(--l5); } #carta path.com.nd { fill: url(#tratteggio); }
+  #carta path.com.scelto { stroke-width: 3; }
+  #carta text { font-size: 11px; fill: var(--testo); pointer-events: none; paint-order: stroke; stroke: var(--carta); stroke-width: 3px; stroke-linejoin: round; }
+  .legenda { display: flex; flex-wrap: wrap; gap: 10px 14px; font-size: 13px; color: var(--muto); margin-top: 6px; justify-content: center; }
+  .legenda i { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 4px; border: 1px solid var(--linea); }
+  .legenda i.l1 { background: var(--l1); } .legenda i.l2 { background: var(--l2); } .legenda i.l3 { background: var(--l3); }
+  .legenda i.l4 { background: var(--l4); } .legenda i.l5 { background: var(--l5); } .legenda i.nd { background: var(--nd); }
+  svg.spark { width: 120px; height: 32px; display: block; }
+  svg.spark path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+  svg.spark rect { fill: currentColor; opacity: .55; }
+  svg.spark line { stroke: var(--l3); stroke-width: 1; stroke-dasharray: 3 3; }
+  .andamento { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 6px; }
+  .andamento .misura svg.spark { width: 100%; height: 48px; margin-top: 4px; }
+  footer { color: var(--muto); font-size: 13px; border-top: 1px solid var(--linea); padding-top: 12px; }
+  select { font: inherit; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--linea); background: var(--carta); color: var(--testo); }
+  button { font: inherit; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--linea); background: var(--carta); color: var(--testo); cursor: pointer; }
+  button:focus-visible, select:focus-visible { outline: 2px solid var(--l3); outline-offset: 2px; }
+  @media (prefers-reduced-motion: no-preference) { .comune, li { transition: background .15s; } }
+
+  /* ---- adattamento allo schermo ---- */
+  header .riga1, header .riga2 { display: contents; }
+  .solo-m { display: none; }
+  section { scroll-margin-top: 84px; }
+  #sintesi { display: none; }
+  details.richiudibile > summary { list-style: none; pointer-events: none; }
+  details.richiudibile > summary::-webkit-details-marker { display: none; }
+  details.richiudibile > summary h2 { display: inline-block; }
+  .riassunto-l1 { display: none; }
+
+  @media (max-width: 640px) {
+    .solo-m { display: inline; } .no-m { display: none; }
+    body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top,0px); background: var(--carta); z-index: 10; }
+    /* intestazione: la prima riga scorre via, resta fissa solo la riga con l'ora di aggiornamento */
+    header { display: block; padding: 0; top: calc(env(safe-area-inset-top,0px) - 48px); }
+    header .riga1 { display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 12px; }
+    header .riga2 { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 2px 6px 2px 12px; border-top: 1px solid var(--linea); }
+    header h1 { font-size: 16px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    header h1 small { display: none; }
+    .scelta a { padding: 9px 11px; font-size: 13px; }
+    header .stato { flex: 1; font-size: 12.5px; line-height: 1.25; }
+    #aggiorna { margin-left: 0 !important; min-width: 44px; min-height: 40px; border: 0; background: none; font-size: 22px; line-height: 1; padding: 0; }
+    #messaggio { padding: 10px 12px; font-size: 15px; }
+    #messaggio small { display: block; margin: 2px 0 0; }
+
+    main { padding: 10px 12px 40px; gap: 18px; }
+    section { scroll-margin-top: 56px; }
+    section h2 small { display: block; margin: 1px 0 0; font-size: 12.5px; }
+    select { font-size: 16px; min-height: 44px; max-width: 100%; }
+    button { min-height: 44px; }
+
+    /* colpo d'occhio */
+    #sintesi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    #sintesi a { background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 8px 2px 6px; min-height: 64px; text-decoration: none; color: var(--testo); display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 4px; text-align: center; }
+    #sintesi a b { font-size: 17px; font-weight: 700; height: 30px; display: flex; align-items: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    #sintesi a span.et { font-size: 11px; color: var(--muto); line-height: 1.15; }
+    #sintesi a.evidenza { border-color: var(--allarme); border-width: 2px; }
+
+    /* Comuni: per esteso solo quelli con allerta o senza dato */
+    .riga-comuni { grid-template-columns: 1fr 1fr; }
+    .comune.calmo { display: none; }
+    .riassunto-l1 { display: block; grid-column: 1 / -1; background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 8px 10px; color: var(--muto); font-size: 13.5px; }
+    .riassunto-l1 b { color: var(--testo); }
+
+    /* carta */
+    #mappa { height: min(52vh, 440px); }
+    #mappa .nome-comune { font-size: 10px; }
+    .carta-box { padding: 4px; }
+
+    /* tabelle delle stazioni: una scheda per riga */
+    .tabella.schede, .tabella.schede tbody { display: block; background: none; border: 0; border-radius: 0; overflow: visible; }
+    .tabella.schede tr { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; }
+    .tabella.schede tr:first-child { display: none; }
+    .tabella.schede td { display: block; border: 0; padding: 0; }
+    .tabella.schede td:empty, .tabella.schede .c-bac, .tabella.schede .c-mis, .tabella.schede .c-ril { display: none; }
+    .tabella.schede .c-nome { font-weight: 600; grid-column: 1; }
+    .tabella.schede .c-nome small { font-weight: 400; margin-left: 6px; }
+    .tabella.schede .c-nome > br { display: none; }
+    .solo-m.blocco { display: block; }
+    #oasi.schede .c-nome { grid-column: 1 / -1; }
+    .tabella.schede .c-liv { grid-column: 2; grid-row: 1; justify-self: end; }
+    .tabella.schede .c-val { grid-column: 1; text-align: left; font-size: 20px; font-weight: 600; }
+    .tabella.schede .c-and { grid-column: 2; text-align: right; }
+    .tabella.schede .c-and svg.spark { margin-left: auto; }
+    .tabella.schede .c-prev, .tabella.schede .c-nd { grid-column: 1 / -1; }
+    .tabella.schede .c-prev { border-top: 1px solid var(--linea); margin-top: 4px; padding-top: 5px; font-size: 13.5px; }
+    .tabella.schede .c-prev::before { content: "Previsione UFAM 48 h: "; color: var(--muto); }
+    .tabella.schede .c-prev span { white-space: normal !important; }
+    /* pioggia: quattro cumulate affiancate */
+    #oasi-pioggia.schede tr { grid-template-columns: repeat(4, 1fr); }
+    #oasi-pioggia.schede .c-nome, #oasi-pioggia.schede .c-and, #oasi-pioggia.schede .c-nd { grid-column: 1 / -1; }
+    #oasi-pioggia.schede .c-p { text-align: left; font-size: 16px; font-weight: 600; white-space: nowrap; }
+    #oasi-pioggia.schede .c-p::before { content: attr(data-e); display: block; font-size: 11.5px; font-weight: 400; color: var(--muto); }
+    #oasi-pioggia.schede .c-and svg.spark { width: 100%; height: 18px; margin-top: 2px; }
+    .vecchio-m { color: var(--allarme); }
+
+    /* tabelle di previsione: più strette */
+    .tabella.stretta th, .tabella.stretta td { padding: 6px 5px; font-size: 13px; }
+    .tabella.stretta .c-vento { display: none; }
+
+    /* sezioni secondarie richiudibili */
+    details.richiudibile > summary { pointer-events: auto; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 44px; background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 10px 12px; }
+    details.richiudibile > summary h2 { margin: 0; }
+    details.richiudibile > summary::after { content: "+"; font-size: 20px; line-height: 1; color: var(--muto); font-weight: 600; }
+    details.richiudibile[open] > summary { margin-bottom: 8px; }
+    details.richiudibile[open] > summary::after { content: "−"; }
+    footer { font-size: 12.5px; }
+  }
+  @media (max-width: 360px) { #sintesi { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="riga1">
+    <h1><small>Protezione civile Regione Lugano Città</small>Analisi della situazione</h1>
+    <nav class="scelta" aria-label="Area"><a class="attiva" href="index.html" aria-current="page"><span class="no-m">Regione Lugano Città</span><span class="solo-m">Regione</span></a><a href="cantone.html">Ticino</a></nav>
+  </div>
+  <div class="riga2">
+    <div class="stato" id="stato">Caricamento dei dati…</div>
+    <button id="aggiorna" type="button" style="margin-left:auto" aria-label="Aggiorna i dati" title="Aggiorna i dati"><span class="no-m">Aggiorna</span><span class="solo-m" aria-hidden="true">↻</span></button>
+  </div>
+</header>
+<div id="messaggio"></div>
+
+<main>
+  <nav id="sintesi" aria-label="Sintesi della situazione"></nav>
+
+  <section id="variazioni">
+    <h2>Cosa è cambiato<small id="var-sub"></small></h2>
+    <ul class="lista" id="var-lista"></ul>
+  </section>
+
+  <section id="sez-allerte">
+    <h2>Allerte MeteoSvizzera per Comune<small>livello massimo attivo, scala 1–5</small></h2>
+    <div class="riga-comuni" id="comuni"></div>
+    <p class="nota">Fonte: MeteoSvizzera (tramite backend dell'app, non ancora API ufficiale). Le allerte fanno fede nella forma pubblicata su meteosvizzera.admin.ch e nel Portale pericoli naturali.</p>
+  </section>
+
+  <section>
+    <h2>Carta del comprensorio<small id="carta-sub">colore = livello di allerta massimo; toccare un Comune per il dettaglio</small></h2>
+    <div class="carta-box"><div id="mappa"></div><div id="carta" hidden></div>
+      <div class="legenda"><span><i class="l1"></i>1 nessun pericolo</span><span><i class="l2"></i>2</span><span><i class="l3"></i>3</span><span><i class="l4"></i>4</span><span><i class="l5"></i>5</span><span><i class="nd"></i>n/d</span></div>
+    </div>
+    <p class="nota">Sfondo: carta nazionale grigia © swisstopo. Confini comunali: swissBOUNDARIES3D © swisstopo, semplificati.</p>
+  </section>
+
+  <section id="sez-dettaglio">
+    <h2>Dettaglio allerte <select id="scelta-comune"></select></h2>
+    <ul class="lista" id="dettaglio"></ul>
+  </section>
+
+  <section id="sez-alertswiss">
+    <h2>Alertswiss<small id="aw-sub"></small></h2>
+    <div id="alertswiss"></div>
+  </section>
+
+  <section id="sez-acque">
+    <h2>Corsi d'acqua e lago<small>UFAM, livelli di pericolo rispetto alle soglie configurate</small></h2>
+    <div class="scorri"><table class="tabella schede" id="pegel"></table></div>
+  </section>
+
+  <section id="sez-oasi">
+    <h2>Rete cantonale a monte<small>OASI / Ufficio dei corsi d'acqua; dati provvisori, latenza 30–60 min</small></h2>
+    <h3 style="font-size:14px;margin:8px 0 4px;color:var(--muto)">Pioggia per bacino</h3>
+    <div class="scorri"><table class="tabella schede" id="oasi-pioggia"></table></div>
+    <h3 style="font-size:14px;margin:12px 0 4px;color:var(--muto)">Portate e livelli a monte</h3>
+    <div class="scorri"><table class="tabella schede" id="oasi"></table></div>
+    <p class="nota">Fonte: Cantone Ticino, Ufficio dei corsi d'acqua, tramite OASI. Per queste stazioni non esistono gradi di pericolo ufficiali: leggere valore e andamento.</p>
+  </section>
+
+  <section>
+    <details class="richiudibile" open>
+    <summary><h2>Misure attuali<small id="mis-sub"></small></h2></summary>
+    <div class="misure" id="misure"></div>
+    <div class="andamento" id="andamento" style="margin-top:6px"></div>
+    </details>
+  </section>
+
+  <section>
+    <details class="richiudibile" open>
+    <summary><h2>Prossime 12 ore<small id="prev-sub"></small></h2></summary>
+    <div class="misure" id="massimi" style="margin-bottom:8px"></div>
+    <div class="scorri"><table class="tabella stretta" id="orario"></table></div>
+    </details>
+  </section>
+
+  <section>
+    <details class="richiudibile" open>
+    <summary><h2>Prossimi giorni</h2></summary>
+    <div class="scorri"><table class="tabella stretta" id="giorni"></table></div>
+    </details>
+  </section>
+
+  <footer>
+    Prototipo interno a scopo di istruzione. Non è un canale di allerta. Fonti: MeteoSvizzera, Alertswiss, UFAM Hydrodaten, Open-Meteo. Nessuno stato «verde» viene mostrato se il dato manca o è più vecchio di <span id="minuti-stantio"></span> minuti.
+  </footer>
+</main>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const BASE_DATI = "https://raw.githubusercontent.com/R5-SMR/ansit-pci-lugano/main/sito/";
+  const t = v => (v === null || v === undefined || Number.isNaN(v)) ? "—" : v;
+  const livHtml = (l, nd) => nd ? '<span class="liv nd">n/d</span>' : `<span class="liv l${l}">${l}</span>`;
+  const CODICI = {0:"Sereno",1:"Poco nuvoloso",2:"Parz. nuvoloso",3:"Coperto",45:"Nebbia",48:"Nebbia",51:"Pioviggine",53:"Pioviggine",55:"Pioviggine",61:"Pioggia debole",63:"Pioggia",65:"Pioggia forte",71:"Neve debole",73:"Neve",75:"Neve forte",80:"Rovesci",81:"Rovesci",82:"Rovesci forti",95:"Temporale",96:"Temporale con grandine",99:"Temporale con grandine"};
+  let dati = null, carta = null;
+  // spostamenti manuali delle etichette per i Comuni piccoli (dx, dy in unità della carta)
+  const OFFSET = {"Vezia": [-22, -4], "Savosa": [14, -12], "Massagno": [-4, 8], "Porza": [10, -6], "Canobbio": [18, 4], "Comano": [-8, -10],
+                  "Sorengo": [-10, -4], "Muzzano": [-12, 8], "Grancia": [12, 4], "Vico Morcote": [22, 10], "Morcote": [-16, 2], "Paradiso": [8, -4]};
+
+  let mappa = null, strato = null, stratoPunti = null, geo = null, inquadraCarta = null;
+  // adattamento allo schermo: «stretto» = telefono in verticale; «tattile» = schermo a tocco senza mouse
+  const mqStretto = window.matchMedia("(max-width: 640px)");
+  const stretto = () => mqStretto.matches;
+  const tattile = window.matchMedia("(pointer: coarse)").matches;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+  async function caricaCarta() {
+    try { const r = await fetch("comuni.geojson", {cache: "force-cache"}); if (r.ok) geo = await r.json(); } catch (e) { geo = null; }
+    if (!geo || typeof L === "undefined") {   // riserva: carta SVG interna
+      try { const r = await fetch("carta.json", {cache: "force-cache"}); if (r.ok) carta = await r.json(); } catch (e) { carta = null; }
+      $("mappa").hidden = true; $("carta").hidden = false;
+      return;
+    }
+    // sugli schermi a tocco un dito scorre la pagina, due dita spostano e ingrandiscono la carta
+    mappa = L.map("mappa", {zoomSnap: .25, zoomControl: false, attributionControl: true, scrollWheelZoom: false, dragging: !tattile});
+    if (tattile) $("carta-sub").textContent += "; due dita per spostare la carta";
+    tileLayer = L.tileLayer("https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg",
+      {attribution: "© swisstopo", maxZoom: 17, minZoom: 9});
+    strato = L.geoJSON(geo, {style: () => ({color: css("--testo"), weight: 1, fillOpacity: .45}),
+      onEachFeature: (f, l) => {
+        l.on("click", () => { $("scelta-comune").value = f.properties.nome; dettaglio(); stileComuni(); });
+        l.bindTooltip(f.properties.nome, {permanent: true, direction: "center", className: "nome-comune"});
+      }}).addTo(mappa);
+    stratoPunti = L.layerGroup().addTo(mappa);
+    const inquadra = () => { mappa.invalidateSize(); mappa.fitBounds(strato.getBounds(), {padding: [6, 6]}); };
+    inquadra(); setTimeout(inquadra, 300); setTimeout(inquadra, 1500); window.addEventListener("load", inquadra);
+    inquadraCarta = inquadra;
+    controlloCarta(mappa, inquadra, $("mappa"));
+  }
+  // controllo personalizzato: + / − / inquadra / sfondo
+  let tileLayer = null;
+  function sfondoAttivo() { try { return localStorage.getItem("ansit-sfondo") !== "bianco"; } catch (e) { return true; } }
+  function applicaSfondo(m, cont) {
+    const on = sfondoAttivo();
+    if (on && !m.hasLayer(tileLayer)) tileLayer.addTo(m);
+    if (!on && m.hasLayer(tileLayer)) m.removeLayer(tileLayer);
+    cont.classList.toggle("sfondo-bianco", !on);
+    document.querySelectorAll(".ctrl-carta a[data-sfondo]").forEach(a => a.classList.toggle("on", !on));
+    if (typeof dati !== "undefined" && dati) disegnaCarta(false);
+  }
+  function controlloCarta(m, inquadra, cont) {
+    const C = L.Control.extend({options: {position: "topleft"}, onAdd: function () {
+      const d = L.DomUtil.create("div", "ctrl-carta");
+      d.innerHTML = '<a href="#" title="Ingrandisci" aria-label="Ingrandisci">+</a><a href="#" title="Rimpicciolisci" aria-label="Rimpicciolisci">−</a><a href="#" title="Inquadra tutto" aria-label="Inquadra tutto">⌂</a><a href="#" class="testo" data-sfondo title="Sfondo bianco / carta swisstopo">BIANCO</a>';
+      const a = d.querySelectorAll("a");
+      L.DomEvent.on(a[0], "click", e => { L.DomEvent.preventDefault(e); m.zoomIn(); });
+      L.DomEvent.on(a[1], "click", e => { L.DomEvent.preventDefault(e); m.zoomOut(); });
+      L.DomEvent.on(a[2], "click", e => { L.DomEvent.preventDefault(e); inquadra(); });
+      L.DomEvent.on(a[3], "click", e => { L.DomEvent.preventDefault(e); try { localStorage.setItem("ansit-sfondo", sfondoAttivo() ? "bianco" : "carta"); } catch (x) {} applicaSfondo(m, cont); });
+      L.DomEvent.disableClickPropagation(d);
+      return d;
+    }});
+    m.addControl(new C());
+    applicaSfondo(m, cont);
+  }
+
+  function colore(l, nd) { return nd || l == null ? css("--muto") : css("--l" + l); }
+
+  function stileComuni(stantio) {
+    const scelto = $("scelta-comune").value;
+    strato.eachLayer(l => {
+      const n = l.feature.properties.nome, a = dati.allerte[n] || {};
+      const nd = stantio || !a.disponibile, liv = a.livello_max;
+      l.setStyle({fillColor: colore(liv, nd), fillOpacity: nd ? .25 : (liv >= 2 ? .6 : (sfondoAttivo() ? .3 : .15)), dashArray: nd ? "4 3" : null,
+                  weight: n === scelto ? 3 : (sfondoAttivo() ? 1 : 1.4), color: css("--testo")});
+      l.bindTooltip(stretto() ? n : n + (a.disponibile ? " – livello " + liv : " – n/d"), {permanent: true, direction: "center", className: "nome-comune"});
+    });
+  }
+
+  function disegnaCarta(stantio) {
+    if (mappa) {
+      stileComuni(stantio);
+      stratoPunti.clearLayers();
+      for (const p of dati.pegel) {
+        if (!p.lat || !p.lon) continue;
+        const cls = (stantio || !p.disponibile || p.livello == null) ? "nd" : "l" + p.livello;
+        L.marker([p.lat, p.lon], {icon: L.divIcon({className: "", html: `<div class="etichetta-peg ${cls}">${p.disponibile && p.livello != null ? p.livello : "·"}</div>`, iconSize: [22, 22], iconAnchor: [11, 11]})})
+          .bindTooltip(`${p.nome} – ${p.luogo}: ${p.disponibile ? p.valore + " " + p.unita : "n/d"}`).addTo(stratoPunti);
+      }
+      for (const o of (dati.oasi || [])) {
+        if (!o.lat || !o.lon || !o.disponibile) continue;
+        const testo = o.parametro === "Prec" ? `${o.pioggia_1h} mm/1h` : `${o.valore} ${o.unita}`;
+        // schermo stretto: solo il valore (un punto se non piove); nome e dettagli al tocco
+        const asciutto = o.parametro === "Prec" && !(o.pioggia_1h > 0);
+        const icona = !stretto() ? L.divIcon({className: "", html: `<div class="etichetta-oasi">${o.nome}: ${testo}</div>`, iconAnchor: [0, 10]})
+          : asciutto ? L.divIcon({className: "", html: `<div class="etichetta-oasi punto"></div>`, iconSize: [24, 24], iconAnchor: [5, 5]})
+          : L.divIcon({className: "", html: `<div class="etichetta-oasi">${testo}</div>`, iconAnchor: [0, 10]});
+        L.marker([o.lat, o.lon], {icon: icona})
+          .bindTooltip(stretto() ? `${o.nome} – ${o.luogo}: ${testo} (OASI, ${o.rilevamento})` : `${o.nome} – ${o.luogo} (OASI, ${o.rilevamento})`).addTo(stratoPunti);
+      }
+      return;
+    }
+    if (!carta) { $("carta").innerHTML = ""; return; }
+    const scelto = $("scelta-comune").value;
+    let s = `<svg viewBox="${carta.viewBox}" role="img" aria-label="Carta dei Comuni del comprensorio con il livello di allerta">
+      <defs><pattern id="tratteggio" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="var(--l1)"/><rect width="4" height="8" fill="var(--linea)"/></pattern></defs>`;
+    for (const d of Object.values(carta.contorno)) s += `<path class="ctx" d="${d}"/>`;
+    for (const [n, d] of Object.entries(carta.comuni)) {
+      const a = dati.allerte[n] || {};
+      const cls = (stantio || !a.disponibile) ? "nd" : "l" + a.livello_max;
+      s += `<path class="com ${cls}${n === scelto ? " scelto" : ""}" d="${d}" data-comune="${n}"><title>${n}: ${a.disponibile ? "livello " + a.livello_max : "n/d"}</title></path>`;
+    }
+    for (const [n, [x, y]] of Object.entries(carta.etichette)) {
+      const [dx, dy] = OFFSET[n] || [0, 0];
+      s += `<text x="${x + dx}" y="${y + dy}" text-anchor="middle">${n}</text>`;
+    }
+    $("carta").innerHTML = s + "</svg>";
+    $("carta").querySelectorAll("path.com").forEach(p => p.addEventListener("click", () => {
+      $("scelta-comune").value = p.dataset.comune; dettaglio();
+      $("carta").querySelectorAll("path.com").forEach(q => q.classList.toggle("scelto", q === p));
+    }));
+  }
+
+  // Sparkline a linea: serie numerica (null ammessi), soglia opzionale (linea tratteggiata)
+  function spark(serie, soglia) {
+    const v = serie.filter(x => typeof x === "number");
+    if (v.length < 2) return "";
+    const W = 120, H = 32, p = 3;
+    let min = Math.min(...v), max = Math.max(...v);
+    if (soglia != null) { min = Math.min(min, soglia); max = Math.max(max, soglia); }
+    if (max === min) { max += 1; min -= 1; }
+    const x = i => p + i * (W - 2 * p) / (serie.length - 1);
+    const y = val => H - p - (val - min) * (H - 2 * p) / (max - min);
+    let d = "", pen = false;
+    serie.forEach((val, i) => {
+      if (typeof val !== "number") { pen = false; return; }
+      d += (pen ? "L" : "M") + x(i).toFixed(1) + " " + y(val).toFixed(1) + " ";
+      pen = true;
+    });
+    const sl = soglia != null ? `<line x1="0" x2="${W}" y1="${y(soglia).toFixed(1)}" y2="${y(soglia).toFixed(1)}"/>` : "";
+    return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${sl}<path d="${d}"/></svg>`;
+  }
+
+  // Previsione UFAM: mediana a 48 h con grado, scenario peggiore in piccolo
+  function prevHtml(p) {
+    const f = p.previsione;
+    if (f === null || f === undefined) return '<small style="color:var(--muto)">—</small>';
+    if (!f.disponibile) return `<small style="color:var(--muto)">n/d</small>`;
+    const u = p.unita, freccia = f.mediana_48h != null && p.valore != null ? (f.mediana_48h > p.valore * 1.15 ? " ↗" : f.mediana_48h < p.valore * 0.85 ? " ↘" : " →") : "";
+    return `<span style="white-space:nowrap">mediana <b>${t(f.mediana_48h)} ${u}</b>${freccia} ${f.grado_mediana_48h != null ? livHtml(f.grado_mediana_48h) : ""}</span><br><small style="color:var(--muto)">scenario peggiore ${t(f.peggiore_48h)} ${u}${f.grado_peggiore_48h != null && f.grado_peggiore_48h >= 2 ? ` (grado ${f.grado_peggiore_48h})` : ""}${f.emessa ? ` · emessa ${f.emessa}` : ""}</small>`;
+  }
+
+  // Sparkline a barre: per la pioggia oraria
+  function barre(serie) {
+    const v = serie.filter(x => typeof x === "number");
+    if (!v.length) return "";
+    const W = 120, H = 32, max = Math.max(...v, 0.5);
+    const w = W / serie.length;
+    const r = serie.map((val, i) => typeof val === "number" && val > 0
+      ? `<rect x="${(i * w).toFixed(1)}" y="${(H - val * (H - 2) / max).toFixed(1)}" width="${Math.max(w - 1, 1).toFixed(1)}" height="${(val * (H - 2) / max).toFixed(1)}"/>` : "").join("");
+    return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${r}</svg>`;
+  }
+
+  async function carica() {
+    try {
+      // i dati vengono letti dal repository (aggiornati al commit del collettore); se non raggiungibile, dalla copia pubblicata
+      let r = null;
+      try { r = await fetch(BASE_DATI + "dati.json?_=" + Date.now(), {cache: "no-store"}); } catch (e) { r = null; }
+      if (!r || !r.ok) r = await fetch("dati.json?_=" + Date.now(), {cache: "no-store"});
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      dati = await r.json();
+      disegna();
+    } catch (e) {
+      $("stato").textContent = "dati.json non raggiungibile: " + e.message;
+      $("stato").className = "stato vecchio";
+    }
+  }
+
+  function disegna() {
+    const eta = Math.round((Date.now() - new Date(dati.generato).getTime()) / 60000);
+    const stantio = eta > dati.dati_stantii_minuti;
+    $("stato").textContent = `Aggiornato ${dati.generato_locale} (${eta} min fa)` + (stantio ? " – DATI NON AGGIORNATI, considerare non disponibili" : "");
+    $("stato").className = "stato" + (stantio ? " vecchio" : "");
+    $("minuti-stantio").textContent = dati.dati_stantii_minuti;
+
+    // variazioni
+    $("var-sub").textContent = dati.precedente ? "rispetto al ciclo delle " + new Date(dati.precedente).toLocaleTimeString("it-CH", {hour: "2-digit", minute: "2-digit"}) : "";
+    $("var-lista").innerHTML = dati.variazioni.map(v => `<li class="${v.tipo}">${v.testo}</li>`).join("");
+
+    // comuni
+    const calmi = [];
+    $("comuni").innerHTML = dati.comuni.map(c => {
+      const a = dati.allerte[c] || {};
+      const nd = stantio || !a.disponibile;
+      const calmo = !nd && a.livello_max === 1;
+      if (calmo) calmi.push(c);
+      return `<div class="comune${calmo ? " calmo" : ""}"><span>${c}</span>${livHtml(a.livello_max, nd)}</div>`;
+    }).join("") + (calmi.length ? `<div class="riassunto-l1"><b>${calmi.length === dati.comuni.length ? "Tutti i " + calmi.length : calmi.length} Comuni a livello 1</b> (nessun pericolo): ${calmi.join(", ")}</div>` : "");
+    const sel = $("scelta-comune");
+    if (!sel.options.length) {
+      sel.innerHTML = dati.comuni.map(c => `<option>${c}</option>`).join("");
+      sel.addEventListener("change", dettaglio);
+    }
+    dettaglio();
+    disegnaCarta(stantio);
+
+    // alertswiss
+    const aw = dati.alertswiss;
+    if (!aw.disponibile) {
+      $("aw-sub").textContent = "";
+      $("alertswiss").innerHTML = `<div class="nd-box">Feed non disponibile (${aw.motivo}). Verificare direttamente su alert.swiss.</div>`;
+    } else {
+      $("aw-sub").textContent = `${aw.notifiche.length} pertinenti su ${aw.totale_svizzera} in Svizzera`;
+      $("alertswiss").innerHTML = aw.notifiche.length
+        ? `<ul class="lista">${aw.notifiche.map(n => `<li class="peggiora"><b>${n.titolo}</b>${n.livello ? ` <span style="color:var(--muto)">(${n.livello})</span>` : ""}<br>${n.area ? `<span style="color:var(--muto)">${n.area}</span><br>` : ""}${n.testo}${n.link ? ` <a href="${n.link}" target="_blank" rel="noopener">apri</a>` : ""}</li>`).join("")}</ul>`
+        : `<div class="ok-box">Nessuna notifica Alertswiss pertinente per il comprensorio.</div>`;
+    }
+
+    // pegel
+    $("pegel").innerHTML = `<tr><th>Stazione</th><th>Misura</th><th class="num">Valore</th><th>Andamento 8 h</th><th>Livello</th><th>Previsione UFAM 48 h</th></tr>` +
+      dati.pegel.map(p => p.disponibile
+        ? `<tr><td class="c-nome">${p.nome}<br><small style="color:var(--muto)">${p.luogo}<span class="solo-m"> · ${p.parametro === "Q" ? "portata" : "livello"}</span></small></td><td class="c-mis">${p.parametro === "Q" ? "Portata" : "Livello"}</td><td class="num c-val">${t(p.valore)} ${p.unita}</td><td class="c-and">${spark(p.serie_8h || [], p.soglie && p.soglie["2"])}<small style="color:var(--muto)">${t(p.trend_8h)}</small></td><td class="c-liv">${livHtml(p.livello, stantio)}</td><td class="c-prev">${prevHtml(p)}</td></tr>`
+        : `<tr><td class="c-nome">${p.nome || "?"}</td><td class="c-nd" colspan="3" style="color:var(--muto)">non disponibile – ${p.motivo}</td><td class="c-liv">${livHtml(null, true)}</td><td></td></tr>`).join("");
+
+    // rete cantonale OASI
+    // riga supplementare visibile solo su schermo stretto: bacino e ora del rilevamento (in rosso se oltre 3 h)
+    const rigaM = o => `<span class="solo-m blocco">${o.bacino ? o.bacino + " · " : ""}<span${o.eta_minuti > 180 ? ' class="vecchio-m"' : ""}>${o.rilevamento}, ${o.eta_minuti} min fa</span></span>`;
+    const oa = (dati.oasi || []).filter(o => o.parametro !== "Prec");
+    const op = (dati.oasi || []).filter(o => o.parametro === "Prec");
+    $("oasi-pioggia").innerHTML = `<tr><th>Stazione</th><th>Bacino</th><th class="num">1 h</th><th class="num">3 h</th><th class="num">6 h</th><th class="num">24 h</th><th>Rilevamento</th><th>Ultime 24 h</th></tr>` +
+      op.map(o => o.disponibile
+        ? `<tr><td class="c-nome">${o.nome}<br><small style="color:var(--muto)">${o.luogo}${rigaM(o)}</small></td><td class="c-bac">${t(o.bacino)}</td><td class="num c-p" data-e="1 h">${t(o.pioggia_1h)} mm</td><td class="num c-p" data-e="3 h">${t(o.pioggia_3h)} mm</td><td class="num c-p" data-e="6 h">${t(o.pioggia_6h)} mm</td><td class="num c-p" data-e="24 h"><b>${t(o.pioggia_24h)} mm</b></td><td class="c-ril"${o.eta_minuti > 180 ? ' style="color:var(--allarme)"' : ""}>${o.rilevamento}<br><small style="color:var(--muto)">${o.eta_minuti} min fa</small></td><td class="c-and">${barre(o.orarie_24h || [])}</td></tr>`
+        : `<tr><td class="c-nome">${o.nome || o.codice}</td><td class="c-nd" colspan="7" style="color:var(--muto)">non disponibile – ${o.motivo}</td></tr>`).join("");
+    $("oasi").innerHTML = `<tr><th>Stazione</th><th>Bacino</th><th>Misura</th><th class="num">Valore</th><th>Rilevamento</th><th>Andamento 8 h</th></tr>` +
+      oa.map(o => o.disponibile
+        ? `<tr><td class="c-nome">${o.nome}<br><small style="color:var(--muto)">${o.luogo}${rigaM(o)}</small></td><td class="c-bac">${t(o.bacino)}</td><td class="c-mis">${o.parametro === "Q" ? "Portata" : "Livello"}</td><td class="num c-val">${t(o.valore)} ${o.unita}</td><td class="c-ril"${o.eta_minuti > 180 ? ' style="color:var(--allarme)"' : ""}>${o.rilevamento}<br><small style="color:var(--muto)">${o.eta_minuti} min fa${o.provvisorio ? ", provv." : ""}</small></td><td class="c-and">${spark(o.serie_8h || [])}<small style="color:var(--muto)">${t(o.trend_8h)}</small></td></tr>`
+        : `<tr><td class="c-nome">${o.nome || o.codice}<br><small style="color:var(--muto)">${o.luogo || ""}</small></td><td class="c-nd" colspan="5" style="color:var(--muto)">non disponibile – ${o.motivo}</td></tr>`).join("");
+
+    // misure
+    const m = Object.values(dati.misure)[0] || {};
+    if (!m.disponibile) {
+      $("mis-sub").textContent = "";
+      $("misure").innerHTML = `<div class="nd-box" style="grid-column:1/-1">Misure MeteoSvizzera non disponibili (${m.motivo}).</div>`;
+      $("andamento").innerHTML = "";
+    } else {
+      $("mis-sub").textContent = `${m.nome}, rilevamento ${t(m.rilevamento)} UTC`;
+      const box = (v, u, l) => `<div class="misura"><b>${t(v)}${v == null ? "" : u}</b><span>${l}</span></div>`;
+      $("misure").innerHTML = box(m.temperatura, " °C", "Temperatura") + box(m.umidita, " %", "Umidità") +
+        box(m.vento_kmh, " km/h", "Vento medio") + box(m.raffica_kmh, " km/h", "Raffica") +
+        box(m.pioggia_1h, " mm", "Pioggia ultima ora") + box(m.pioggia_24h, " mm", "Pioggia 24 ore") + box(m.pressione, " hPa", "Pressione");
+      const s24 = m.serie_24h || {};
+      $("andamento").innerHTML =
+        `<div class="misura"><span>Pioggia oraria, ultime 24 h</span>${barre(s24.pioggia_oraria || [])}</div>` +
+        `<div class="misura"><span>Raffica, ultime 24 h</span>${spark(s24.raffica_kmh || [])}</div>` +
+        `<div class="misura"><span>Temperatura, ultime 24 h</span>${spark(s24.temperatura || [])}</div>`;
+    }
+
+    // previsione
+    const pv = dati.previsione;
+    if (!pv.disponibile) {
+      $("prev-sub").textContent = "";
+      $("massimi").innerHTML = `<div class="nd-box" style="grid-column:1/-1">Previsione non disponibile (${pv.motivo}).</div>`;
+      $("orario").innerHTML = ""; $("giorni").innerHTML = "";
+    } else {
+      $("prev-sub").textContent = pv.fonte + ", Lugano";
+      const mx = pv.massimi_12h;
+      const box = (v, u, l) => `<div class="misura"><b>${t(v)}${v == null ? "" : u}</b><span>${l}</span></div>`;
+      const nv = pv.neve_48h || {}, lu = (pv.luce || [])[0] || {};
+      $("massimi").innerHTML = box(mx.raffica_kmh, " km/h", "Raffica massima") + box(mx.pioggia_oraria_mm, " mm", "Pioggia oraria massima") + box(mx.pioggia_totale_mm, " mm", "Pioggia totale 12 h") + box(mx.temperatura, " °C", "Temperatura massima") +
+        (nv.zero_termico_min != null ? `<div class="misura"><b>${nv.zero_termico_min}–${nv.zero_termico_max} m</b><span>Zero termico 48 h</span></div><div class="misura"><b>≈ ${nv.limite_neve_min} m</b><span>Limite neve minimo 48 h${nv.neve_48h_cm ? `, ${nv.neve_48h_cm} cm attesi` : ""}</span></div>` : "") +
+        (lu.alba ? `<div class="misura"><b>${lu.alba} – ${lu.tramonto}</b><span>Luce oggi (crepuscolo ${lu.crepuscolo_mattino} / ${lu.crepuscolo_sera})</span></div>` : "");
+      $("orario").innerHTML = `<tr><th>Ora</th><th>Tempo</th><th class="num">°C</th><th class="num"><span class="no-m">Pioggia</span><span class="solo-m">mm</span></th><th class="num"><span class="no-m">Prob.</span><span class="solo-m">%</span></th><th class="num c-vento">Vento</th><th class="num">Raffica</th></tr>` +
+        pv.orario.map(o => `<tr><td>${o.ora}</td><td>${CODICI[o.codice] || o.codice}</td><td class="num">${t(o.temperatura)}</td><td class="num">${t(o.pioggia_mm)}<span class="no-m"> mm</span></td><td class="num">${t(o.prob_pioggia)}<span class="no-m"> %</span></td><td class="num c-vento">${t(o.vento_kmh)}</td><td class="num">${t(o.raffica_kmh)}</td></tr>`).join("");
+      $("giorni").innerHTML = `<tr><th>Giorno</th><th>Tempo</th><th class="num">Min / Max</th><th class="num">Pioggia</th><th class="num">Raffica max</th></tr>` +
+        pv.giorni.map(g => `<tr><td>${new Date(g.data).toLocaleDateString("it-CH", {weekday: "short", day: "numeric", month: "numeric"})}</td><td>${CODICI[g.codice] || g.codice}</td><td class="num">${t(g.tmin)} / ${t(g.tmax)} °C</td><td class="num">${t(g.pioggia_mm)} mm</td><td class="num">${t(g.raffica_max)} km/h</td></tr>`).join("");
+    }
+    sintesi(stantio);
+  }
+
+  // Colpo d'occhio (solo schermo stretto): quattro valori che rimandano alle sezioni.
+  // Regola: un livello 1 viene mostrato solo se TUTTI i dati sono disponibili e aggiornati; altrimenti n/d.
+  function sintesi(stantio) {
+    const massimo = elenco => {            // elenco di {ok, liv}
+      if (stantio || !elenco.length) return null;
+      const liv = elenco.filter(e => e.ok && e.liv != null).map(e => e.liv);
+      const max = liv.length ? Math.max(...liv) : null;
+      if (max !== null && max >= 2) return max;
+      return liv.length === elenco.length ? max : null;
+    };
+    const al = massimo(dati.comuni.map(c => { const a = dati.allerte[c] || {}; return {ok: !!a.disponibile, liv: a.livello_max}; }));
+    const pg = massimo(dati.pegel.map(p => ({ok: !!p.disponibile, liv: p.livello})));
+    const aw = dati.alertswiss, nAw = aw.disponibile && !stantio ? aw.notifiche.length : null;
+    const m = Object.values(dati.misure)[0] || {};
+    const piogge = (dati.oasi || []).filter(o => o.parametro === "Prec" && o.disponibile && o.eta_minuti <= 180 && typeof o.pioggia_1h === "number").map(o => o.pioggia_1h);
+    if (m.disponibile && typeof m.pioggia_1h === "number") piogge.push(m.pioggia_1h);
+    const pMax = !stantio && piogge.length ? Math.max(...piogge) : null;
+    const casella = (href, valore, etichetta, evidenza) => `<a href="${href}"${evidenza ? ' class="evidenza"' : ""}><b>${valore}</b><span class="et">${etichetta}</span></a>`;
+    $("sintesi").innerHTML =
+      casella("#sez-allerte", livHtml(al, al === null), "Allerte<br>meteo", al >= 3) +
+      casella("#sez-acque", livHtml(pg, pg === null), "Corsi d'acqua<br>e lago", pg >= 3) +
+      casella("#sez-alertswiss", nAw === null ? '<span class="liv nd">n/d</span>' : nAw, "Alertswiss", nAw > 0) +
+      casella("#sez-oasi", pMax === null ? '<span class="liv nd">n/d</span>' : pMax + " mm", "Pioggia 1 h<br>massimo", false);
+  }
+
+  function dettaglio() {
+    const c = $("scelta-comune").value;
+    const a = dati.allerte[c] || {};
+    if (!a.disponibile) { $("dettaglio").innerHTML = `<li class="info">Allerte non disponibili per ${c} (${a.motivo || "nessun dato"}).</li>`; return; }
+    if (!a.allerte.length) { $("dettaglio").innerHTML = `<li class="info">Nessuna allerta attiva per ${c}.</li>`; return; }
+    $("dettaglio").innerHTML = a.allerte.map(w => `<li class="allerta l${w.livello}"><b>${w.tipo} – livello ${t(w.livello)}${w.preallerta ? " (preallerta)" : ""}</b><small>${t(w.dal)} → ${t(w.al)}</small>${w.testo}</li>`).join("");
+  }
+
+
+  // messaggio in evidenza dello stato maggiore (letto in diretta dal server svizzero; riserva: copia nel JSON del collettore)
+  async function caricaMessaggio() {
+    let m = null;
+    try { const r = await fetch("https://179-237-106-60.sslip.io/messaggio.json?_=" + Date.now(), {cache: "no-store"}); if (r.ok) m = await r.json(); } catch (e) { m = null; }
+    if (!m && dati && dati.messaggio) m = dati.messaggio;
+    const el = document.getElementById("messaggio");
+    if (!el) return;
+    if (m && m.testo) {
+      el.className = "on " + (m.livello || "info");
+      el.innerHTML = `<b>${m.testo.replace(/</g, "&lt;")}</b><small>${(m.autore || "").replace(/</g, "&lt;")} · ${m.aggiornato_locale || ""}</small>`;
+    } else { el.className = ""; el.innerHTML = ""; }
+  }
+  // sezioni secondarie: chiuse all'avvio su schermo stretto, sempre aperte su schermo largo
+  const richiudibili = document.querySelectorAll("details.richiudibile");
+  const applicaLarghezza = () => richiudibili.forEach(d => { d.open = !stretto(); });
+  applicaLarghezza();
+  const cambioLarghezza = () => { applicaLarghezza(); if (dati) disegna(); if (inquadraCarta) setTimeout(inquadraCarta, 200); };
+  if (mqStretto.addEventListener) mqStretto.addEventListener("change", cambioLarghezza); else if (mqStretto.addListener) mqStretto.addListener(cambioLarghezza);
+  // rotazione del dispositivo: la carta va inquadrata di nuovo (solo se cambia la larghezza, non quando scompare la barra del browser)
+  let larghezza = window.innerWidth;
+  window.addEventListener("resize", () => { if (window.innerWidth !== larghezza) { larghezza = window.innerWidth; if (inquadraCarta) setTimeout(inquadraCarta, 250); } });
+
+  setInterval(caricaMessaggio, 60 * 1000);
+  $("aggiorna").addEventListener("click", carica);
+  caricaCarta().then(carica).then(caricaMessaggio);
+  setInterval(carica, 5 * 60 * 1000);
+})();
+</script>
+</body>
+</html>
