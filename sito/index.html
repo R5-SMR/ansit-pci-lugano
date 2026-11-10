@@ -37,7 +37,7 @@
   #messaggio.urgente { border-left-color: var(--l4); background: var(--l4); color: #fff; font-weight: 600; }
   #messaggio small { opacity: .8; margin-left: 10px; font-size: 13px; }
   header .stato.vecchio { color: var(--allarme); font-weight: 600; }
-  main { max-width: 1100px; margin: 0 auto; padding: 14px 16px 60px; display: grid; gap: 22px; }
+  main { max-width: 1100px; margin: 0 auto; padding: 14px 16px 60px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
   section h2 { font-size: 15px; font-weight: 600; margin: 0 0 8px; }
   section h2 small { font-weight: 400; color: var(--muto); margin-left: 8px; font-size: 13px; }
   .riga-comuni { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
@@ -331,7 +331,12 @@
   }
   // controllo personalizzato: + / − / inquadra / sfondo
   let tileLayer = null;
-  function sfondoAttivo() { try { return localStorage.getItem("ansit-sfondo") !== "bianco"; } catch (e) { return true; } }
+  // sfondo swisstopo: vale la scelta salvata dall'utente; senza scelta, carta nazionale su schermo largo e sfondo bianco su schermo stretto
+  function sfondoAttivo() {
+    let v = null;
+    try { v = localStorage.getItem("ansit-sfondo"); } catch (e) { v = null; }
+    return v === "bianco" ? false : v === "carta" ? true : !stretto();
+  }
   function applicaSfondo(m, cont) {
     const on = sfondoAttivo();
     if (on && !m.hasLayer(tileLayer)) tileLayer.addTo(m);
@@ -619,7 +624,7 @@
   const richiudibili = document.querySelectorAll("details.richiudibile");
   const applicaLarghezza = () => richiudibili.forEach(d => { d.open = !stretto(); });
   applicaLarghezza();
-  const cambioLarghezza = () => { applicaLarghezza(); if (dati) disegna(); if (inquadraCarta) setTimeout(inquadraCarta, 200); };
+  const cambioLarghezza = () => { applicaLarghezza(); if (mappa) applicaSfondo(mappa, $("mappa")); if (dati) disegna(); if (inquadraCarta) setTimeout(inquadraCarta, 200); };
   if (mqStretto.addEventListener) mqStretto.addEventListener("change", cambioLarghezza); else if (mqStretto.addListener) mqStretto.addListener(cambioLarghezza);
   // rotazione del dispositivo: la carta va inquadrata di nuovo (solo se cambia la larghezza, non quando scompare la barra del browser)
   let larghezza = window.innerWidth;
