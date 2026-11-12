@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-12T08:31:07+00:00",
- "generato_locale": "12.11.2026 09:31",
+ "generato": "2026-11-12T08:40:57+00:00",
+ "generato_locale": "12.11.2026 09:40",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,16 +25,16 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "12.11.2026 08:20",
+   "rilevamento": "12.11.2026 08:30",
    "temperatura": 10.9,
-   "umidita": 97.7,
-   "pioggia_10min": 0.4,
-   "pioggia_1h": 1.6,
-   "pioggia_24h": 3.3,
+   "umidita": 97.6,
+   "pioggia_10min": 0.5,
+   "pioggia_1h": 1.8,
+   "pioggia_24h": 3.8,
    "vento_kmh": 0.2,
-   "raffica_kmh": 0.5,
-   "direzione": 327.0,
-   "pressione": 965.2,
+   "raffica_kmh": 0.4,
+   "direzione": 352.0,
+   "pressione": 965.1,
    "serie_24h": {
     "temperatura": [
      11.2,
@@ -87,6 +87,7 @@
      10.8,
      10.8,
      10.8,
+     10.9,
      10.9
     ],
     "raffica_kmh": [
@@ -140,7 +141,8 @@
      0.7,
      0.5,
      0.4,
-     0.5
+     0.5,
+     0.4
     ],
     "pioggia_oraria": [
      0.0,
@@ -151,7 +153,7 @@
      0.1,
      0.5,
      1.9,
-     0.8
+     1.3
     ]
    }
   },
@@ -159,15 +161,15 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "12.11.2026 08:20",
+   "rilevamento": "12.11.2026 08:30",
    "temperatura": 5.3,
    "umidita": 99.3,
-   "pioggia_10min": null,
-   "pioggia_1h": 2.2,
-   "pioggia_24h": 5.0,
-   "vento_kmh": 6.6,
-   "raffica_kmh": 7.9,
-   "direzione": 124.0,
+   "pioggia_10min": 0.4,
+   "pioggia_1h": 2.6,
+   "pioggia_24h": 5.8,
+   "vento_kmh": 6.0,
+   "raffica_kmh": 8.0,
+   "direzione": 114.0,
    "pressione": 824.5,
    "serie_24h": {
     "temperatura": [
@@ -221,6 +223,7 @@
      5.1,
      5.1,
      5.2,
+     5.3,
      5.3
     ],
     "raffica_kmh": [
@@ -274,7 +277,8 @@
      7.9,
      7.6,
      6.6,
-     7.9
+     7.9,
+     8.0
     ],
     "pioggia_oraria": [
      0.0,
@@ -285,7 +289,7 @@
      0.5,
      1.3,
      2.2,
-     1.0
+     1.8
     ]
    }
   }
@@ -383,7 +387,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "previsione": null,
-   "valore": 0.95,
+   "valore": 0.94,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -395,8 +399,6 @@
    "lon": 8.9625,
    "trend_8h": "in aumento",
    "serie_8h": [
-    0.81,
-    0.81,
     0.81,
     0.81,
     0.81,
@@ -442,7 +444,9 @@
     0.92,
     0.92,
     0.93,
-    0.95
+    0.95,
+    0.95,
+    0.94
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
@@ -455,7 +459,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "previsione": null,
-   "valore": 2.29,
+   "valore": 2.52,
    "livello": 1,
    "soglie": {
     "2": 55,
@@ -467,8 +471,6 @@
    "lon": 8.9102,
    "trend_8h": "in aumento",
    "serie_8h": [
-    1.21,
-    1.29,
     1.2,
     1.1,
     1.06,
@@ -514,7 +516,9 @@
     2.0,
     2.0,
     2.29,
-    2.29
+    2.29,
+    2.21,
+    2.52
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
@@ -596,7 +600,7 @@
    },
    "lat": 45.9559,
    "lon": 8.9554,
-   "trend_8h": "stabile",
+   "trend_8h": "in calo",
    "serie_8h": [
     270.38,
     270.38,
@@ -619,7 +623,6 @@
     270.38,
     270.38,
     270.38,
-    270.38,
     270.37,
     270.38,
     270.38,
@@ -636,6 +639,7 @@
     270.38,
     270.38,
     270.37,
+    270.38,
     270.38,
     270.38,
     270.38,
@@ -660,7 +664,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "rilevamento": "12.11. 08:05",
-   "eta_minuti": 86,
+   "eta_minuti": 95,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.1321,
@@ -727,7 +731,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "rilevamento": "12.11. 08:05",
-   "eta_minuti": 86,
+   "eta_minuti": 95,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.998,
@@ -794,7 +798,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "rilevamento": "12.11. 08:05",
-   "eta_minuti": 86,
+   "eta_minuti": 95,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9522,
@@ -861,7 +865,7 @@
    "parametro": "WL",
    "unita": "m s.l.m.",
    "rilevamento": "12.11. 08:05",
-   "eta_minuti": 86,
+   "eta_minuti": 95,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9959,
@@ -928,7 +932,7 @@
    "parametro": "WL",
    "unita": "m s.l.m.",
    "rilevamento": "12.11. 08:05",
-   "eta_minuti": 86,
+   "eta_minuti": 95,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9245,
@@ -994,17 +998,17 @@
    "bacino": "Cassarate (testata)",
    "parametro": "Prec",
    "unita": "mm",
-   "rilevamento": "12.11. 08:35",
-   "eta_minuti": 56,
+   "rilevamento": "12.11. 08:55",
+   "eta_minuti": 45,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.0975,
    "lon": 9.0551,
-   "valore": 1.2,
-   "pioggia_1h": 1.2,
-   "pioggia_3h": 1.6,
-   "pioggia_6h": 1.6,
-   "pioggia_24h": 1.8,
+   "valore": 1.6,
+   "pioggia_1h": 1.6,
+   "pioggia_3h": 2.2,
+   "pioggia_6h": 2.2,
+   "pioggia_24h": 2.4,
    "orarie_24h": [
     0.0,
     0.0,
@@ -1028,8 +1032,8 @@
     0.0,
     0.0,
     0.0,
-    0.4,
-    1.2
+    0.6,
+    1.6
    ]
   },
   {
@@ -1040,17 +1044,17 @@
    "bacino": "Cassarate (medio)",
    "parametro": "Prec",
    "unita": "mm",
-   "rilevamento": "12.11. 08:35",
-   "eta_minuti": 56,
+   "rilevamento": "12.11. 08:55",
+   "eta_minuti": 45,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.0597,
    "lon": 8.9839,
    "valore": 1.4,
    "pioggia_1h": 1.4,
-   "pioggia_3h": 1.8,
-   "pioggia_6h": 1.8,
-   "pioggia_24h": 2.0,
+   "pioggia_3h": 2.2,
+   "pioggia_6h": 2.2,
+   "pioggia_24h": 2.4,
    "orarie_24h": [
     0.0,
     0.0,
@@ -1073,8 +1077,8 @@
     0.0,
     0.0,
     0.0,
-    0.0,
-    0.4,
+    0.2,
+    0.6,
     1.4
    ]
   },
@@ -1086,17 +1090,17 @@
    "bacino": "Vedeggio (alto)",
    "parametro": "Prec",
    "unita": "mm",
-   "rilevamento": "12.11. 08:55",
-   "eta_minuti": 36,
+   "rilevamento": "12.11. 09:25",
+   "eta_minuti": 15,
    "provvisorio": true,
    "proprietario": "UMAm",
    "lat": 46.1038,
    "lon": 8.9315,
-   "valore": 1.4,
-   "pioggia_1h": 1.4,
-   "pioggia_3h": 1.7,
-   "pioggia_6h": 1.7,
-   "pioggia_24h": 1.8,
+   "valore": 1.2,
+   "pioggia_1h": 1.2,
+   "pioggia_3h": 2.3,
+   "pioggia_6h": 2.3,
+   "pioggia_24h": 2.4,
    "orarie_24h": [
     0.0,
     0.0,
@@ -1119,9 +1123,9 @@
     0.0,
     0.0,
     0.0,
-    0.0,
-    0.3,
-    1.4
+    0.1,
+    1.0,
+    1.2
    ]
   },
   {
@@ -1132,17 +1136,17 @@
    "bacino": "Pian Scairolo",
    "parametro": "Prec",
    "unita": "mm",
-   "rilevamento": "12.11. 08:25",
-   "eta_minuti": 66,
+   "rilevamento": "12.11. 08:45",
+   "eta_minuti": 55,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9763,
    "lon": 8.925,
-   "valore": 1.6,
-   "pioggia_1h": 1.6,
-   "pioggia_3h": 1.8,
-   "pioggia_6h": 1.8,
-   "pioggia_24h": 2.0,
+   "valore": 2.0,
+   "pioggia_1h": 2.0,
+   "pioggia_3h": 2.4,
+   "pioggia_6h": 2.4,
+   "pioggia_24h": 2.6,
    "orarie_24h": [
     0.0,
     0.0,
@@ -1166,8 +1170,8 @@
     0.0,
     0.0,
     0.0,
-    0.2,
-    1.6
+    0.4,
+    2.0
    ]
   },
   {
@@ -1178,17 +1182,17 @@
    "bacino": "Malcantone / Magliasina",
    "parametro": "Prec",
    "unita": "mm",
-   "rilevamento": "12.11. 08:35",
-   "eta_minuti": 56,
+   "rilevamento": "12.11. 08:55",
+   "eta_minuti": 45,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.008,
    "lon": 8.8585,
    "valore": 1.4,
    "pioggia_1h": 1.4,
-   "pioggia_3h": 1.8,
-   "pioggia_6h": 1.8,
-   "pioggia_24h": 2.0,
+   "pioggia_3h": 2.2,
+   "pioggia_6h": 2.2,
+   "pioggia_24h": 2.4,
    "orarie_24h": [
     0.0,
     0.0,
@@ -1211,8 +1215,8 @@
     0.0,
     0.0,
     0.0,
-    0.2,
-    0.2,
+    0.4,
+    0.4,
     1.4
    ]
   }
@@ -1436,5 +1440,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-12T08:26:16+00:00"
+ "precedente": "2026-11-12T08:31:07+00:00"
 }
