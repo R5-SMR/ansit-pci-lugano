@@ -18,7 +18,7 @@ h1{font-size:1.3em}label{display:block;margin:.8em 0 .3em;font-weight:600}textar
 textarea{height:7em}button{font:inherit;padding:.6em 1.2em;border-radius:6px;border:0;background:#1b1f1d;color:#fff;margin-top:1em;cursor:pointer}
 button.sec{background:#eee;color:#1b1f1d;margin-left:.5em}.att{background:#fff3c4;border-left:5px solid #f08a1f;padding:.6em 1em;margin:1em 0}
 small{color:#5c645f}</style></head><body>
-<h1>Analisi della situazione – messaggio in evidenza</h1>
+<h1>Quadro della situazione – messaggio in evidenza</h1>
 <p><small>Compare in cima alle pagine «Regione Lugano Città» e «Ticino» entro un minuto. Lasciare vuoto e salvare per rimuoverlo.</small></p>
 %STATO%
 <form method="post">
