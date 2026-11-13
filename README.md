@@ -1,4 +1,4 @@
-# Quadro di situazione meteo e pericoli naturali – PCi Regione Lugano Città
+# Quadro della situazione – meteo e pericoli naturali (ANSIT) – PCi Regione Lugano Città
 
 Prototipo interno a scopo di istruzione (corsi di stato maggiore) e, in prospettiva, di impiego.
 Non è un canale di allerta: fanno fede MeteoSvizzera, il Portale pericoli naturali della Confederazione, Alertswiss e l'UFAM.
