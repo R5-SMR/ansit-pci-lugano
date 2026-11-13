@@ -415,18 +415,60 @@ def _tempo(x):
 
 
 # ---------------------------------------------------------------- Open-Meteo: previsione
-def previsione(lat=None, lon=None):
+ORE_SERIE = 60   # ore di previsione conservate per il riuso (48 h di finestra neve + margine)
+
+
+def previsione(lat=None, lon=None, precedente=None):
+    """Legge la previsione Open-Meteo. Se il servizio non risponde (anche dopo un secondo tentativo),
+    riusa l'ultima lettura riuscita, ricalcolata sull'ora attuale e marcata con l'ora di lettura,
+    purché non sia più vecchia di previsione.riuso_max_ore (config.json, predefinito 6 h)."""
     p = CFG["previsione"]
     url = p["url"].format(lat=lat if lat is not None else p["lat"], lon=lon if lon is not None else p["lon"])
+    errore = None
+    for tentativo in (1, 2):
+        try:
+            js = scarica(url, "json", timeout=15)
+            GREZZI["open_meteo"] = js
+            out = _elabora_previsione(js)
+            out["letta"] = ADESSO.isoformat(timespec="seconds")
+            out["riutilizzata"] = False
+            out["_serie"] = _serie_previsione(js)
+            return out
+        except Exception as e:
+            errore = e
+    # servizio non raggiungibile: ultima lettura riuscita, se abbastanza recente
     try:
-        js = scarica(url, "json")
-    except Exception as e:
-        return non_disp(e)
-    GREZZI["open_meteo"] = js
+        serie, letta = precedente["_serie"], _tempo(precedente["letta"])
+        eta_ore = (ADESSO - letta).total_seconds() / 3600
+        if 0 <= eta_ore <= p.get("riuso_max_ore", 6):
+            out = _elabora_previsione(serie)
+            if out["orario"]:
+                ora_lettura = letta.astimezone(TZ).strftime("%H:%M")
+                out.update(fonte=f"Open-Meteo (non ufficiale), ultima lettura {ora_lettura}",
+                           letta=precedente["letta"], riutilizzata=True, _serie=serie,
+                           motivo_riuso=str(errore)[:200])
+                log(f"Previsione: Open-Meteo non risponde, riuso la lettura delle {ora_lettura}")
+                return out
+    except Exception:
+        pass
+    return non_disp(errore)
+
+
+def _serie_previsione(js):
+    """Estratto compatto della risposta Open-Meteo, salvato nel file dati per poterlo riusare al ciclo successivo."""
     h = js.get("hourly", {})
     ore = h.get("time", [])
     adesso_loc = ADESSO.astimezone(TZ).replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M")
     i0 = next((i for i, t in enumerate(ore) if t >= adesso_loc), 0)
+    return {"hourly": {k: v[i0:i0 + ORE_SERIE] for k, v in h.items() if isinstance(v, list)},
+            "daily": js.get("daily", {})}
+
+
+def _elabora_previsione(js):
+    h = js.get("hourly", {})
+    ore = h.get("time", [])
+    adesso_loc = ADESSO.astimezone(TZ).replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M")
+    i0 = next((i for i, t in enumerate(ore) if t >= adesso_loc), len(ore))
     orario = []
     for i in range(i0, min(i0 + 12, len(ore))):
         orario.append({
@@ -436,9 +478,11 @@ def previsione(lat=None, lon=None):
             "raffica_kmh": h["wind_gusts_10m"][i], "codice": h["weather_code"][i],
         })
     d = js.get("daily", {})
+    oggi = ADESSO.astimezone(TZ).strftime("%Y-%m-%d")
+    gi = [i for i, g in enumerate(d.get("time", [])) if g >= oggi]     # solo da oggi in avanti
     giorni = [{"data": d["time"][i], "tmax": d["temperature_2m_max"][i], "tmin": d["temperature_2m_min"][i],
                "pioggia_mm": d["precipitation_sum"][i], "raffica_max": d["wind_gusts_10m_max"][i],
-               "codice": d["weather_code"][i]} for i in range(len(d.get("time", [])))]
+               "codice": d["weather_code"][i]} for i in gi]
     # zero termico e limite delle nevicate nelle prossime 48 ore (limite neve ≈ zero termico − 300 m)
     zt = [v for v in h.get("freezing_level_height", [])[i0:i0 + 48] if isinstance(v, (int, float))]
     nv = [v for v in h.get("snowfall", [])[i0:i0 + 48] if isinstance(v, (int, float))]
@@ -448,7 +492,7 @@ def previsione(lat=None, lon=None):
             "neve_48h_cm": round(sum(nv), 1) if nv else None, "nota": "limite neve stimato: zero termico − 300 m"}
     # ore di luce di oggi e domani
     luce = []
-    for i in range(min(2, len(d.get("time", [])))):
+    for i in gi[:2]:
         alba, tram = d["sunrise"][i][11:16], d["sunset"][i][11:16]
         luce.append({"data": d["time"][i], "alba": alba, "tramonto": tram,
                      "crepuscolo_mattino": _sposta(alba, -32), "crepuscolo_sera": _sposta(tram, 32)})
@@ -460,6 +504,13 @@ def previsione(lat=None, lon=None):
     }
     return {"disponibile": True, "fonte": "Open-Meteo (non ufficiale)", "orario": orario,
             "giorni": giorni, "massimi_12h": massimi, "neve_48h": neve, "luce": luce}
+
+
+def _leggi_json(percorso):
+    try:
+        return json.loads(percorso.read_text(encoding="utf-8"))
+    except Exception:
+        return None
 
 
 def _sposta(hhmm, minuti):
@@ -543,10 +594,11 @@ def cantone(dati_regione):
         d["oasi"] = [{**non_disp("OASI non raggiungibile in questo ciclo"), "nome": st["nome"], "luogo": st["luogo"],
                       "codice": st["codice"], "parametro": st["param"], "bacino": st.get("bacino"), "lat": st.get("lat"), "lon": st.get("lon")}
                      for st in C.get("oasi", {}).get("stazioni", [])]
-    d["previsioni"] = {p["nome"]: previsione(p["lat"], p["lon"]) for p in C["previsioni"]}
-    log("Quadro cantonale: previsioni lette")
     out = BASE / "sito" / "cantone.json"
-    vecchio = json.loads(out.read_text(encoding="utf-8")) if out.exists() else None
+    vecchio = _leggi_json(out)
+    prev_vecchie = (vecchio or {}).get("previsioni") or {}
+    d["previsioni"] = {p["nome"]: previsione(p["lat"], p["lon"], prev_vecchie.get(p["nome"])) for p in C["previsioni"]}
+    log("Quadro cantonale: previsioni lette")
     d["variazioni"] = variazioni(d, vecchio)
     d["precedente"] = vecchio["generato"] if vecchio else None
     out.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -572,12 +624,12 @@ def main():
     log("Pegel letti")
     dati["oasi"] = [oasi(st) for st in CFG["oasi"]["stazioni"]]
     log("Rete cantonale OASI letta")
-    dati["previsione"] = previsione()
+    sito = BASE / "sito" / "dati.json"
+    vecchio = _leggi_json(sito)
+    dati["previsione"] = previsione(precedente=(vecchio or {}).get("previsione"))
     log("Previsione letta")
     dati["messaggio"] = messaggio()
 
-    sito = BASE / "sito" / "dati.json"
-    vecchio = json.loads(sito.read_text(encoding="utf-8")) if sito.exists() else None
     dati["variazioni"] = variazioni(dati, vecchio)
     dati["precedente"] = vecchio["generato"] if vecchio else None
     sito.write_text(json.dumps(dati, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -586,6 +638,14 @@ def main():
         cantone(dati)
     except Exception as e:
         log(f"Quadro cantonale: errore {e}")
+
+    t = ADESSO.astimezone(TZ)
+    arch = BASE / "archivio" / t.strftime("%Y/%m/%d")
+    arch.mkdir(parents=True, exist_ok=True)
+    with gzip.open(arch / f"{t:%H%M}.json.gz", "wt", encoding="utf-8") as f:
+        json.dump({"generato": dati["generato"], "normalizzato": dati, "grezzi": GREZZI}, f, ensure_ascii=False)
+    log(f"Ciclo concluso. Fonti: " + ", ".join(
+        f"{k}={'ok' if _ok(dati, k) else 'KO'}" for k in ("misure", "allerte", "alertswiss", "pegel", "oasi", "previsione")))
 
 
 def messaggio():
@@ -597,14 +657,6 @@ def messaggio():
     except Exception as e:
         log(f"Messaggio in evidenza non letto: {str(e)[:100]}")
         return None
-
-    t = ADESSO.astimezone(TZ)
-    arch = BASE / "archivio" / t.strftime("%Y/%m/%d")
-    arch.mkdir(parents=True, exist_ok=True)
-    with gzip.open(arch / f"{t:%H%M}.json.gz", "wt", encoding="utf-8") as f:
-        json.dump({"generato": dati["generato"], "normalizzato": dati, "grezzi": GREZZI}, f, ensure_ascii=False)
-    log(f"Ciclo concluso. Fonti: " + ", ".join(
-        f"{k}={'ok' if _ok(dati, k) else 'KO'}" for k in ("misure", "allerte", "alertswiss", "pegel", "oasi", "previsione")))
 
 
 if __name__ == "__main__":
