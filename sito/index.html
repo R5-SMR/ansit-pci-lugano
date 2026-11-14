@@ -328,7 +328,7 @@
   const BASE_DATI = "https://raw.githubusercontent.com/R5-SMR/ansit-pci-lugano/main/sito/";
   const t = v => (v === null || v === undefined || Number.isNaN(v)) ? "—" : v;
   const livHtml = (l, nd) => nd ? '<span class="liv nd">n/d</span>' : `<span class="liv l${l}">${l}</span>`;
-  const CODICI = {0:"Sereno",1:"Poco nuvoloso",2:"Parz. nuvoloso",3:"Coperto",45:"Nebbia",48:"Nebbia",51:"Pioviggine",53:"Pioviggine",55:"Pioviggine",61:"Pioggia debole",63:"Pioggia",65:"Pioggia forte",71:"Neve debole",73:"Neve",75:"Neve forte",80:"Rovesci",81:"Rovesci",82:"Rovesci forti",95:"Temporale",96:"Temporale con grandine",99:"Temporale con grandine"};
+  const CODICI = {0:"Sereno",1:"Poco nuvoloso",2:"Parz. nuvoloso",3:"Coperto",45:"Nebbia",48:"Nebbia",51:"Pioviggine",53:"Pioviggine",55:"Pioviggine",61:"Pioggia debole",63:"Pioggia",65:"Pioggia forte",56:"Pioviggine gelata",57:"Pioviggine gelata",66:"Pioggia gelata",67:"Pioggia gelata",71:"Neve debole",73:"Neve",75:"Neve forte",77:"Neve granulosa",80:"Rovesci",81:"Rovesci",82:"Rovesci forti",85:"Rovesci di neve",86:"Rovesci di neve forti",95:"Temporale",96:"Temporale con grandine",99:"Temporale con grandine"};
   let eraStantio = null;
   let dati = null, carta = null;
   // spostamenti manuali delle etichette per i Comuni piccoli (dx, dy in unità della carta)
@@ -644,13 +644,15 @@
       const mx = pv.massimi_12h;
       const box = (v, u, l) => `<div class="misura"><b>${t(v)}${v == null ? "" : u}</b><span>${l}</span></div>`;
       const nv = pv.neve_48h || {}, lu = (pv.luce || [])[0] || {};
-      $("massimi").innerHTML = box(mx.raffica_kmh, " km/h", "Raffica massima") + box(mx.pioggia_oraria_mm, " mm", "Pioggia oraria massima") + box(mx.pioggia_totale_mm, " mm", "Pioggia totale 12 h") + box(mx.temperatura, " °C", "Temperatura massima") +
+      const alto = (v, u) => v != null ? ` · scenario alto ${v}${u}` : "";
+      $("massimi").innerHTML = box(mx.raffica_kmh, " km/h", "Raffica massima" + alto(mx.raffica_alta_kmh, " km/h")) + box(mx.pioggia_oraria_mm, " mm", "Pioggia oraria massima") + box(mx.pioggia_totale_mm, " mm", "Pioggia totale 12 h" + alto(mx.pioggia_totale_alta_mm, " mm")) + box(mx.temperatura, " °C", "Temperatura massima") +
         (nv.zero_termico_min != null ? `<div class="misura"><b>${nv.zero_termico_min}–${nv.zero_termico_max} m</b><span>Zero termico 48 h</span></div>${limiteNeve(nv)}` : "") +
         (lu.alba ? `<div class="misura"><b>${lu.alba} – ${lu.tramonto}</b><span>Luce oggi (crepuscolo ${lu.crepuscolo_mattino} / ${lu.crepuscolo_sera})</span></div>` : "");
-      $("orario").innerHTML = `<tr><th>Ora</th><th>Tempo</th><th class="num">°C</th><th class="num"><span class="no-m">Pioggia</span><span class="solo-m">mm</span></th><th class="num"><span class="no-m">Prob.</span><span class="solo-m">%</span></th><th class="num c-vento">Vento</th><th class="num">Raffica</th></tr>` +
-        pv.orario.map(o => `<tr><td>${o.ora}</td><td>${CODICI[o.codice] || o.codice}</td><td class="num">${t(o.temperatura)}</td><td class="num">${t(o.pioggia_mm)}<span class="no-m"> mm</span></td><td class="num">${t(o.prob_pioggia)}<span class="no-m"> %</span></td><td class="num c-vento">${t(o.vento_kmh)}</td><td class="num">${t(o.raffica_kmh)}</td></tr>`).join("");
+      $("orario").innerHTML = `<tr><th>Ora</th><th>Tempo</th><th class="num">°C</th><th class="num"><span class="no-m">Pioggia</span><span class="solo-m">mm</span></th><th class="num"><span class="no-m">Prob.</span><span class="solo-m">%</span></th><th class="num c-vento">Vento</th><th class="num">Raffica${pv.ufficiale ? '<small style="font-weight:400"> / alta</small>' : ""}</th></tr>` +
+        pv.orario.map(o => `<tr><td>${o.ora}</td><td>${CODICI[o.codice] || t(o.codice)}</td><td class="num">${t(o.temperatura)}</td><td class="num">${t(o.pioggia_mm)}<span class="no-m"> mm</span></td><td class="num">${t(o.prob_pioggia)}<span class="no-m"> %</span></td><td class="num c-vento">${t(o.vento_kmh)}</td><td class="num">${t(o.raffica_kmh)}${o.raffica_alta_kmh != null ? `<small style="color:var(--muto)"> / ${o.raffica_alta_kmh}</small>` : ""}</td></tr>`).join("") +
+        (pv.ufficiale ? `<tr><td colspan="7" style="color:var(--muto);font-size:12.5px">Fonte: MeteoSvizzera, previsione locale ufficiale per Lugano. «Alta» e «scenario alto»: valore superato solo in un caso su dieci. ${pv.fonte_secondaria ? pv.fonte_secondaria.charAt(0).toUpperCase() + pv.fonte_secondaria.slice(1) + "." : ""}</td></tr>` : "");
       $("giorni").innerHTML = `<tr><th>Giorno</th><th>Tempo</th><th class="num">Min / Max</th><th class="num">Pioggia</th><th class="num">Raffica max</th></tr>` +
-        pv.giorni.map(g => `<tr><td>${new Date(g.data).toLocaleDateString("it-CH", {weekday: "short", day: "numeric", month: "numeric"})}</td><td>${CODICI[g.codice] || g.codice}</td><td class="num">${t(g.tmin)} / ${t(g.tmax)} °C</td><td class="num">${t(g.pioggia_mm)} mm</td><td class="num">${t(g.raffica_max)} km/h</td></tr>`).join("");
+        pv.giorni.map(g => `<tr><td>${new Date(g.data).toLocaleDateString("it-CH", {weekday: "short", day: "numeric", month: "numeric"})}</td><td>${CODICI[g.codice] || t(g.codice)}</td><td class="num">${t(g.tmin)} / ${t(g.tmax)} °C</td><td class="num">${t(g.pioggia_mm)} mm</td><td class="num">${t(g.raffica_max)} km/h</td></tr>`).join("");
     }
     sintesi(stantio);
   }
