@@ -548,11 +548,230 @@ def _tempo(x):
         return None
 
 
+# ---------------------------------------------------------------- MeteoSvizzera: previsione locale ufficiale (dati aperti)
+MS_CHIAVI = ("temperatura", "pioggia", "pioggia_alta", "raffica", "raffica_alta", "vento", "zero_termico", "prob_pioggia_3h")
+MS_OBBLIGATORI = ("temperatura", "pioggia", "raffica")
+
+
+def _ms_ultima_corsa(cfg):
+    """Cerca la corsa più recente che contiene tutti i parametri richiesti. I file stanno in un «item» per giorno
+    (AAAAMMGG-ch) e si chiamano …<corsa AAAAMMGGHHMM>.<parametro>.csv. Restituisce (corsa, {parametro: url})."""
+    richiesti = {v for k, v in cfg["parametri"].items() if k in MS_OBBLIGATORI}
+    for giorni_fa in (0, 1, 2):
+        giorno = (ADESSO - timedelta(days=giorni_fa)).strftime("%Y%m%d")
+        try:
+            js = scarica(cfg["url_item"].format(giorno=giorno), "json", timeout=30)
+        except Exception as e:
+            log(f"MeteoSvizzera: elenco del {giorno} non letto ({str(e)[:80]})")
+            continue
+        corse = {}
+        for nome, a in (js.get("assets") or {}).items():
+            m = re.search(r"\.(\d{12})\.([a-z0-9]+)\.csv$", nome)
+            if m and isinstance(a, dict) and a.get("href"):
+                corse.setdefault(m.group(1), {})[m.group(2)] = a["href"]
+        complete = [c for c, f in corse.items() if richiesti <= set(f)]
+        if complete:
+            c = max(complete)
+            return c, corse[c]
+    return None, {}
+
+
+def _ms_leggi_file(url, prefissi):
+    """Scorre un file CSV (fino a 33 MB, tutti i punti della Svizzera) tenendo solo le righe dei punti richiesti.
+    prefissi: {b"690000;2;": chiave}. Restituisce {chiave: {AAAAMMGGHHMM: valore}}."""
+    out = {k: {} for k in prefissi.values()}
+    inizi = tuple(prefissi)
+    with requests.get(url, headers=HEADERS, timeout=(15, 90), stream=True) as r:
+        r.raise_for_status()
+        for riga in r.iter_lines():
+            if not riga or not riga.startswith(inizi):
+                continue
+            campi = riga.decode("latin-1").split(";")
+            if len(campi) < 4:
+                continue
+            try:
+                out[prefissi[(campi[0] + ";" + campi[1] + ";").encode()]][campi[2].strip()] = float(campi[3])
+            except (KeyError, ValueError):
+                continue
+    return out
+
+
+def meteosvizzera_locale(prec):
+    """Previsione locale ufficiale di MeteoSvizzera (la stessa dell'app), per i punti di config.json.
+    Si scaricano i file solo quando esce una corsa nuova; fra una corsa e l'altra vale l'ultima lettura.
+    Una corsa più vecchia di max_eta_ore non viene usata: la pagina ripiega su Open-Meteo e lo dichiara."""
+    cfg = (CFG["previsione"].get("meteosvizzera") or {})
+    if not cfg.get("url_item"):
+        return None
+    prec = prec if isinstance(prec, dict) else {}
+
+    def valida(d):
+        t = _ms_tempo(d.get("corsa"))
+        return bool(d.get("disponibile") and t and (ADESSO - t).total_seconds() <= cfg.get("max_eta_ore", 6) * 3600)
+
+    try:   # controllo dell'elenco al massimo ogni intervallo_minuti
+        if prec.get("controllato") and (ADESSO - _tempo(prec["controllato"])).total_seconds() < cfg.get("intervallo_minuti", 20) * 60 and valida(prec):
+            return prec
+    except Exception:
+        pass
+    corsa, file = _ms_ultima_corsa(cfg)
+    if corsa is None:
+        if valida(prec):
+            return {**prec, "nota": "elenco delle corse non raggiungibile, vale l'ultima lettura"}
+        return non_disp("nessuna corsa di previsione trovata")
+    if prec.get("corsa") == corsa and prec.get("disponibile"):
+        return {**prec, "controllato": ADESSO.isoformat(timespec="seconds")} if valida(prec) else non_disp("ultima corsa pubblicata troppo vecchia")
+    punti = {str(k): v for k, v in (cfg.get("punti") or {}).items()}
+    prefissi = {f"{pid};{v.get('tipo', 2)};".encode(): pid for pid, v in punti.items()}
+    serie = {pid: {} for pid in punti}
+    errori = []
+    for chiave in MS_CHIAVI:
+        par = cfg["parametri"].get(chiave)
+        if not par or par not in file:
+            continue
+        try:
+            letto = _ms_leggi_file(file[par], prefissi)
+        except Exception as e:
+            errori.append(f"{chiave}: {str(e)[:60]}")
+            continue
+        for pid, valori in letto.items():
+            serie[pid][chiave] = valori
+    principale = str(cfg.get("punto_principale"))
+    if errori:
+        log("MeteoSvizzera: " + " | ".join(errori))
+    if any(not serie.get(principale, {}).get(k) for k in MS_OBBLIGATORI):
+        if valida(prec):
+            return {**prec, "nota": "nuova corsa non leggibile, vale la precedente"}
+        return non_disp("file della previsione non leggibili" + (": " + errori[0] if errori else ""))
+    out = {"disponibile": True, "corsa": corsa, "corsa_locale": _ms_tempo(corsa).astimezone(TZ).strftime("%d.%m. %H:%M"),
+           "letto": ADESSO.isoformat(timespec="seconds"), "controllato": ADESSO.isoformat(timespec="seconds"),
+           "fonte": "MeteoSvizzera, previsione locale", "punti": {}}
+    for pid, v in punti.items():
+        s = serie.get(pid) or {}
+        if not s.get("temperatura"):
+            continue
+        tempi = sorted(set().union(*[set(x) for x in s.values()]))
+        chiavi = MS_CHIAVI
+        if pid != principale:
+            # per gli altri punti bastano le prossime 30 ore e le grandezze del riepilogo: il file dei dati resta leggero
+            limite = (ADESSO + timedelta(hours=30)).strftime("%Y%m%d%H%M")
+            tempi = [t for t in tempi if t <= limite]
+            chiavi = ("temperatura", "pioggia", "pioggia_alta", "raffica", "raffica_alta")
+        out["punti"][pid] = {"nome": v.get("nome"), "t": tempi,
+                             **{k: [s.get(k, {}).get(t) for t in tempi] for k in chiavi if s.get(k)}}
+    GREZZI["meteosvizzera_locale"] = {"corsa": corsa, "punti": list(out["punti"]), "errori": errori}
+    log(f"MeteoSvizzera: corsa {corsa} letta, {len(out['punti'])} punti")
+    return out
+
+
+def _ms_tempo(v):
+    try:
+        return datetime.strptime(str(v), "%Y%m%d%H%M").replace(tzinfo=timezone.utc)
+    except (TypeError, ValueError):
+        return None
+
+
+def _ms_riepilogo(punto, ore=(12, 24)):
+    """Massimi e somme delle prossime ore per un punto (usato per l'elenco dei Comuni)."""
+    righe = [(t, i) for i, t in enumerate(punto["t"]) if (_ms_tempo(t) or ADESSO) > ADESSO]
+    def col(k, n):
+        return [punto[k][i] for _, i in righe[:n] if k in punto and punto[k][i] is not None]
+    r = {}
+    for n in ore:
+        raf, raf_a, pio, pio_a, tem = col("raffica", n), col("raffica_alta", n), col("pioggia", n), col("pioggia_alta", n), col("temperatura", n)
+        r[f"{n}h"] = {"raffica_max": max(raf) if raf else None, "raffica_alta_max": max(raf_a) if raf_a else None,
+                      "pioggia": round(sum(pio), 1) if pio else None, "pioggia_alta": round(sum(pio_a), 1) if pio_a else None,
+                      "tmin": min(tem) if tem else None, "tmax": max(tem) if tem else None}
+    return r
+
+
+def _applica_ms(out, punto, ms):
+    """Sostituisce nei riquadri «Prossime 12 ore» e «Prossimi giorni» i valori di Open-Meteo con la previsione ufficiale.
+    Da Open-Meteo restano solo il tipo di tempo, l'umidità e gli orari di luce, che MeteoSvizzera non fornisce in questa forma."""
+    g = lambda k, i: punto[k][i] if k in punto and i < len(punto[k]) else None
+    futuri = [(t, i) for i, t in enumerate(punto["t"]) if (_ms_tempo(t) or ADESSO) > ADESSO - timedelta(minutes=1) and g("temperatura", i) is not None]
+    if len(futuri) < 12:
+        return False
+    vecchio_orario = {o["ora"]: o for o in (out.get("orario") or [])}
+    orario = []
+    for t, i in futuri[:12]:
+        loc = _ms_tempo(t).astimezone(TZ)
+        ora = loc.strftime("%H:%M")
+        # probabilità su 3 ore: vale il primo intervallo che termina a quest'ora o dopo
+        prob = next((punto["prob_pioggia_3h"][j] for j in range(i, min(i + 3, len(punto["t"])))
+                     if punto["prob_pioggia_3h"][j] is not None), None) if "prob_pioggia_3h" in punto else None
+        om = vecchio_orario.get(ora, {})
+        orario.append({"ora": ora, "temperatura": g("temperatura", i), "umidita": om.get("umidita"), "pioggia_mm": g("pioggia", i),
+                       "pioggia_alta_mm": g("pioggia_alta", i), "prob_pioggia": round(prob) if prob is not None else None,
+                       "vento_kmh": g("vento", i), "raffica_kmh": g("raffica", i), "raffica_alta_kmh": g("raffica_alta", i),
+                       "codice": om.get("codice")})
+    def mx(k):
+        v = [o[k] for o in orario if o.get(k) is not None]
+        return max(v) if v else None
+    def somma(k):
+        v = [o[k] for o in orario if o.get(k) is not None]
+        return round(sum(v), 1) if v else None
+    massimi = {"raffica_kmh": mx("raffica_kmh"), "raffica_alta_kmh": mx("raffica_alta_kmh"), "pioggia_oraria_mm": mx("pioggia_mm"),
+               "pioggia_totale_mm": somma("pioggia_mm"), "pioggia_totale_alta_mm": somma("pioggia_alta_mm"), "temperatura": mx("temperatura")}
+    # giorni: minime, massime e somme calcolate sulle ore di ciascun giorno locale (il primo e l'ultimo possono essere parziali)
+    per_giorno = {}
+    for t, i in futuri:
+        d = (_ms_tempo(t) - timedelta(minutes=1)).astimezone(TZ).strftime("%Y-%m-%d")
+        per_giorno.setdefault(d, []).append(i)
+    codici = {x["data"]: x.get("codice") for x in (out.get("giorni") or [])}
+    giorni = []
+    for d in sorted(per_giorno)[:6]:
+        idx = per_giorno[d]
+        tem = [g("temperatura", i) for i in idx if g("temperatura", i) is not None]
+        pio = [g("pioggia", i) for i in idx if g("pioggia", i) is not None]
+        raf = [g("raffica", i) for i in idx if g("raffica", i) is not None]
+        if not tem:
+            continue
+        giorni.append({"data": d, "tmax": max(tem), "tmin": min(tem), "pioggia_mm": round(sum(pio), 1) if pio else None,
+                       "raffica_max": max(raf) if raf else None, "codice": codici.get(d), "ore": len(idx)})
+    zero = [g("zero_termico", i) for _, i in futuri[:48] if g("zero_termico", i) is not None]
+    out.update(orario=orario, giorni=giorni, massimi_12h=massimi, ufficiale=True, corsa=ms.get("corsa_locale"),
+               fonte=f"MeteoSvizzera, previsione locale ufficiale (corsa del {ms.get('corsa_locale')})",
+               fonte_secondaria="tipo di tempo, umidità, luce e limite neve: Open-Meteo")
+    if zero and isinstance(out.get("neve_48h"), dict):
+        out["neve_48h"].update(zero_termico_min=round(min(zero)), zero_termico_max=round(max(zero)), zero_termico_ora=round(zero[0]),
+                               zero_termico_fonte="MeteoSvizzera")
+    return True
+
+
 # ---------------------------------------------------------------- Open-Meteo: previsione
 ORE_SERIE = 60   # ore di previsione conservate per il riuso (48 h di finestra neve + margine)
 
 
-def previsione(lat=None, lon=None, precedente=None):
+def previsione(lat=None, lon=None, precedente=None, ms=None):
+    out = _previsione_open_meteo(lat, lon, precedente)
+    punto = None
+    try:
+        if ms and ms.get("disponibile"):
+            punto = (ms.get("punti") or {}).get(str(CFG["previsione"]["meteosvizzera"].get("punto_principale")))
+    except Exception:
+        punto = None
+    if punto is None:
+        return out
+    if not out.get("disponibile"):      # Open-Meteo non risponde: la previsione ufficiale basta da sola
+        out = {"disponibile": True, "orario": [], "giorni": [], "massimi_12h": {}, "luce": [], "riutilizzata": False,
+               "neve_48h": {"zero_termico_min": None, "zero_termico_max": None, "zero_termico_ora": None, "limite_neve_min": None,
+                            "neve_48h_cm": None, "precipitazione": None, "nota": "Open-Meteo non disponibile"},
+               "letta": ADESSO.isoformat(timespec="seconds")}
+        senza_om = True
+    else:
+        senza_om = False
+    try:
+        if _applica_ms(out, punto, ms):
+            if senza_om:
+                out["fonte_secondaria"] = "tipo di tempo, umidità, luce e limite neve non disponibili (Open-Meteo non risponde)"
+            return out
+    except Exception as e:
+        log(f"MeteoSvizzera: applicazione non riuscita ({str(e)[:120]})")
+    return out if not senza_om else non_disp("previsione non disponibile")
+
+
+def _previsione_open_meteo(lat=None, lon=None, precedente=None):
     """Legge la previsione Open-Meteo. Se il servizio non risponde (anche dopo un secondo tentativo),
     riusa l'ultima lettura riuscita, ricalcolata sull'ora attuale e marcata con l'ora di lettura,
     purché non sia più vecchia di previsione.riuso_max_ore (config.json, predefinito 6 h)."""
@@ -1214,7 +1433,22 @@ def main():
     log("Rete cantonale OASI letta")
     sito = BASE / "sito" / "dati.json"
     vecchio = _leggi_json(sito)
-    dati["previsione"] = previsione(precedente=(vecchio or {}).get("previsione"))
+    try:
+        dati["meteosvizzera"] = meteosvizzera_locale((vecchio or {}).get("meteosvizzera"))
+    except Exception as e:
+        log(f"MeteoSvizzera: errore {str(e)[:120]}")
+        dati["meteosvizzera"] = non_disp("errore nella lettura")
+    log("Previsione MeteoSvizzera letta")
+    dati["previsione"] = previsione(precedente=(vecchio or {}).get("previsione"), ms=dati["meteosvizzera"])
+    ms = dati["meteosvizzera"]
+    if ms and ms.get("disponibile"):
+        # riepilogo per Comune (raffiche e pioggia delle prossime 12 e 24 ore)
+        nomi = {str(k): v.get("nome") for k, v in (CFG["previsione"]["meteosvizzera"].get("punti") or {}).items()}
+        try:
+            dati["previsione_comuni"] = {"corsa": ms.get("corsa_locale"),
+                                         "punti": {nomi.get(pid, pid): _ms_riepilogo(pt) for pid, pt in ms["punti"].items()}}
+        except Exception as e:
+            log(f"MeteoSvizzera: riepilogo per Comune non riuscito ({str(e)[:100]})")
     log("Previsione letta")
     dati["messaggio"] = messaggio()
 
