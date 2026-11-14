@@ -203,6 +203,91 @@ def alertswiss():
     return {"disponibile": True, "fonte": usato, "totale_svizzera": len(voci), "notifiche": pertinenti}
 
 
+# ---------------------------------------------------------------- SLF: bollettino valanghe
+GRADI_VALANGHE = {"low": 1, "moderate": 2, "considerable": 3, "high": 4, "very_high": 5}
+PROBLEMI_VALANGHE = {"new_snow": "neve fresca", "wind_slab": "neve ventata", "persistent_weak_layers": "strati deboli persistenti",
+                     "wet_snow": "neve bagnata", "gliding_snow": "slittamenti", "cornices": "cornici"}
+
+
+def valanghe():
+    """Bollettino valanghe SLF (CAAML v6, JSON): grado massimo per le regioni di allerta indicate in config.json.
+    Distingue tre casi: fonte non raggiungibile (non disponibile), nessun bollettino in vigore, bollettino in vigore.
+    Un bollettino scaduto non viene mai mostrato come valido."""
+    cfg = CFG.get("valanghe") or {}
+    if not cfg.get("url_candidati"):
+        return None
+    js, usato = None, None
+    for url in cfg["url_candidati"]:
+        try:
+            js = scarica(url, "json", timeout=15)
+            usato = url
+            break
+        except Exception as e:
+            log(f"Valanghe: {url} non risponde ({str(e)[:100]})")
+    if js is None:
+        return non_disp("nessun URL del bollettino SLF risponde")
+    GREZZI["valanghe"] = js
+    if isinstance(js, dict) and isinstance(js.get("bulletins"), list):
+        bollettini = js["bulletins"]
+    elif isinstance(js, dict) and isinstance(js.get("features"), list):      # variante GeoJSON
+        bollettini = [f.get("properties") or {} for f in js["features"]]
+    elif isinstance(js, list):
+        bollettini = js
+    else:
+        return non_disp("formato del bollettino non riconosciuto")
+    prefissi = tuple(cfg.get("prefissi_regione") or ["CH-6"])
+    regioni, tutte, validita = {}, set(), []
+    for b in bollettini:
+        if not isinstance(b, dict):
+            continue
+        vt = b.get("validTime") or {}
+        inizio, fine = _tempo(vt.get("startTime")), _tempo(vt.get("endTime"))
+        reg = [r for r in (b.get("regions") or []) if isinstance(r, dict) and r.get("regionID")]
+        if not reg and b.get("regionID"):
+            reg = [{"regionID": b["regionID"], "name": b.get("regionName") or b.get("name")}]
+        tutte.update(r["regionID"] for r in reg)
+        miei = [r for r in reg if str(r["regionID"]).startswith(prefissi)]
+        if not miei:
+            continue
+        if fine is not None and fine < ADESSO:
+            continue                                  # scaduto
+        if inizio is not None and inizio > ADESSO + timedelta(hours=12):
+            continue                                  # non ancora in vigore
+        migliore = None
+        for d in b.get("dangerRatings") or []:
+            g = GRADI_VALANGHE.get(str((d or {}).get("mainValue")))
+            if g is None:
+                continue
+            sudd = (((d.get("customData") or {}).get("CH") or {}).get("subdivision"))
+            cand = {"grado": g, "suddivisione": {"minus": "−", "neutral": "=", "plus": "+"}.get(sudd, ""),
+                    "quota_da": (d.get("elevation") or {}).get("lowerBound"), "periodo": d.get("validTimePeriod")}
+            if migliore is None or g > migliore["grado"]:
+                migliore = cand
+        if migliore is None:
+            continue
+        problemi = []
+        for pr in b.get("avalancheProblems") or []:
+            nome = PROBLEMI_VALANGHE.get(str((pr or {}).get("problemType")))
+            if nome and nome not in problemi:
+                problemi.append(nome)
+        validita.append((inizio, fine))
+        for r in miei:
+            prec = regioni.get(r["regionID"])
+            if prec is None or migliore["grado"] > prec["grado"]:
+                regioni[r["regionID"]] = {"id": r["regionID"], "nome": r.get("name") or r["regionID"], **migliore, "problemi": problemi}
+    base = {"disponibile": True, "fonte": usato, "regioni_svizzera": len(tutte)}
+    if not regioni:
+        esempio = ", ".join(sorted(tutte)[:6])
+        return {**base, "in_vigore": False,
+                "nota": "Nessun bollettino valanghe in vigore per il Ticino" + (f" (in Svizzera: {len(tutte)} regioni)" if tutte else "")
+                , "_regioni_viste": esempio}
+    elenco = sorted(regioni.values(), key=lambda r: (-r["grado"], r["nome"]))
+    fini = [f for _, f in validita if f is not None]
+    return {**base, "in_vigore": True, "grado_max": elenco[0]["grado"], "regioni": elenco,
+            "valido_fino": min(fini).astimezone(TZ).strftime("%d.%m. %H:%M") if fini else None,
+            "valido_fino_iso": min(fini).isoformat(timespec="minutes") if fini else None}
+
+
 # ---------------------------------------------------------------- UFAM: pegel
 def pegel(st):
     valore, serie, punti, usato = None, [], [], None
@@ -474,11 +559,12 @@ def previsione(lat=None, lon=None, precedente=None):
     p = CFG["previsione"]
     url = p["url"].format(lat=lat if lat is not None else p["lat"], lon=lon if lon is not None else p["lon"])
     errore = None
+    modello = _neve_modello(lat if lat is not None else p["lat"], lon if lon is not None else p["lon"])
     for tentativo in (1, 2):
         try:
             js = scarica(url, "json", timeout=15)
             GREZZI["open_meteo"] = js
-            out = _elabora_previsione(js)
+            out = _elabora_previsione(js, modello)
             out["letta"] = ADESSO.isoformat(timespec="seconds")
             out["riutilizzata"] = False
             out["_serie"] = _serie_previsione(js)
@@ -490,7 +576,7 @@ def previsione(lat=None, lon=None, precedente=None):
         serie, letta = precedente["_serie"], _tempo(precedente["letta"])
         eta_ore = (ADESSO - letta).total_seconds() / 3600
         if 0 <= eta_ore <= p.get("riuso_max_ore", 6):
-            out = _elabora_previsione(serie)
+            out = _elabora_previsione(serie, modello)
             if out["orario"]:
                 ora_lettura = letta.astimezone(TZ).strftime("%H:%M")
                 out.update(fonte=f"Open-Meteo (non ufficiale), ultima lettura {ora_lettura}",
@@ -513,7 +599,92 @@ def _serie_previsione(js):
             "daily": js.get("daily", {})}
 
 
-def _elabora_previsione(js):
+def _neve_modello(lat, lon):
+    """Seconda lettura, solo per la neve: modello MeteoSvizzera ICON-CH (tramite Open-Meteo), che fornisce
+    la quota delle nevicate calcolata dal modello. Se non risponde restituisce None e si ripiega sulla stima."""
+    url = ((CFG["previsione"].get("neve") or {}).get("url_modello") or "").strip()
+    if not url:
+        return None
+    try:
+        js = scarica(url.format(lat=lat, lon=lon), "json", timeout=15)
+    except Exception as e:
+        log(f"Neve: modello MeteoSvizzera non letto ({str(e)[:120]}), uso la stima dallo zero termico")
+        return None
+    GREZZI.setdefault("open_meteo_neve", {})[f"{lat},{lon}"] = js
+    return js
+
+
+def _neve_48h(generico, modello):
+    """Limite delle nevicate nelle prossime 48 ore, considerando solo le ore con precipitazione prevista.
+    Con il modello MeteoSvizzera si usa la quota delle nevicate del modello; altrimenti zero termico meno
+    uno scarto che cresce con l'intensità della precipitazione (la fusione raffredda l'aria)."""
+    cfg = CFG["previsione"].get("neve") or {}
+    prec_min = cfg.get("prec_minima_mm", 0.1)
+    scarti = sorted(cfg.get("scarti_m") or [[0, 300], [1, 450], [4, 600]])
+    adesso_loc = ADESSO.astimezone(TZ).replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M")
+
+    def finestra(js):
+        h = (js or {}).get("hourly") or {}
+        ore = h.get("time") or []
+        i0 = next((i for i, t in enumerate(ore) if t >= adesso_loc), len(ore))
+        col = lambda k: [v if isinstance(v, (int, float)) else None for v in (h.get(k) or [])[i0:i0 + 48]]
+        return {"ore": ore[i0:i0 + 48], "prec": col("precipitation"), "zt": col("freezing_level_height"),
+                "neve": col("snowfall"), "quota": col("snowfall_height")}
+
+    g, m = finestra(generico), finestra(modello)
+    # il modello vale se copre almeno 24 delle 48 ore con la precipitazione
+    da_modello = sum(v is not None for v in m["prec"]) >= 24
+    f = m if da_modello else g
+    n = len(f["ore"])
+    zt = [v for v in f["zt"] if v is not None] or [v for v in g["zt"] if v is not None]
+    nv = [v for v in f["neve"] if v is not None]
+    out = {"zero_termico_min": round(min(zt)) if zt else None, "zero_termico_max": round(max(zt)) if zt else None,
+           "zero_termico_ora": round(zt[0]) if zt else None,
+           # campo storico (zero termico minimo − 300 m, anche senza precipitazioni): resta per le pagine non ancora aggiornate
+           "limite_neve_min": max(0, round(min(zt) - 300, -1)) if zt else None,
+           "neve_48h_cm": round(sum(nv), 1) if nv else None}
+    if n < 12 or not any(v is not None for v in f["prec"]):
+        out.update(precipitazione=None, nota="precipitazione prevista non disponibile")
+        return out
+    quote, stimate = [], 0
+    for i in range(n):
+        p = f["prec"][i]
+        if p is None or p < prec_min:
+            continue
+        q = f["quota"][i] if da_modello and i < len(f["quota"]) else None
+        if q is None:
+            z = f["zt"][i] if i < len(f["zt"]) else None
+            if z is None:
+                continue
+            scarto = [s for soglia, s in scarti if p >= soglia][-1]
+            q, stimata = z - scarto, True
+            stimate += 1
+        quote.append((max(0.0, q), f["ore"][i]))
+    quota_luogo = (modello if da_modello else generico or {}).get("elevation")
+    out.update(precipitazione=bool(quote), ore_con_precipitazione=len(quote),
+               modello="MeteoSvizzera ICON-CH (via Open-Meteo)" if da_modello else "Open-Meteo, modello generico")
+    if not quote:
+        out["nota"] = "nessuna precipitazione prevista nelle prossime 48 ore"
+        return out
+    q_min, quando = min(quote)
+    q_max = max(quote)[0]
+    arr = lambda v: int(round(v / 50.0) * 50)
+    try:
+        t = datetime.fromisoformat(quando)
+        giorni = ["lun", "mar", "mer", "gio", "ven", "sab", "dom"]
+        quando_txt = f"{giorni[t.weekday()]} {t:%H:%M}"
+    except ValueError:
+        quando_txt = quando
+    out.update(limite_min=arr(q_min), limite_max=arr(q_max), limite_quando=quando_txt,
+               metodo="modello" if stimate == 0 else "stima",
+               fino_al_piano=bool(isinstance(quota_luogo, (int, float)) and q_min <= quota_luogo + 50),
+               quota_luogo=round(quota_luogo) if isinstance(quota_luogo, (int, float)) else None,
+               nota="quota delle nevicate del modello, solo ore con precipitazione" if stimate == 0
+               else "stima: zero termico meno 300–600 m secondo l'intensità, solo ore con precipitazione")
+    return out
+
+
+def _elabora_previsione(js, modello=None):
     h = js.get("hourly", {})
     ore = h.get("time", [])
     adesso_loc = ADESSO.astimezone(TZ).replace(minute=0, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M")
@@ -532,13 +703,13 @@ def _elabora_previsione(js):
     giorni = [{"data": d["time"][i], "tmax": d["temperature_2m_max"][i], "tmin": d["temperature_2m_min"][i],
                "pioggia_mm": d["precipitation_sum"][i], "raffica_max": d["wind_gusts_10m_max"][i],
                "codice": d["weather_code"][i]} for i in gi]
-    # zero termico e limite delle nevicate nelle prossime 48 ore (limite neve ≈ zero termico − 300 m)
-    zt = [v for v in h.get("freezing_level_height", [])[i0:i0 + 48] if isinstance(v, (int, float))]
-    nv = [v for v in h.get("snowfall", [])[i0:i0 + 48] if isinstance(v, (int, float))]
-    neve = {"zero_termico_min": round(min(zt)) if zt else None, "zero_termico_max": round(max(zt)) if zt else None,
-            "zero_termico_ora": round(zt[0]) if zt else None,
-            "limite_neve_min": max(0, round(min(zt) - 300, -1)) if zt else None,
-            "neve_48h_cm": round(sum(nv), 1) if nv else None, "nota": "limite neve stimato: zero termico − 300 m"}
+    # zero termico e limite delle nevicate nelle prossime 48 ore
+    try:
+        neve = _neve_48h(js, modello)
+    except Exception as e:      # la neve non deve mai far cadere il resto della previsione
+        log(f"Neve: elaborazione non riuscita ({str(e)[:120]})")
+        neve = {"zero_termico_min": None, "zero_termico_max": None, "zero_termico_ora": None,
+                "limite_neve_min": None, "neve_48h_cm": None, "precipitazione": None, "nota": "non disponibile"}
     # ore di luce di oggi e domani
     luce = []
     for i in gi[:2]:
@@ -597,6 +768,12 @@ def variazioni(nuovo, vecchio):
         for v in ns["notifiche"]:
             if v["titolo"] not in vt:
                 out.append({"testo": f"Nuova notifica Alertswiss: {v['titolo']}", "tipo": "peggiora"})
+    vv, nvv = vecchio.get("valanghe") or {}, nuovo.get("valanghe") or {}
+    if vv.get("disponibile") and nvv.get("disponibile"):
+        a, b = vv.get("grado_max") or 0, nvv.get("grado_max") or 0
+        if a != b:
+            out.append({"testo": f"Valanghe (SLF): grado massimo in Ticino da {a or 'nessun bollettino'} a {b or 'nessun bollettino'}",
+                        "tipo": "peggiora" if b > a else "migliora"})
     for fonte in ("misure", "allerte", "alertswiss", "pegel", "oasi", "previsione"):
         if _ok(nuovo, fonte) != _ok(vecchio, fonte):
             out.append({"testo": f"Fonte «{fonte}»: {'di nuovo disponibile' if _ok(nuovo, fonte) else 'NON disponibile'}",
@@ -791,6 +968,12 @@ def cantone(dati_regione):
     d["misure"] = {st["id"]: misure_smn(st) for st in C["stazioni_meteo"]}
     log("Quadro cantonale: misure lette")
     d["alertswiss"] = dati_regione["alertswiss"]
+    try:
+        d["valanghe"] = valanghe()
+    except Exception as e:
+        log(f"Valanghe: errore {str(e)[:120]}")
+        d["valanghe"] = non_disp("errore nella lettura del bollettino")
+    log("Quadro cantonale: bollettino valanghe letto")
     if "oasi" in C and not OASI_BLOCCATO["stato"]:
         d["oasi"] = [oasi(st) for st in C["oasi"]["stazioni"]]
         log("Quadro cantonale: rete OASI letta")
