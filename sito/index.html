@@ -483,6 +483,17 @@
     return `<span style="white-space:nowrap">mediana <b>${t(f.mediana_48h)} ${u}</b>${freccia} ${f.grado_mediana_48h != null ? livHtml(f.grado_mediana_48h) : ""}</span><br><small style="color:var(--muto)">scenario peggiore ${t(f.peggiore_48h)} ${u}${f.grado_peggiore_48h != null && f.grado_peggiore_48h >= 2 ? ` (grado ${f.grado_peggiore_48h})` : ""}${f.emessa ? ` · emessa ${f.emessa}` : ""}</small>`;
   }
 
+  // Limite delle nevicate: vale solo nelle ore con precipitazione prevista (quota del modello MeteoSvizzera, oppure stima dallo zero termico)
+  function limiteNeve(nv) {
+    const box = (v, l) => `<div class="misura"><b>${v}</b><span>${l}</span></div>`;
+    if (nv.precipitazione === undefined)   // dati del collettore precedente
+      return box(`≈ ${nv.limite_neve_min} m`, `Limite neve minimo 48 h${nv.neve_48h_cm ? `, ${nv.neve_48h_cm} cm attesi` : ""}`);
+    if (nv.precipitazione === null) return box("n/d", "Limite neve: precipitazione prevista non disponibile");
+    if (!nv.precipitazione) return box("—", "Limite neve: nessuna precipitazione prevista in 48 h");
+    const quota = nv.fino_al_piano ? "fino al piano" : nv.limite_min === nv.limite_max ? `≈ ${nv.limite_min} m` : `≈ ${nv.limite_min}–${nv.limite_max} m`;
+    return box(quota, `Limite neve con precipitazioni, 48 h · minimo ${nv.limite_quando}${nv.neve_48h_cm ? ` · ${nv.neve_48h_cm} cm attesi a Lugano` : ""} · ${nv.metodo === "modello" ? "modello MeteoSvizzera" : "stima dallo zero termico"}`);
+  }
+
   // Sparkline a barre: per la pioggia oraria
   function barre(serie) {
     const v = serie.filter(x => typeof x === "number");
@@ -634,7 +645,7 @@
       const box = (v, u, l) => `<div class="misura"><b>${t(v)}${v == null ? "" : u}</b><span>${l}</span></div>`;
       const nv = pv.neve_48h || {}, lu = (pv.luce || [])[0] || {};
       $("massimi").innerHTML = box(mx.raffica_kmh, " km/h", "Raffica massima") + box(mx.pioggia_oraria_mm, " mm", "Pioggia oraria massima") + box(mx.pioggia_totale_mm, " mm", "Pioggia totale 12 h") + box(mx.temperatura, " °C", "Temperatura massima") +
-        (nv.zero_termico_min != null ? `<div class="misura"><b>${nv.zero_termico_min}–${nv.zero_termico_max} m</b><span>Zero termico 48 h</span></div><div class="misura"><b>≈ ${nv.limite_neve_min} m</b><span>Limite neve minimo 48 h${nv.neve_48h_cm ? `, ${nv.neve_48h_cm} cm attesi` : ""}</span></div>` : "") +
+        (nv.zero_termico_min != null ? `<div class="misura"><b>${nv.zero_termico_min}–${nv.zero_termico_max} m</b><span>Zero termico 48 h</span></div>${limiteNeve(nv)}` : "") +
         (lu.alba ? `<div class="misura"><b>${lu.alba} – ${lu.tramonto}</b><span>Luce oggi (crepuscolo ${lu.crepuscolo_mattino} / ${lu.crepuscolo_sera})</span></div>` : "");
       $("orario").innerHTML = `<tr><th>Ora</th><th>Tempo</th><th class="num">°C</th><th class="num"><span class="no-m">Pioggia</span><span class="solo-m">mm</span></th><th class="num"><span class="no-m">Prob.</span><span class="solo-m">%</span></th><th class="num c-vento">Vento</th><th class="num">Raffica</th></tr>` +
         pv.orario.map(o => `<tr><td>${o.ora}</td><td>${CODICI[o.codice] || o.codice}</td><td class="num">${t(o.temperatura)}</td><td class="num">${t(o.pioggia_mm)}<span class="no-m"> mm</span></td><td class="num">${t(o.prob_pioggia)}<span class="no-m"> %</span></td><td class="num c-vento">${t(o.vento_kmh)}</td><td class="num">${t(o.raffica_kmh)}</td></tr>`).join("");

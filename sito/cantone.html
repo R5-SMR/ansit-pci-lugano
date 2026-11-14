@@ -56,7 +56,7 @@
   td.ev-val { color: var(--ev); font-weight: 700; }
   .ev-passata .ev-txt { font-weight: 400; opacity: .8; }
   #var-lista li.ev.critica { border: 1px solid var(--linea); border-left: 6px solid var(--ev); }
-  #basso { max-height: 36vh; }
+  #basso { max-height: 44vh; }
   tr.ev-critica > td { box-shadow: inset 0 3px 0 var(--ev), inset 0 -3px 0 var(--ev); }
   tr.ev-critica > td:first-child { box-shadow: inset 3px 0 0 var(--ev), inset 0 3px 0 var(--ev), inset 0 -3px 0 var(--ev); }
   tr.ev-critica > td:last-child { box-shadow: inset -3px 0 0 var(--ev), inset 0 3px 0 var(--ev), inset 0 -3px 0 var(--ev); }
@@ -122,7 +122,9 @@
   svg.spark { width: 6em; height: 1.6em; display: block; }
   svg.spark path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
   svg.spark line { stroke: var(--l3); stroke-width: 1; stroke-dasharray: 3 3; }
-  #basso { grid-column: 2; display: grid; grid-template-columns: 2fr 1fr; gap: .6em; }
+  #basso { grid-column: 2; display: grid; grid-template-columns: 1fr 1fr; gap: .6em; }
+  #prev th, #prev td { font-size: .76em; padding: .25em .25em; }
+  #misure th, #misure td { font-size: .84em; padding: .2em .35em; }
   @media (max-width: 1000px), (orientation: portrait) {
     header h1 .sott { display: block; margin-left: 0; }
     body { overflow: auto; height: auto; }
@@ -300,6 +302,33 @@
   const evTxt = e => e ? `<small class="ev-txt">${e.breve}</small>` : "";
   const oraMin = iso => new Date(iso).toLocaleTimeString("it-CH", {hour: "2-digit", minute: "2-digit"});
 
+  // Bollettino valanghe SLF: grado massimo e regioni ticinesi interessate; mai un grado se il bollettino è scaduto o i dati sono vecchi
+  function valangheHtml(stantio) {
+    const v = dati.valanghe;
+    if (!v) return "";
+    const scaduto = v.valido_fino_iso && new Date(v.valido_fino_iso).getTime() < Date.now();
+    if (!v.disponibile || stantio || (v.in_vigore && scaduto))
+      return `<li class="info"><b>Valanghe (SLF)</b> · ${livHtml(null, true)} bollettino non disponibile${scaduto ? " (scaduto)" : ""}; consultare slf.ch o White Risk</li>`;
+    if (!v.in_vigore) return `<li class="info"><b>Valanghe (SLF)</b> · nessun bollettino in vigore per il Ticino</li>`;
+    const perGrado = {};
+    for (const r of v.regioni) (perGrado[r.grado] = perGrado[r.grado] || []).push(r);
+    const righe = Object.keys(perGrado).sort((a, b) => b - a).filter(g => g >= 2 || v.grado_max < 2).map(g => {
+      const rr = perGrado[g], q = rr.map(r => r.quota_da).filter(x => x && /^\d+$/.test(x)).map(Number);
+      const pr = [...new Set(rr.flatMap(r => r.problemi || []))];
+      return `<b>grado ${g}${rr.every(r => r.suddivisione === rr[0].suddivisione) ? rr[0].suddivisione.replace("=", "") : ""}</b>${q.length ? ` oltre ${Math.min(...q)} m` : ""}: ${rr.map(r => r.nome).join(", ")}${pr.length ? ` <small style="color:var(--muto)">(${pr.join(", ")})</small>` : ""}`;
+    });
+    return `<li class="l${v.grado_max}"><b>Valanghe (SLF)</b> ${livHtml(v.grado_max)} ${v.valido_fino ? `<small style="color:var(--muto)">valido fino al ${v.valido_fino}</small>` : ""}<br>${righe.join("<br>")}</li>`;
+  }
+
+  function limiteNeve(nv) {
+    if (!nv) return "—";
+    if (nv.precipitazione === undefined) return nv.limite_neve_min != null ? "≈ " + nv.limite_neve_min + " m" : "—";   // dati del collettore precedente
+    if (nv.precipitazione === null) return "n/d";
+    if (!nv.precipitazione) return "—";
+    const q = nv.fino_al_piano ? "al piano" : nv.limite_min === nv.limite_max ? nv.limite_min + " m" : nv.limite_min + "–" + nv.limite_max + " m";
+    return q + (nv.metodo === "modello" ? "" : "*");
+  }
+
   function intestazione(eta, stantio) {
     $("stato").textContent = `Aggiornato ${dati.generato_locale} (${eta} min fa)`;
     $("banner").classList.toggle("on", stantio);
@@ -330,7 +359,7 @@
     const okMisure = Object.values(dati.misure).some(m => m.disponibile);
     const okPrev = Object.values(dati.previsioni).some(p => p.disponibile);
     const okOasi = (dati.oasi || []).some(o => o.disponibile);
-    $("fonti").innerHTML = [["Allerte", okAllerte], ["UFAM", okPegel], ["OASI", okOasi], ["Alertswiss", dati.alertswiss.disponibile], ["Misure", okMisure], ["Previsione", okPrev]]
+    $("fonti").innerHTML = [["Allerte", okAllerte], ["UFAM", okPegel], ["OASI", okOasi], ["Alertswiss", dati.alertswiss.disponibile], ["Misure", okMisure], ["Previsione", okPrev]].concat(dati.valanghe ? [["Valanghe", !!dati.valanghe.disponibile]] : [])
       .map(([n, ok]) => `<span class="${ok ? "" : "ko"}">${n}${ok ? "" : " KO"}</span>`).join("");
 
     // allerte attive (livello >= 2), raggruppate per regione
@@ -341,9 +370,9 @@
     }
     attive.sort((x, y) => (y.livello || 0) - (x.livello || 0));
     $("all-sub").textContent = `${attive.length} allerte di livello ≥ 2 su ${Object.keys(dati.allerte).length} regioni`;
-    $("all-lista").innerHTML = attive.length
+    $("all-lista").innerHTML = valangheHtml(stantio) + (attive.length
       ? attive.map(w => `<li class="l${w.livello}"><b>${w.reg}</b> · ${w.tipo} – livello ${w.livello}${w.preallerta ? " (preallerta)" : ""}<br><small style="color:var(--muto)">${t(w.dal)} → ${t(w.al)}</small>${w.testo ? `<br>${w.testo.slice(0, 220)}${w.testo.length > 220 ? "…" : ""}` : ""}</li>`).join("")
-      : `<li class="info">Nessuna allerta di livello 2 o superiore in Ticino.${okAllerte ? "" : " (fonte allerte non disponibile)"}</li>`;
+      : `<li class="info">Nessuna allerta di livello 2 o superiore in Ticino.${okAllerte ? "" : " (fonte allerte non disponibile)"}</li>`);
 
     // pegel
     const prevCella = p => {
@@ -377,10 +406,11 @@
         : `<tr><td>${m.nome || m.stazione || "?"}</td><td colspan="4" style="color:var(--muto)">n/d</td></tr>`; }).join("");
 
     // previsioni: massimi 12 h per località
-    $("prev").innerHTML = `<tr><th>Località</th><th class="num">Raffica max</th><th class="num">Pioggia 12 h</th><th class="num">Zero termico 48 h</th><th class="num">Limite neve</th><th class="num">Neve 48 h</th></tr>` +
+    $("prev").innerHTML = `<tr><th>Località</th><th class="num">Raffica</th><th class="num">Pioggia 12 h</th><th class="num">Zero termico</th><th class="num" title="solo nelle ore con precipitazione; * = stima dallo zero termico">Limite neve</th><th class="num">Neve 48 h</th></tr>` +
       Object.entries(dati.previsioni).map(([n, p]) => p.disponibile
-        ? `<tr><td>${n}</td><td class="num">${t(p.massimi_12h.raffica_kmh)} km/h</td><td class="num">${t(p.massimi_12h.pioggia_totale_mm)} mm</td><td class="num">${p.neve_48h ? p.neve_48h.zero_termico_min + "–" + p.neve_48h.zero_termico_max + " m" : "—"}</td><td class="num">${p.neve_48h && p.neve_48h.limite_neve_min != null ? "≈ " + p.neve_48h.limite_neve_min + " m" : "—"}</td><td class="num">${p.neve_48h && p.neve_48h.neve_48h_cm ? p.neve_48h.neve_48h_cm + " cm" : "—"}</td></tr>`
+        ? `<tr><td>${n}</td><td class="num">${t(p.massimi_12h.raffica_kmh)} km/h</td><td class="num">${t(p.massimi_12h.pioggia_totale_mm)} mm</td><td class="num">${p.neve_48h ? p.neve_48h.zero_termico_min + "–" + p.neve_48h.zero_termico_max + " m" : "—"}</td><td class="num">${limiteNeve(p.neve_48h)}</td><td class="num">${p.neve_48h && p.neve_48h.neve_48h_cm ? p.neve_48h.neve_48h_cm + " cm" : "—"}</td></tr>`
         : `<tr><td>${n}</td><td colspan="5" style="color:var(--muto)">n/d</td></tr>`).join("");
+    $("prev").insertAdjacentHTML("beforeend", `<tr><td colspan="6" style="color:var(--muto);font-size:.8em">Limite neve: solo nelle ore con precipitazione, quota del modello MeteoSvizzera ICON-CH; * = stima dallo zero termico; — = nessuna precipitazione in 48 h.</td></tr>`);
     const lu = ((dati.previsioni["Lugano"] || {}).luce || [])[0];
     const riuso = Object.values(dati.previsioni).find(p => p.disponibile && p.riutilizzata);
     if (lu) $("prev").insertAdjacentHTML("afterend", "");
