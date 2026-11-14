@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Picchetto · Quadro della situazione · PCi Lugano Città</title>
+<style>
+  :root {
+    --sfondo: #f3f4f2; --carta: #ffffff; --testo: #1b1f1d; --muto: #5c645f; --linea: #d8dcd9;
+    --l1: #e4e8e5; --l2: #f5d442; --l3: #f08a1f; --l4: #d8322c; --l5: #7a1b3a;
+    --nd: repeating-linear-gradient(135deg,#dfe3e0 0 6px,#cfd4d0 6px 12px);
+    --ok: #2e7d4f; --attenzione: #b35c00; --allarme: #b3261e;
+    --ev: #7b2cbf; --ev-chiaro: #ead9f7;   /* variazioni rapide: viola, fuori dalla scala dei gradi 1–5 */
+    box-sizing: border-box; padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    color-scheme: dark;
+    --sfondo: #161917; --carta: #202522; --testo: #ecefed; --muto: #a2aaa5; --linea: #38403b;
+    --l1: #2c332f; --nd: repeating-linear-gradient(135deg,#2c332f 0 6px,#363d39 6px 12px);
+    --ev: #c77dff; --ev-chiaro: #3d2952;
+  }}
+  * { box-sizing: inherit; }
+  html, body { margin: 0; background: var(--sfondo); color: var(--testo); }
+  body { font: 15px/1.45 -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  header { position: sticky; top: env(safe-area-inset-top,0px); z-index: 5; background: var(--carta); border-bottom: 1px solid var(--linea); padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+  header h1 { font-size: 22px; margin: 0; font-weight: 700; letter-spacing: -.01em; }
+  header h1 small { display: block; font-size: 12px; font-weight: 500; color: var(--muto); text-transform: uppercase; letter-spacing: .06em; }
+  header h1 .sott { margin-left: 8px; font-size: 15px; font-weight: 500; letter-spacing: 0; color: var(--muto); white-space: nowrap; }
+  .scelta { display: inline-flex; border: 1px solid var(--linea); border-radius: 8px; overflow: hidden; }
+  .scelta a { padding: 7px 14px; font-size: 14px; font-weight: 600; text-decoration: none; color: var(--muto); background: var(--carta); }
+  .scelta a + a { border-left: 1px solid var(--linea); }
+  .scelta a.attiva { background: var(--testo); color: var(--carta); }
+  header .stato { font-size: 13px; color: var(--muto); font-variant-numeric: tabular-nums; }
+  header .stato.vecchio { color: var(--allarme); font-weight: 600; }
+  header .riga1, header .riga2 { display: contents; }
+  #messaggio { display: none; padding: 10px 16px; font-size: 16px; border-left: 6px solid var(--muto); background: var(--carta); border-bottom: 1px solid var(--linea); }
+  #messaggio.on { display: block; } #messaggio.attenzione { border-left-color: var(--l3); background: #fff3c4; color: #1b1f1d; }
+  #messaggio.urgente { border-left-color: var(--l4); background: var(--l4); color: #fff; font-weight: 600; }
+  #messaggio small { opacity: .8; margin-left: 10px; font-size: 13px; }
+  main { max-width: 1000px; margin: 0 auto; padding: 14px 16px 60px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  section { scroll-margin-top: 84px; }
+  section h2 { font-size: 15px; font-weight: 600; margin: 0 0 8px; }
+  section h2 small { font-weight: 400; color: var(--muto); margin-left: 8px; font-size: 13px; }
+  .liv { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; padding: 0 6px; border-radius: 15px; font-weight: 700; font-size: 14px; color: #111; }
+  .liv.l1 { background: var(--l1); color: var(--muto); } .liv.l2 { background: var(--l2); } .liv.l3 { background: var(--l3); }
+  .liv.l4 { background: var(--l4); color: #fff; } .liv.l5 { background: var(--l5); color: #fff; }
+  .liv.nd { background: var(--nd); color: var(--muto); font-size: 12px; }
+  #sintesi { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  #sintesi a { background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 8px 4px 6px; min-height: 72px; text-decoration: none; color: var(--testo); display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 4px; text-align: center; }
+  #sintesi a b { font-size: 17px; font-weight: 700; height: 30px; display: flex; align-items: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  #sintesi a span.et { font-size: 12px; color: var(--muto); line-height: 1.2; }
+  #sintesi a.evidenza { border-color: var(--allarme); border-width: 2px; }
+  #sintesi a.ev { border-color: var(--ev); border-width: 3px; }
+  .schede { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px; }
+  .scheda { background: var(--carta); border: 1px solid var(--linea); border-left-width: 6px; border-radius: 6px; padding: 9px 12px; }
+  .scheda.l2 { border-left-color: var(--l2); } .scheda.l3 { border-left-color: var(--l3); } .scheda.l4 { border-left-color: var(--l4); } .scheda.l5 { border-left-color: var(--l5); }
+  .scheda .t { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-weight: 600; }
+  .scheda p { margin: 4px 0 0; } .scheda small { color: var(--muto); display: block; margin-top: 2px; }
+  .tabella { width: 100%; border-collapse: collapse; background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; overflow: hidden; }
+  .tabella th, .tabella td { text-align: left; padding: 7px 10px; border-top: 1px solid var(--linea); font-size: 14px; vertical-align: middle; }
+  .tabella th { font-weight: 600; border-top: 0; color: var(--muto); font-size: 13px; }
+  .tabella td small { color: var(--muto); margin-left: 6px; }
+  .scorri { overflow-x: auto; }
+  .nd-box { background: var(--nd); border-radius: 6px; padding: 10px 12px; color: var(--muto); font-size: 14px; }
+  .ok-box { background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 10px 12px; }
+  ul.lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+  ul.lista li { background: var(--carta); border: 1px solid var(--linea); border-left-width: 5px; border-radius: 6px; padding: 8px 12px; display: flex; align-items: center; gap: 10px; }
+  ul.lista li.forte { border-left-color: var(--allarme); } ul.lista li.ev { border-left-color: var(--ev); } ul.lista li.ev.critica { border: 3px solid var(--ev); border-left-width: 8px; }
+  ul.lista li small { color: var(--muto); display: block; }
+  ul.lista li.artificiale { opacity: .7; }
+  .nota { color: var(--muto); font-size: 13px; margin-top: 6px; }
+  .coll { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px; }
+  .coll a { background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: 9px 12px; text-decoration: none; color: var(--testo); font-weight: 600; min-height: 44px; }
+  .coll a small { display: block; font-weight: 400; color: var(--muto); }
+  .coll a:hover { background: var(--sfondo); }
+  footer { color: var(--muto); font-size: 13px; border-top: 1px solid var(--linea); padding-top: 12px; }
+  button { font: inherit; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--linea); background: var(--carta); color: var(--testo); cursor: pointer; }
+  .solo-m { display: none; }
+  @media (max-width: 640px) {
+    .solo-m { display: inline; } .no-m { display: none; }
+    body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top,0px); background: var(--carta); z-index: 10; }
+    header { display: block; padding: 0; top: calc(env(safe-area-inset-top,0px) - 48px); }
+    header .riga1 { display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 12px; }
+    header .riga2 { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 2px 6px 2px 12px; border-top: 1px solid var(--linea); }
+    header h1 { font-size: 16px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    header h1 small, header h1 .sott { display: none; }
+    .scelta a { padding: 9px 9px; font-size: 13px; }
+    header .stato { flex: 1; font-size: 12.5px; line-height: 1.25; }
+    #aggiorna { margin-left: 0 !important; min-width: 44px; min-height: 40px; border: 0; background: none; font-size: 22px; line-height: 1; padding: 0; }
+    main { padding: 10px 12px 40px; gap: 18px; }
+    section { scroll-margin-top: 56px; }
+    section h2 small { display: block; margin: 1px 0 0; font-size: 12.5px; }
+    #sintesi { grid-template-columns: repeat(3, 1fr); }
+    .tabella th, .tabella td { padding: 7px 6px; font-size: 13.5px; }
+    .tabella td small { display: block; margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="riga1">
+    <h1><small>Protezione civile Regione Lugano Città</small><span class="no-m">Quadro della situazione </span><span class="solo-m">Picchetto</span><span class="sott">Picchetto: altri fattori di rischio</span></h1>
+    <nav class="scelta" aria-label="Area"><a href="index.html"><span class="no-m">Regione Lugano Città</span><span class="solo-m">Regione</span></a><a href="cantone.html">Ticino</a><a class="attiva" href="picchetto.html" aria-current="page">Picchetto</a></nav>
+  </div>
+  <div class="riga2">
+    <div class="stato" id="stato">Caricamento dei dati…</div>
+    <button id="aggiorna" type="button" style="margin-left:auto" aria-label="Aggiorna i dati" title="Aggiorna i dati"><span class="no-m">Aggiorna</span><span class="solo-m" aria-hidden="true">↻</span></button>
+  </div>
+</header>
+<div id="messaggio"></div>
+
+<main>
+  <nav id="sintesi" aria-label="Sintesi della situazione"></nav>
+
+  <section id="sez-evidenze" hidden>
+    <h2>Variazioni rapide in Ticino<small>dettaglio nella pagina Ticino</small></h2>
+    <ul class="lista" id="ev-lista"></ul>
+  </section>
+
+  <section id="sez-incendio">
+    <h2>Incendio di bosco<small id="inc-sub">misure in vigore</small></h2>
+    <div id="incendio"></div>
+    <p class="nota">Fonte: UFAM e Cantoni (waldbrandgefahr.ch). La scala indica le misure decise dalle autorità, da 1 (nessuna) a 5 (divieto assoluto di accendere fuochi all'aperto): non è il grado di pericolo, che va letto sul Portale pericoli naturali.</p>
+  </section>
+
+  <section id="sez-terremoti">
+    <h2>Terremoti<small id="ter-sub"></small></h2>
+    <div id="terremoti"></div>
+    <p class="nota">Zona: Ticino e regioni confinanti. Da magnitudo <span id="ter-soglia">2.5</span> un terremoto è di norma avvertito dalla popolazione. I valori automatici possono essere corretti in seguito dal servizio sismico.</p>
+  </section>
+
+  <section id="sez-siccita">
+    <h2>Siccità<small id="sic-sub"></small></h2>
+    <div id="siccita"></div>
+    <p class="nota">Fonte: UFAM, piattaforma nazionale siccità. Indice combinato da 1 (non secco) a 5, aggiornato ogni settimana; allerta ai livelli 1, 2 e 4.</p>
+  </section>
+
+  <section id="sez-collegamenti">
+    <h2>Fonti da consultare direttamente<small>non lette in automatico</small></h2>
+    <div class="coll" id="collegamenti"></div>
+  </section>
+
+  <footer>
+    Prototipo interno a scopo di istruzione. Non è un canale di allerta. Nessun valore viene mostrato se il dato manca o è più vecchio di <span id="minuti-stantio"></span> minuti; le fonti di questa pagina vengono rilette a intervalli più lunghi (incendio ogni ora, siccità ogni 6 ore), l'ora dell'ultima lettura è indicata in ogni sezione.
+  </footer>
+</main>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const BASE_DATI = "https://raw.githubusercontent.com/R5-SMR/ansit-pci-lugano/main/sito/";
+  const t = v => (v === null || v === undefined || Number.isNaN(v)) ? "—" : v;
+  const esc = s => String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  const livHtml = (l, nd, testo) => (nd || l == null) ? '<span class="liv nd">n/d</span>' : `<span class="liv l${Math.min(5, Math.max(1, l))}">${testo != null ? testo : l}</span>`;
+  const oraMin = iso => new Date(iso).toLocaleTimeString("it-CH", {hour: "2-digit", minute: "2-digit"});
+  const letto = x => x && x.letto ? `letto alle ${oraMin(x.letto)}` : "";
+  const livMag = m => m >= 5 ? 4 : m >= 4 ? 3 : m >= 2.5 ? 2 : 1;
+  let dati = null, eraStantio = null;
+
+  async function carica() {
+    try {
+      let r = null;
+      try { r = await fetch(BASE_DATI + "cantone.json?_=" + Date.now(), {cache: "no-store"}); } catch (e) { r = null; }
+      if (!r || !r.ok) r = await fetch("cantone.json?_=" + Date.now(), {cache: "no-store"});
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      dati = await r.json();
+      disegna();
+    } catch (e) {
+      $("stato").textContent = "Dati non raggiungibili: " + e.message;
+      $("stato").className = "stato vecchio";
+    }
+  }
+
+  function intestazione(eta, stantio) {
+    $("stato").textContent = `Aggiornato ${dati.generato_locale} (${eta} min fa)` + (stantio ? " – DATI NON AGGIORNATI, considerare non disponibili" : "");
+    $("stato").className = "stato" + (stantio ? " vecchio" : "");
+  }
+
+  function disegna() {
+    const eta = Math.round((Date.now() - new Date(dati.generato).getTime()) / 60000);
+    const stantio = eta > dati.dati_stantii_minuti;
+    eraStantio = stantio;
+    intestazione(eta, stantio);
+    $("minuti-stantio").textContent = dati.dati_stantii_minuti;
+    const p = dati.picchetto || {};
+    const inc = p.incendio, sic = p.siccita, ter = p.terremoti;
+    const ok = x => x && x.disponibile && !stantio;
+    const assente = (x, nome) => `<div class="nd-box">${nome}: ${!x ? "non ancora letto dal collettore" : stantio ? "dati non aggiornati" : "fonte non disponibile (" + esc(x.motivo || "") + ")"}. Consultare la fonte diretta in fondo alla pagina.</div>`;
+
+    // ---- sintesi: meteo e acque (dalla pagina Ticino) + fattori di questa pagina
+    const massimo = el => { if (stantio || !el.length) return null; const l = el.filter(e => e.ok && e.liv != null).map(e => e.liv); const m = l.length ? Math.max(...l) : null; return (m !== null && m >= 2) ? m : (l.length === el.length ? m : null); };
+    const al = massimo(Object.values(dati.allerte || {}).map(a => ({ok: !!a.disponibile, liv: a.livello_max})));
+    const pg = massimo((dati.pegel || []).filter(x => x.soglie).map(x => ({ok: !!x.disponibile, liv: x.livello})));
+    const va = dati.valanghe, vaScaduto = va && va.valido_fino_iso && new Date(va.valido_fino_iso).getTime() < Date.now();
+    const durataEv = (dati.evidenza_durata_minuti || 60) * 60000;
+    const evid = stantio ? [] : (dati.evidenze || []).filter(e => Date.now() - new Date(e.ultimo).getTime() <= durataEv);
+    const casella = (href, valore, etichetta, rosso, viola) => `<a href="${href}" class="${rosso ? "evidenza" : ""}${viola ? " ev" : ""}"><b>${valore}</b><span class="et">${etichetta}</span></a>`;
+    $("sintesi").innerHTML =
+      casella("cantone.html", livHtml(al, al === null), "Allerte meteo<br>Ticino", al >= 3, evid.some(e => e.ambito === "vento")) +
+      casella("cantone.html", livHtml(pg, pg === null), "Corsi d'acqua<br>e laghi", pg >= 3, evid.some(e => e.ambito === "ufam")) +
+      casella("cantone.html", !va || !va.disponibile || stantio || (va.in_vigore && vaScaduto) ? livHtml(null, true) : va.in_vigore ? livHtml(va.grado_max) : "—", "Valanghe" + (va && va.disponibile && !va.in_vigore ? "<br>nessun bollettino" : ""), va && va.in_vigore && va.grado_max >= 3 && !vaScaduto) +
+      casella("#sez-incendio", ok(inc) ? livHtml(inc.livello_max) : livHtml(null, true), "Incendio di bosco<br>misura massima", ok(inc) && inc.livello_max >= 4) +
+      casella("#sez-terremoti", ok(ter) ? (ter.magnitudo_max != null ? livHtml(livMag(ter.magnitudo_max), false, "M " + ter.magnitudo_max) : "—") : livHtml(null, true), `Terremoti<br>massimo ${ter && ter.giorni ? ter.giorni : 7} giorni`, ok(ter) && ter.magnitudo_max >= 4) +
+      casella("#sez-siccita", ok(sic) && !sic.datato ? livHtml(sic.indice_max) : livHtml(null, true), "Siccità<br>indice massimo", ok(sic) && !sic.datato && sic.indice_max >= 4);
+
+    // ---- variazioni rapide (viola) riprese dal quadro cantonale
+    $("sez-evidenze").hidden = !evid.length;
+    $("ev-lista").innerHTML = evid.map(e => `<li class="ev ${e.livello}"><div><b style="color:var(--ev)">▲ ${e.livello === "critica" ? "CRITICA" : "Rapida"}</b> · ${esc(e.testo)}<small>${e.attiva ? "in corso dalle " + oraMin(e.dal) : "alle " + oraMin(e.dal)}</small></div></li>`).join("");
+
+    // ---- incendio di bosco
+    if (!ok(inc)) { $("inc-sub").textContent = "misure in vigore"; $("incendio").innerHTML = assente(inc, "Misure contro gli incendi di bosco"); }
+    else {
+      $("inc-sub").textContent = "misure in vigore · " + letto(inc);
+      $("incendio").innerHTML = `<div class="schede">${inc.regioni.map(r => `<div class="scheda l${r.livello || 1}"><div class="t"><span>${esc(r.nome)}${r.cantone && r.cantone !== "TI" ? ` <small style="display:inline">(${esc(r.cantone)})</small>` : ""}</span>${livHtml(r.livello)}</div><p>${esc(r.misura || "—")}</p><small>${esc(r.descrizione || "")}${r.dal ? ` · in vigore dal ${esc(r.dal)}` : ""}</small></div>`).join("")}</div>`;
+    }
+
+    // ---- terremoti
+    if (!ok(ter)) { $("ter-sub").textContent = ""; $("terremoti").innerHTML = assente(ter, "Terremoti"); }
+    else {
+      $("ter-soglia").textContent = ter.soglia_avvertibile;
+      $("ter-sub").textContent = `ultimi ${ter.giorni} giorni · ${ter.fonte} · ${letto(ter)}`;
+      $("terremoti").innerHTML = ter.eventi.length
+        ? `<ul class="lista">${ter.eventi.map(e => `<li class="${!e.naturale ? "artificiale" : e.magnitudo >= ter.soglia_avvertibile ? "forte" : ""}">${livHtml(e.naturale ? livMag(e.magnitudo) : 1, false, "M " + e.magnitudo)}<div><b>${esc(e.luogo || "luogo non indicato")}</b>${!e.naturale ? ` <span style="color:var(--muto)">(${e.tipo === "quarry blast" ? "brillamento in cava" : esc(e.tipo)})</span>` : e.magnitudo >= ter.soglia_avvertibile ? " · probabilmente avvertito" : ""}<small>${esc(e.ora_locale)}${e.profondita_km != null ? ` · profondità ${e.profondita_km} km` : ""}</small></div></li>`).join("")}</ul>` +
+          (ter.numero > ter.eventi.length ? `<p class="nota">Mostrati i ${ter.eventi.length} più recenti su ${ter.numero}.</p>` : "")
+        : `<div class="ok-box">Nessun evento registrato negli ultimi ${ter.giorni} giorni nella zona.</div>`;
+    }
+
+    // ---- siccità
+    if (!ok(sic)) { $("sic-sub").textContent = ""; $("siccita").innerHTML = assente(sic, "Siccità"); }
+    else if (sic.datato) { $("sic-sub").textContent = ""; $("siccita").innerHTML = `<div class="nd-box">Il dato pubblicato non è aggiornato (validità fino al ${esc(sic.valido_fino)}): non viene mostrato. Consultare la piattaforma siccità.</div>`; }
+    else {
+      $("sic-sub").textContent = (sic.valido_fino ? `settimana fino al ${sic.valido_fino} · ` : "") + letto(sic);
+      const fr = (a, b) => a == null || b == null ? "" : b > a ? " ↗" : b < a ? " ↘" : " →";
+      $("siccita").innerHTML = `<div class="scorri"><table class="tabella"><tr><th>Regione</th><th>Questa settimana</th><th>Prossima</th><th>Allerta</th></tr>${sic.regioni.map(r =>
+        `<tr><td><b>${esc(r.nome)}</b></td><td>${livHtml(r.indice)}<small>${esc(r.testo || "")}</small></td><td>${r.indice_prossima != null ? livHtml(r.indice_prossima) + fr(r.indice, r.indice_prossima) : "—"}</td><td>${r.allerta != null ? livHtml(r.allerta) + `<small>${esc(r.allerta_testo || "")}</small>` : "—"}</td></tr>`).join("")}</table></div>`;
+    }
+
+    // ---- collegamenti
+    $("collegamenti").innerHTML = (p.collegamenti || []).filter(c => /^https?:\/\//.test(c.url || "")).map(c => `<a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.titolo)}<small>${esc(c.ente || "")}</small></a>`).join("")
+      || `<div class="nd-box">Elenco non ancora disponibile.</div>`;
+  }
+
+  // messaggio in evidenza dello stato maggiore
+  async function caricaMessaggio() {
+    let m = null;
+    try { const r = await fetch("https://179-237-106-60.sslip.io/messaggio.json?_=" + Date.now(), {cache: "no-store"}); if (r.ok) m = await r.json(); } catch (e) { m = null; }
+    const el = $("messaggio");
+    if (m && m.testo) { el.className = "on " + (m.livello || "info"); el.innerHTML = `<b>${esc(m.testo)}</b><small>${esc(m.autore || "")} · ${esc(m.aggiornato_locale || "")}</small>`; }
+    else { el.className = ""; el.innerHTML = ""; }
+  }
+
+  $("aggiorna").addEventListener("click", () => { carica(); caricaMessaggio(); });
+  carica().then(caricaMessaggio);
+  setInterval(caricaMessaggio, 60 * 1000);
+  let ultimoTentativo = Date.now();
+  const ricarica = () => { ultimoTentativo = Date.now(); carica(); caricaMessaggio(); };
+  setInterval(ricarica, 2 * 60 * 1000);
+  const alRitorno = () => { if (document.visibilityState === "visible" && Date.now() - ultimoTentativo > 60 * 1000) ricarica(); };
+  document.addEventListener("visibilitychange", alRitorno);
+  window.addEventListener("focus", alRitorno);
+  window.addEventListener("pageshow", alRitorno);
+  window.addEventListener("online", alRitorno);
+  setInterval(() => {
+    if (!dati) return;
+    const eta = Math.round((Date.now() - new Date(dati.generato).getTime()) / 60000);
+    const stantio = eta > dati.dati_stantii_minuti;
+    if (stantio !== eraStantio) disegna(); else intestazione(eta, stantio);
+  }, 30 * 1000);
+})();
+</script>
+</body>
+</html>
