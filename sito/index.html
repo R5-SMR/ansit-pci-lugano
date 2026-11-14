@@ -490,8 +490,8 @@
       return box(`≈ ${nv.limite_neve_min} m`, `Limite neve minimo 48 h${nv.neve_48h_cm ? `, ${nv.neve_48h_cm} cm attesi` : ""}`);
     if (nv.precipitazione === null) return box("n/d", "Limite neve: precipitazione prevista non disponibile");
     if (!nv.precipitazione) return box("—", "Limite neve: nessuna precipitazione prevista in 48 h");
-    const quota = nv.fino_al_piano ? "fino al piano" : nv.limite_min === nv.limite_max ? `≈ ${nv.limite_min} m` : `≈ ${nv.limite_min}–${nv.limite_max} m`;
-    return box(quota, `Limite neve con precipitazioni, 48 h · minimo ${nv.limite_quando}${nv.neve_48h_cm ? ` · ${nv.neve_48h_cm} cm attesi a Lugano` : ""} · ${nv.metodo === "modello" ? "modello MeteoSvizzera" : "stima dallo zero termico"}`);
+    const quota = nv.limite_min === nv.limite_max ? `≈ ${nv.limite_min} m` : `≈ ${nv.limite_min}–${nv.limite_max} m`;
+    return box(quota, `Limite neve con precipitazioni, 48 h${nv.fino_al_piano ? " · <b>neve fino a Lugano</b>" : ""} · minimo ${nv.limite_quando}${nv.neve_48h_cm ? ` · ${nv.neve_48h_cm} cm attesi a Lugano` : ""} · ${nv.metodo === "modello" ? "modello MeteoSvizzera" : "stima dallo zero termico"}`);
   }
 
   // Sparkline a barre: per la pioggia oraria
