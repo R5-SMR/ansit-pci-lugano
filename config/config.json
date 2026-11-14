@@ -3,6 +3,25 @@
   "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
   "fuso_orario": "Europe/Zurich",
   "dati_stantii_minuti": 30,
+  "evidenza": {
+    "_nota": "Variazioni rapide messe in evidenza (colore viola, fuori dalla scala 1-5). Valori di prova, da tarare. durata_minuti: per quanto tempo l'evidenza resta visibile dopo che la condizione è cessata. cronologia_ore: quante ore restano in 'Ultimi cambiamenti'.",
+    "durata_minuti": 60,
+    "cronologia_ore": 6,
+    "vento": {
+      "_nota": "Raffiche MeteoSvizzera a 10 minuti. Soglie = gradi 2 e 3 delle allerte vento MeteoSvizzera per il Sud delle Alpi (sotto / da 1600 m). Salto brusco: aumento della raffica massima degli ultimi 30 minuti rispetto ai 60 minuti precedenti.",
+      "dato_max_minuti": 40,
+      "salto_kmh": 30,
+      "stazioni_quota_alta": ["GEN", "CIM", "ROE"],
+      "pianura": {"rapida_kmh": 70, "critica_kmh": 90, "salto_minimo_kmh": 50},
+      "quota_alta": {"rapida_kmh": 100, "critica_kmh": 130, "salto_minimo_kmh": 70}
+    },
+    "ufam": {
+      "_nota": "Tempo stimato alla soglia del grado successivo, al ritmo dell'ultima ora. salita_minima_frazione: la salita oraria deve valere almeno questa parte della distanza tra due soglie, altrimenti non si segnala.",
+      "rapida_ore": 3,
+      "critica_ore": 1,
+      "salita_minima_frazione": 0.1
+    }
+  },
   "comuni": [
     {
       "nome": "Lugano",
