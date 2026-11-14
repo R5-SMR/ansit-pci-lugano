@@ -235,6 +235,53 @@
       "scarti_m": [[0, 300], [1, 450], [4, 600]]
     }
   },
+  "picchetto": {
+    "_nota": "Fonti della pagina «Picchetto» (altri fattori di rischio). I dati finiscono in sito/cantone.json, chiave «picchetto». intervallo_minuti: ogni quanto si rilegge la fonte; nel frattempo vale l'ultima lettura riuscita.",
+    "incendio": {
+      "_nota": "Misure di prevenzione degli incendi di bosco in vigore (UFAM e Cantoni, waldbrandgefahr.ch). Scala delle misure da 1 (nessuna) a 5 (divieto assoluto di accendere fuochi all'aperto): non è il grado di pericolo. Regioni: 2102 Sottoceneri, 2101 Ticino centrale, 2100 Alto Ticino, 1010 Moesano, 1009 San Bernardino (verificate il 14.11.2026).",
+      "url": "https://data.geo.admin.ch/ch.bafu.gefahren-waldbrand_praeventionsmassnahmen_kantone/gefahren-waldbrand_praeventionsmassnahmen_kantone/gefahren-waldbrand_praeventionsmassnahmen_kantone_2056.geojson",
+      "regioni": [2102, 2101, 2100, 1010, 1009],
+      "intervallo_minuti": 60
+    },
+    "siccita": {
+      "_nota": "Indice combinato di siccità per regione, da 1 (non secco) a 5 (UFAM, trockenheit.admin.ch). Regioni: 65 Sottoceneri, 64 Ticino orientale, 62 Ticino occidentale, 63 Ticino settentrionale (verificate il 14.11.2026). datato_giorni: oltre questo ritardo sulla fine di validità il dato è mostrato come non aggiornato.",
+      "url_settimana": "https://data.geo.admin.ch/ch.bafu.trockenheitsindex/trockenheitsindex_1/trockenheitsindex_1_2056.json",
+      "url_prossima": "https://data.geo.admin.ch/ch.bafu.trockenheitsindex/trockenheitsindex_2/trockenheitsindex_2_2056.json",
+      "url_allerta": "https://data.geo.admin.ch/ch.bafu.trockenheitswarnkarte/trockenheitswarnkarte/trockenheitswarnkarte_2056.json",
+      "regioni": [65, 64, 62, 63],
+      "intervallo_minuti": 360,
+      "datato_giorni": 10
+    },
+    "terremoti": {
+      "_nota": "DA_VERIFICARE al primo ciclo. Servizi sismici in formato FDSN, provati in ordine: Servizio sismico svizzero (due indirizzi possibili), poi il centro europeo EMSC come riserva. zona: rettangolo attorno al Ticino. magnitudo_avvertibile: soglia oltre la quale un terremoto è di norma percepito.",
+      "url_candidati": [
+        {"nome": "Servizio sismico svizzero (SED)", "url": "http://arclink.ethz.ch/fdsnws/event/1/query"},
+        {"nome": "Servizio sismico svizzero (SED)", "url": "https://eida.ethz.ch/fdsnws/event/1/query"},
+        {"nome": "EMSC, centro sismologico euro-mediterraneo", "url": "https://www.seismicportal.eu/fdsnws/event/1/query"}
+      ],
+      "zona": {"lat_min": 45.5, "lat_max": 47.0, "lon_min": 8.0, "lon_max": 9.8},
+      "giorni": 7,
+      "magnitudo_minima": 1.0,
+      "magnitudo_avvertibile": 2.5,
+      "intervallo_minuti": 10
+    },
+    "collegamenti": [
+      {"titolo": "Traffico: notizie e stato dei passi", "ente": "TCS / Viasuisse", "url": "https://www.tcs.ch/verkehrsinfo"},
+      {"titolo": "Traffico in tempo reale sulla carta", "ente": "Google Maps, strato del traffico", "url": "https://www.google.com/maps/@46.2,8.95,10z/data=!5m1!1e1"},
+      {"titolo": "Traffico: notizie", "ente": "SRF", "url": "https://www.srf.ch/verkehrsinformationen"},
+      {"titolo": "Radioattività – valori misurati", "ente": "CENAL", "url": "https://www.naz.ch/fr/aktuell/messwerte"},
+      {"titolo": "Allerte di protezione civile Lombardia", "ente": "Regione Lombardia", "url": "https://www.allertalom.regione.lombardia.it"},
+      {"titolo": "Pericolo d'incendio di bosco", "ente": "UFAM", "url": "https://www.waldbrandgefahr.ch"},
+      {"titolo": "Siccità", "ente": "UFAM", "url": "https://www.trockenheit.admin.ch"},
+      {"titolo": "Terremoti attuali", "ente": "Servizio sismico svizzero", "url": "http://www.seismo.ethz.ch"},
+      {"titolo": "Portale pericoli naturali", "ente": "Confederazione", "url": "https://www.pericoli-naturali.ch"},
+      {"titolo": "Bollettino valanghe e neve", "ente": "SLF / White Risk", "url": "https://whiterisk.ch/it/conditions"},
+      {"titolo": "Epizoozie notificate", "ente": "USAV", "url": "https://infosm.blv.admin.ch"},
+      {"titolo": "Malattie trasmissibili", "ente": "UFSP", "url": "https://idd.bag.admin.ch"},
+      {"titolo": "Qualità dell'aria e dati ambientali", "ente": "OASI, Cantone Ticino", "url": "https://www.ti.ch/oasi"},
+      {"titolo": "Alertswiss", "ente": "UFPP", "url": "https://www.alert.swiss"}
+    ]
+  },
   "valanghe": {
     "_nota": "Bollettino valanghe SLF in formato CAAML (JSON), solo per la pagina Ticino. prefissi_regione: inizio del codice delle regioni di allerta da considerare (DA_VERIFICARE al primo bollettino: CH-6 dovrebbe corrispondere al versante sudalpino). Condizioni d'uso: servizio dati SLF, citare la fonte.",
     "url_candidati": [
