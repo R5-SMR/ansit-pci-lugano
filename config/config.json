@@ -227,7 +227,22 @@
     "_nota": "Open-Meteo, servizio open non ufficiale; usato per la previsione puntuale su Lugano.",
     "lat": 46.0037,
     "lon": 8.9511,
-    "url": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,wind_speed_10m,wind_gusts_10m,weather_code,freezing_level_height,snowfall&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_gusts_10m_max,weather_code,sunrise,sunset&timezone=Europe%2FZurich&forecast_days=6&wind_speed_unit=kmh"
+    "url": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,wind_speed_10m,wind_gusts_10m,weather_code,freezing_level_height,snowfall&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_gusts_10m_max,weather_code,sunrise,sunset&timezone=Europe%2FZurich&forecast_days=6&wind_speed_unit=kmh",
+    "neve": {
+      "_nota": "Limite delle nevicate, solo nelle ore con precipitazione prevista. url_modello: modello MeteoSvizzera ICON-CH tramite Open-Meteo, con la quota delle nevicate calcolata dal modello (DA_VERIFICARE al primo ciclo). Se non risponde: stima = zero termico meno lo scarto di scarti_m, dove ogni coppia è [precipitazione oraria minima in mm, scarto in m]. url_modello vuoto = sempre stima.",
+      "url_modello": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=precipitation,snowfall,freezing_level_height,snowfall_height&models=meteoswiss_icon_seamless&timezone=Europe%2FZurich&forecast_days=3",
+      "prec_minima_mm": 0.1,
+      "scarti_m": [[0, 300], [1, 450], [4, 600]]
+    }
+  },
+  "valanghe": {
+    "_nota": "Bollettino valanghe SLF in formato CAAML (JSON), solo per la pagina Ticino. prefissi_regione: inizio del codice delle regioni di allerta da considerare (DA_VERIFICARE al primo bollettino: CH-6 dovrebbe corrispondere al versante sudalpino). Condizioni d'uso: servizio dati SLF, citare la fonte.",
+    "url_candidati": [
+      "https://aws.slf.ch/api/bulletin/caaml/it/json",
+      "https://aws.slf.ch/api/bulletin/caaml/de/json",
+      "https://aws.slf.ch/api/bulletin/caaml"
+    ],
+    "prefissi_regione": ["CH-6"]
   },
   "oasi": {
     "_nota": "OASI, Osservatorio ambientale della Svizzera italiana (www.ti.ch/oasi). Interfaccia REST ricavata dalle esportazioni; stazioni di proprietà UCA, pubblicabili con citazione. Latenza circa 1 h. Codici verificati il 05.11.2026. Pluviometri: Lugano (meteo_11), Scairolo (meteo_auto_801), Vedeggio ad Agno (803), Cassarate a Lugano (804) sono di MeteoSvizzera e non si possono ripubblicare via OASI.",
