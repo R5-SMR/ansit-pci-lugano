@@ -13,12 +13,14 @@
     --l1: #e4e8e5; --l2: #f5d442; --l3: #f08a1f; --l4: #d8322c; --l5: #7a1b3a;
     --nd: repeating-linear-gradient(135deg,#dfe3e0 0 6px,#cfd4d0 6px 12px);
     --ok: #2e7d4f; --attenzione: #b35c00; --allarme: #b3261e;
+    --ev: #7b2cbf; --ev-chiaro: #ead9f7;   /* variazioni rapide: viola, fuori dalla scala dei gradi 1–5 */
     box-sizing: border-box; padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
   }
   @media (prefers-color-scheme: dark) { :root {
     color-scheme: dark;
     --sfondo: #161917; --carta: #202522; --testo: #ecefed; --muto: #a2aaa5; --linea: #38403b;
     --l1: #2c332f; --nd: repeating-linear-gradient(135deg,#2c332f 0 6px,#363d39 6px 12px);
+    --ev: #c77dff; --ev-chiaro: #3d2952;
   }}
   * { box-sizing: inherit; }
   html, body { margin: 0; background: var(--sfondo); color: var(--testo); }
@@ -62,6 +64,25 @@
   ul.lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
   ul.lista li { background: var(--carta); border: 1px solid var(--linea); border-left-width: 5px; border-radius: 6px; padding: 8px 12px; }
   li.peggiora { border-left-color: var(--allarme); } li.migliora { border-left-color: var(--ok); } li.info { border-left-color: var(--linea); }
+  /* variazioni rapide (viola): ▲ = rapida, cornice = critica; il colore dei gradi resta invariato */
+  ul.lista li.ev { border-left-color: var(--ev); }
+  ul.lista li.ev.critica { border: 3px solid var(--ev); border-left-width: 8px; }
+  ul.lista li.ev b { color: var(--ev); }
+  ul.lista li.ev small, ul.lista li small.ora { color: var(--muto); }
+  ul.lista li.ev small { display: block; }
+  ul.lista li.ev.passata { opacity: .75; }
+  ul.lista li small.ora { font-variant-numeric: tabular-nums; margin-right: 8px; }
+  .ev-txt { display: block; color: var(--ev); font-weight: 700; font-size: 12.5px; white-space: nowrap; }
+  .ev-passata .ev-txt { font-weight: 400; opacity: .8; }
+  #cron-lista li.ev.critica { border: 1px solid var(--linea); border-left: 8px solid var(--ev); }
+  .tabella tr.ev-critica > td { box-shadow: inset 0 3px 0 var(--ev), inset 0 -3px 0 var(--ev); }
+  .tabella tr.ev-critica > td:first-child { box-shadow: inset 3px 0 0 var(--ev), inset 0 3px 0 var(--ev), inset 0 -3px 0 var(--ev); }
+  .tabella tr.ev-critica > td:last-child { box-shadow: inset -3px 0 0 var(--ev), inset 0 3px 0 var(--ev), inset 0 -3px 0 var(--ev); }
+  .misura.ev-critica { border: 3px solid var(--ev); }
+  #mappa .etichetta-peg.ev { box-shadow: 0 0 0 4px var(--ev); }
+  h3.sotto { font-size: 14px; margin: 10px 0 4px; color: var(--muto); font-weight: 600; }
+  @keyframes ev-pulsa { 0%, 100% { background-color: var(--carta); } 50% { background-color: var(--ev-chiaro); } }
+  @media (prefers-reduced-motion: no-preference) { .ev-nuova, .tabella tr.ev-nuova > td { animation: ev-pulsa 2.4s ease-in-out infinite; } }
   .allerta { border-left-width: 5px; }
   .allerta.l2 { border-left-color: var(--l2); } .allerta.l3 { border-left-color: var(--l3); } .allerta.l4 { border-left-color: var(--l4); } .allerta.l5 { border-left-color: var(--l5); }
   .allerta small { color: var(--muto); display: block; }
@@ -147,6 +168,12 @@
     #sintesi a b { font-size: 17px; font-weight: 700; height: 30px; display: flex; align-items: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
     #sintesi a span.et { font-size: 11px; color: var(--muto); line-height: 1.15; }
     #sintesi a.evidenza { border-color: var(--allarme); border-width: 2px; }
+    #sintesi a.ev { border-color: var(--ev); border-width: 3px; }
+    .tabella.schede tr.ev-critica { border: 3px solid var(--ev); }
+    .tabella.schede tr.ev-critica > td { box-shadow: none !important; }
+    .tabella.schede tr.ev-nuova { animation: ev-pulsa 2.4s ease-in-out infinite; }
+    .tabella.schede tr.ev-nuova > td { animation: none; }
+    .tabella.schede .c-val .ev-txt { font-size: 13px; white-space: normal; }
 
     /* Comuni: per esteso solo quelli con allerta o senza dato */
     .riga-comuni { grid-template-columns: 1fr 1fr; }
@@ -217,9 +244,16 @@
 <main>
   <nav id="sintesi" aria-label="Sintesi della situazione"></nav>
 
+  <section id="sez-evidenze" hidden>
+    <h2>Variazioni rapide<small>viola = fuori dalla scala dei gradi; cornice = critica</small></h2>
+    <ul class="lista" id="ev-lista"></ul>
+  </section>
+
   <section id="variazioni">
     <h2>Cosa è cambiato<small id="var-sub"></small></h2>
     <ul class="lista" id="var-lista"></ul>
+    <h3 class="sotto" id="cron-tit" hidden>Ultimi cambiamenti</h3>
+    <ul class="lista" id="cron-lista"></ul>
   </section>
 
   <section id="sez-allerte">
@@ -284,7 +318,7 @@
   </section>
 
   <footer>
-    Prototipo interno a scopo di istruzione. Non è un canale di allerta. Fonti: MeteoSvizzera, Alertswiss, UFAM Hydrodaten, Open-Meteo. Nessuno stato «verde» viene mostrato se il dato manca o è più vecchio di <span id="minuti-stantio"></span> minuti.
+    Prototipo interno a scopo di istruzione. Non è un canale di allerta. Fonti: MeteoSvizzera, Alertswiss, UFAM Hydrodaten, Open-Meteo. Nessuno stato «verde» viene mostrato se il dato manca o è più vecchio di <span id="minuti-stantio"></span> minuti. Il viola segnala le variazioni rapide di vento e stazioni UFAM (▲ = rapida, cornice = critica): soglie di prova, calcolo automatico senza valore ufficiale.
   </footer>
 </main>
 
@@ -382,7 +416,7 @@
       stratoPunti.clearLayers();
       for (const p of dati.pegel) {
         if (!p.lat || !p.lon) continue;
-        const cls = (stantio || !p.disponibile || p.livello == null) ? "nd" : "l" + p.livello;
+        const cls = ((stantio || !p.disponibile || p.livello == null) ? "nd" : "l" + p.livello) + (evDi("ufam:" + p.id, "grado:" + p.id) ? " ev" : "");
         L.marker([p.lat, p.lon], {icon: L.divIcon({className: "", html: `<div class="etichetta-peg ${cls}">${p.disponibile && p.livello != null ? p.livello : "·"}</div>`, iconSize: [22, 22], iconAnchor: [11, 11]})})
           .bindTooltip(`${p.nome} – ${p.luogo}: ${p.disponibile ? p.valore + " " + p.unita : "n/d"}`).addTo(stratoPunti);
       }
@@ -475,6 +509,21 @@
     }
   }
 
+  // Variazioni rapide calcolate dal collettore: valgono solo con dati aggiornati e fino a durata_minuti dall'ultima conferma.
+  let evidenze = [];
+  const evDi = (...chiavi) => {
+    const l = evidenze.filter(e => chiavi.includes(e.chiave));
+    if (!l.length) return null;
+    const critica = l.some(e => e.livello === "critica");
+    const inizio = Math.max(...l.filter(e => e.livello === "critica").map(e => new Date(e.critica_dal || e.dal).getTime()), 0);
+    const attiva = l.some(e => e.attiva || e.chiave.startsWith("grado:"));
+    return {livello: critica ? "critica" : "rapida", attiva,
+            breve: l.map(e => e.breve + (e.attiva || e.chiave.startsWith("grado:") ? "" : ` (fino alle ${oraMin(e.ultimo)})`)).join(" · "),
+            classe: " ev-" + (critica ? "critica" : "rapida") + (attiva ? "" : " ev-passata") + (critica && Date.now() - inizio < 10 * 60000 ? " ev-nuova" : "")};
+  };
+  const evTxt = e => e ? `<small class="ev-txt">${e.breve}</small>` : "";
+  const oraMin = iso => new Date(iso).toLocaleTimeString("it-CH", {hour: "2-digit", minute: "2-digit"});
+
   function intestazione(eta, stantio) {
     $("stato").textContent = `Aggiornato ${dati.generato_locale} (${eta} min fa)` + (stantio ? " – DATI NON AGGIORNATI, considerare non disponibili" : "");
     $("stato").className = "stato" + (stantio ? " vecchio" : "");
@@ -487,9 +536,23 @@
     intestazione(eta, stantio);
     $("minuti-stantio").textContent = dati.dati_stantii_minuti;
 
-    // variazioni
+    // variazioni rapide (viola)
+    const durataEv = (dati.evidenza_durata_minuti || 60) * 60000;
+    evidenze = stantio ? [] : (dati.evidenze || []).filter(e => Date.now() - new Date(e.ultimo).getTime() <= durataEv);
+    $("sez-evidenze").hidden = !evidenze.length;
+    $("ev-lista").innerHTML = evidenze.map(e => {
+      const critica = e.livello === "critica", puntuale = e.chiave.startsWith("grado:");
+      const nuova = critica && Date.now() - new Date(e.critica_dal || e.dal).getTime() < 10 * 60000;
+      const quando = puntuale ? `alle ${oraMin(e.dal)}` : e.attiva ? `in corso dalle ${oraMin(e.dal)}` : `dalle ${oraMin(e.dal)}, non più in corso (ultima conferma ${oraMin(e.ultimo)})`;
+      return `<li class="ev ${e.livello}${e.attiva || puntuale ? "" : " passata"}${nuova ? " ev-nuova" : ""}"><b>▲ ${critica ? "CRITICA" : "Rapida"}</b> · ${e.testo}<small>${quando}</small></li>`;
+    }).join("");
+
+    // variazioni rispetto al ciclo precedente e cronologia delle ultime ore
     $("var-sub").textContent = dati.precedente ? "rispetto al ciclo delle " + new Date(dati.precedente).toLocaleTimeString("it-CH", {hour: "2-digit", minute: "2-digit"}) : "";
     $("var-lista").innerHTML = dati.variazioni.map(v => `<li class="${v.tipo}">${v.testo}</li>`).join("");
+    const cron = (dati.cronologia || []).slice().reverse();
+    $("cron-tit").hidden = !cron.length;
+    $("cron-lista").innerHTML = cron.map(c => `<li class="${c.livello ? "ev " + c.livello : c.tipo}"><small class="ora" style="display:inline">${c.ora_locale}</small>${c.livello ? "<b>▲</b> " : c.tipo === "migliora" ? "▼ " : ""}${c.testo}</li>`).join("");
 
     // comuni
     const calmi = [];
@@ -522,9 +585,9 @@
 
     // pegel
     $("pegel").innerHTML = `<tr><th>Stazione</th><th>Misura</th><th class="num">Valore</th><th>Andamento 8 h</th><th>Livello</th><th>Previsione UFAM 48 h</th></tr>` +
-      dati.pegel.map(p => p.disponibile
-        ? `<tr><td class="c-nome">${p.nome}<br><small style="color:var(--muto)">${p.luogo}<span class="solo-m"> · ${p.parametro === "Q" ? "portata" : "livello"}</span></small></td><td class="c-mis">${p.parametro === "Q" ? "Portata" : "Livello"}</td><td class="num c-val">${t(p.valore)} ${p.unita}</td><td class="c-and">${spark(p.serie_8h || [], p.soglie && p.soglie["2"])}<small style="color:var(--muto)">${t(p.trend_8h)}</small></td><td class="c-liv">${livHtml(p.livello, stantio)}</td><td class="c-prev">${prevHtml(p)}</td></tr>`
-        : `<tr><td class="c-nome">${p.nome || "?"}</td><td class="c-nd" colspan="3" style="color:var(--muto)">non disponibile – ${p.motivo}</td><td class="c-liv">${livHtml(null, true)}</td><td></td></tr>`).join("");
+      dati.pegel.map(p => { const e = evDi("ufam:" + p.id, "grado:" + p.id); return p.disponibile
+        ? `<tr class="${e ? e.classe.trim() : ""}"><td class="c-nome">${p.nome}<br><small style="color:var(--muto)">${p.luogo}<span class="solo-m"> · ${p.parametro === "Q" ? "portata" : "livello"}</span></small></td><td class="c-mis">${p.parametro === "Q" ? "Portata" : "Livello"}</td><td class="num c-val">${t(p.valore)} ${p.unita}${evTxt(e)}</td><td class="c-and">${spark(p.serie_8h || [], p.soglie && p.soglie["2"])}<small style="color:var(--muto)">${t(p.trend_8h)}</small></td><td class="c-liv">${livHtml(p.livello, stantio)}</td><td class="c-prev">${prevHtml(p)}</td></tr>`
+        : `<tr><td class="c-nome">${p.nome || "?"}</td><td class="c-nd" colspan="3" style="color:var(--muto)">non disponibile – ${p.motivo}</td><td class="c-liv">${livHtml(null, true)}</td><td></td></tr>`; }).join("");
 
     // rete cantonale OASI
     // riga supplementare visibile solo su schermo stretto: bacino e ora del rilevamento (in rosso se oltre 3 h)
@@ -548,9 +611,9 @@
       $("andamento").innerHTML = "";
     } else {
       $("mis-sub").textContent = `${m.nome}, rilevamento ${t(m.rilevamento)} UTC`;
-      const box = (v, u, l) => `<div class="misura"><b>${t(v)}${v == null ? "" : u}</b><span>${l}</span></div>`;
+      const box = (v, u, l, e) => `<div class="misura${e ? e.classe : ""}"><b>${t(v)}${v == null ? "" : u}</b><span>${l}</span>${evTxt(e)}</div>`;
       $("misure").innerHTML = box(m.temperatura, " °C", "Temperatura") + box(m.umidita, " %", "Umidità") +
-        box(m.vento_kmh, " km/h", "Vento medio") + box(m.raffica_kmh, " km/h", "Raffica") +
+        box(m.vento_kmh, " km/h", "Vento medio") + box(m.raffica_kmh, " km/h", "Raffica", evDi("vento:" + m.stazione)) +
         box(m.pioggia_1h, " mm", "Pioggia ultima ora") + box(m.pioggia_24h, " mm", "Pioggia 24 ore") + box(m.pressione, " hPa", "Pressione");
       const s24 = m.serie_24h || {};
       $("andamento").innerHTML =
@@ -598,10 +661,10 @@
     const piogge = (dati.oasi || []).filter(o => o.parametro === "Prec" && o.disponibile && o.eta_minuti <= 180 && typeof o.pioggia_1h === "number").map(o => o.pioggia_1h);
     if (m.disponibile && typeof m.pioggia_1h === "number") piogge.push(m.pioggia_1h);
     const pMax = !stantio && piogge.length ? Math.max(...piogge) : null;
-    const casella = (href, valore, etichetta, evidenza) => `<a href="${href}"${evidenza ? ' class="evidenza"' : ""}><b>${valore}</b><span class="et">${etichetta}</span></a>`;
+    const casella = (href, valore, etichetta, evidenza, viola) => `<a href="${href}" class="${evidenza ? "evidenza" : ""}${viola ? " ev" : ""}"><b>${valore}</b><span class="et">${etichetta}</span></a>`;
     $("sintesi").innerHTML =
       casella("#sez-allerte", livHtml(al, al === null), "Allerte<br>meteo", al >= 3) +
-      casella("#sez-acque", livHtml(pg, pg === null), "Corsi d'acqua<br>e lago", pg >= 3) +
+      casella("#sez-acque", livHtml(pg, pg === null), "Corsi d'acqua<br>e lago", pg >= 3, evidenze.some(e => e.ambito === "ufam")) +
       casella("#sez-alertswiss", nAw === null ? '<span class="liv nd">n/d</span>' : nAw, "Alertswiss", nAw > 0) +
       casella("#sez-oasi", pMax === null ? '<span class="liv nd">n/d</span>' : pMax + " mm", "Pioggia 1 h<br>massimo", false);
   }

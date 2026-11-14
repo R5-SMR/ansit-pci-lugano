@@ -13,6 +13,7 @@
     --l1: #e4e8e5; --l2: #f5d442; --l3: #f08a1f; --l4: #d8322c; --l5: #7a1b3a;
     --nd: repeating-linear-gradient(135deg,#dfe3e0 0 6px,#cfd4d0 6px 12px);
     --ok: #2e7d4f; --allarme: #b3261e; --evidenza: #fff3c4;
+    --ev: #7b2cbf; --ev-chiaro: #ead9f7;   /* variazioni rapide: viola, fuori dalla scala dei gradi 1–5 */
     --base: clamp(13px, 1.05vw, 20px);
     box-sizing: border-box;
   }
@@ -20,6 +21,7 @@
     color-scheme: dark;
     --sfondo: #141715; --carta: #1e2320; --testo: #ecefed; --muto: #a2aaa5; --linea: #38403b;
     --l1: #2c332f; --evidenza: #4a3f12; --nd: repeating-linear-gradient(135deg,#2c332f 0 6px,#363d39 6px 12px);
+    --ev: #c77dff; --ev-chiaro: #3d2952;
   }}
   * { box-sizing: inherit; }
   html, body { margin: 0; height: 100%; background: var(--sfondo); color: var(--testo); }
@@ -42,6 +44,27 @@
   header .fonti span.ko { border-color: var(--allarme); color: var(--allarme); font-weight: 600; }
   #banner { display: none; background: var(--allarme); color: #fff; font-weight: 700; text-align: center; padding: .4em; font-size: 1.15em; }
   #banner.on { display: block; }
+  /* variazioni rapide (viola): ▲ = rapida, cornice = critica; il colore dei gradi resta invariato */
+  #evidenze { display: none; flex-wrap: wrap; gap: .3em .5em; align-items: center; padding: .35em .8em; background: var(--carta); border-bottom: 3px solid var(--ev); font-size: .95em; }
+  #evidenze.on { display: flex; }
+  #evidenze .tit { color: var(--ev); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: .85em; }
+  #evidenze .voce { border: 1px solid var(--ev); border-left-width: 5px; border-radius: 5px; padding: .15em .6em; }
+  #evidenze .voce.critica { border-width: 3px; border-left-width: 8px; font-weight: 700; }
+  #evidenze .voce.passata { opacity: .7; }
+  #evidenze .voce small { color: var(--muto); font-weight: 400; margin-left: .5em; }
+  .ev-txt { display: block; color: var(--ev); font-weight: 700; font-size: .78em; white-space: nowrap; }
+  td.ev-val { color: var(--ev); font-weight: 700; }
+  .ev-passata .ev-txt { font-weight: 400; opacity: .8; }
+  #var-lista li.ev.critica { border: 1px solid var(--linea); border-left: 6px solid var(--ev); }
+  #basso { max-height: 36vh; }
+  tr.ev-critica > td { box-shadow: inset 0 3px 0 var(--ev), inset 0 -3px 0 var(--ev); }
+  tr.ev-critica > td:first-child { box-shadow: inset 3px 0 0 var(--ev), inset 0 3px 0 var(--ev), inset 0 -3px 0 var(--ev); }
+  tr.ev-critica > td:last-child { box-shadow: inset -3px 0 0 var(--ev), inset 0 3px 0 var(--ev), inset 0 -3px 0 var(--ev); }
+  #mappa-l .etichetta-peg.ev { box-shadow: 0 0 0 4px var(--ev); }
+  li.ev { border-left-color: var(--ev); } li.ev.critica { border: 2px solid var(--ev); border-left-width: 6px; }
+  li small.ora { color: var(--muto); font-variant-numeric: tabular-nums; margin-right: .5em; }
+  @keyframes ev-pulsa { 0%, 100% { background-color: var(--carta); } 50% { background-color: var(--ev-chiaro); } }
+  @media (prefers-reduced-motion: no-preference) { .ev-nuova, tr.ev-nuova > td { animation: ev-pulsa 2.4s ease-in-out infinite; } }
   main { flex: 1; display: grid; grid-template-columns: 42fr 58fr; grid-template-rows: 1fr auto; gap: .6em; padding: .6em; min-height: 0; }
   .pannello { background: var(--carta); border: 1px solid var(--linea); border-radius: 6px; padding: .5em .7em; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
   .pannello h2 { font-size: .95em; margin: 0 0 .3em; font-weight: 600; color: var(--muto); text-transform: uppercase; letter-spacing: .03em; }
@@ -106,7 +129,7 @@
     main { grid-template-columns: 1fr; grid-template-rows: none; }
     #mappa { grid-row: auto; } #mappa .corpo { max-height: 60vh; }
     #destra { grid-template-columns: 1fr; grid-template-rows: none; } #allerte { grid-row: auto; }
-    #basso { grid-column: 1; grid-template-columns: 1fr; }
+    #basso { grid-column: 1; grid-template-columns: 1fr; max-height: none; }
     .pannello .corpo { overflow: visible; }
   }
 </style>
@@ -120,12 +143,13 @@
 </header>
 <div id="messaggio"></div>
 <div id="banner">DATI NON AGGIORNATI – considerare non disponibili e consultare le fonti ufficiali</div>
+<div id="evidenze" aria-live="polite"></div>
 
 <main>
   <section class="pannello" id="mappa">
     <h2>Allerte MeteoSvizzera per regione · pegel UFAM</h2>
     <div class="corpo"><div id="mappa-l"></div><div id="carta" hidden></div></div>
-    <div class="legenda"><span><i class="l1"></i>1</span><span><i class="l2"></i>2</span><span><i class="l3"></i>3</span><span><i class="l4"></i>4</span><span><i class="l5"></i>5</span><span><i class="nd"></i>n/d</span><span>○ pegel, numero = grado</span><span>contorno nero = comprensorio</span><span>sfondo © swisstopo</span><span>tratteggio = distretti</span></div>
+    <div class="legenda"><span><i class="l1"></i>1</span><span><i class="l2"></i>2</span><span><i class="l3"></i>3</span><span><i class="l4"></i>4</span><span><i class="l5"></i>5</span><span><i class="nd"></i>n/d</span><span>○ pegel, numero = grado</span><span>contorno nero = comprensorio</span><span>sfondo © swisstopo</span><span>tratteggio = distretti</span><span><b style="color:var(--ev)">▲ viola</b> = variazione rapida (cornice = critica), soglie di prova</span></div>
   </section>
 
   <div id="destra">
@@ -261,6 +285,21 @@
     }
   }
 
+  // Variazioni rapide calcolate dal collettore: valgono solo con dati aggiornati e fino a durata_minuti dall'ultima conferma.
+  let evidenze = [];
+  const evDi = (...chiavi) => {
+    const l = evidenze.filter(e => chiavi.includes(e.chiave));
+    if (!l.length) return null;
+    const critica = l.some(e => e.livello === "critica");
+    const inizio = Math.max(...l.filter(e => e.livello === "critica").map(e => new Date(e.critica_dal || e.dal).getTime()), 0);
+    const attiva = l.some(e => e.attiva || e.chiave.startsWith("grado:"));
+    return {livello: critica ? "critica" : "rapida", attiva,
+            breve: l.map(e => e.breve + (e.attiva || e.chiave.startsWith("grado:") ? "" : ` (fino alle ${oraMin(e.ultimo)})`)).join(" · "),
+            classe: "ev-" + (critica ? "critica" : "rapida") + (attiva ? "" : " ev-passata") + (critica && Date.now() - inizio < 10 * 60000 ? " ev-nuova" : "")};
+  };
+  const evTxt = e => e ? `<small class="ev-txt">${e.breve}</small>` : "";
+  const oraMin = iso => new Date(iso).toLocaleTimeString("it-CH", {hour: "2-digit", minute: "2-digit"});
+
   function intestazione(eta, stantio) {
     $("stato").textContent = `Aggiornato ${dati.generato_locale} (${eta} min fa)`;
     $("banner").classList.toggle("on", stantio);
@@ -273,6 +312,17 @@
     ultimoGenerato = dati.generato;
     eraStantio = stantio;
     intestazione(eta, stantio);
+
+    // variazioni rapide (viola): striscia sotto l'intestazione
+    const durataEv = (dati.evidenza_durata_minuti || 60) * 60000;
+    evidenze = stantio ? [] : (dati.evidenze || []).filter(e => Date.now() - new Date(e.ultimo).getTime() <= durataEv);
+    $("evidenze").classList.toggle("on", evidenze.length > 0);
+    $("evidenze").innerHTML = evidenze.length ? '<span class="tit">▲ Variazioni rapide</span>' + evidenze.map(e => {
+      const critica = e.livello === "critica", puntuale = e.chiave.startsWith("grado:");
+      const nuova = critica && Date.now() - new Date(e.critica_dal || e.dal).getTime() < 10 * 60000;
+      const quando = puntuale ? oraMin(e.dal) : e.attiva ? `dalle ${oraMin(e.dal)}` : `${oraMin(e.dal)}–${oraMin(e.ultimo)}, non più in corso`;
+      return `<span class="voce ${e.livello}${e.attiva || puntuale ? "" : " passata"}${nuova ? " ev-nuova" : ""}">${e.testo}<small>${quando}</small></span>`;
+    }).join("") : "";
 
     // stato delle fonti
     const okAllerte = Object.values(dati.allerte).some(a => a.disponibile);
@@ -303,9 +353,9 @@
       return `<td class="num" title="scenario peggiore ${t(f.peggiore_48h)} ${p.unita}${f.emessa ? " · emessa " + f.emessa : ""}">${t(f.mediana_48h)} ${fr}</td><td>${f.grado_peggiore_48h != null && f.grado_peggiore_48h >= 2 ? livHtml(f.grado_peggiore_48h) : (f.grado_mediana_48h != null ? livHtml(f.grado_mediana_48h) : "")}</td>`;
     };
     $("pegel").innerHTML = `<tr><th>Stazione</th><th class="num">Valore</th><th>8 h</th><th>Grado</th><th class="num">Prev. 48 h</th><th title="grado atteso (scenario peggiore se ≥ 2)">Att.</th></tr>` +
-      dati.pegel.map(p => p.disponibile
-        ? `<tr><td>${p.nome} <small style="color:var(--muto)">${p.luogo}</small></td><td class="num">${t(p.valore)} ${p.unita}</td><td>${spark(p.serie_8h || [], p.soglie && p.soglie["2"])}</td><td>${livHtml(p.livello, stantio)}</td>${prevCella(p)}</tr>`
-        : `<tr><td>${p.nome} <small style="color:var(--muto)">${p.luogo || ""}</small></td><td colspan="2" style="color:var(--muto)">n/d</td><td>${livHtml(null, true)}</td><td></td><td></td></tr>`).join("");
+      dati.pegel.map(p => { const e = evDi("ufam:" + p.id, "grado:" + p.id); return p.disponibile
+        ? `<tr class="${e ? e.classe : ""}"><td>${p.nome} <small style="color:var(--muto)">${p.luogo}</small></td><td class="num">${t(p.valore)} ${p.unita}${evTxt(e)}</td><td>${spark(p.serie_8h || [], p.soglie && p.soglie["2"])}</td><td>${livHtml(p.livello, stantio)}</td>${prevCella(p)}</tr>`
+        : `<tr><td>${p.nome} <small style="color:var(--muto)">${p.luogo || ""}</small></td><td colspan="2" style="color:var(--muto)">n/d</td><td>${livHtml(null, true)}</td><td></td><td></td></tr>`; }).join("");
 
     // alertswiss
     const aw = dati.alertswiss;
@@ -322,9 +372,9 @@
     const prima = ms.find(m => m.disponibile);
     $("mis-sub").textContent = prima ? `rilevamento ${t(prima.rilevamento)} UTC` : "non disponibili";
     $("misure").innerHTML = `<tr><th>Stazione</th><th class="num">°C</th><th class="num">Raffica</th><th class="num">Pioggia 1 h</th><th class="num">Pioggia 24 h</th></tr>` +
-      ms.map(m => m.disponibile
-        ? `<tr><td>${m.nome}</td><td class="num">${t(m.temperatura)}</td><td class="num">${t(m.raffica_kmh)} km/h</td><td class="num">${t(m.pioggia_1h)} mm</td><td class="num"${m.pioggia_24h >= 50 ? ' style="color:var(--allarme);font-weight:700"' : ""}>${t(m.pioggia_24h)} mm</td></tr>`
-        : `<tr><td>${m.nome || m.stazione || "?"}</td><td colspan="4" style="color:var(--muto)">n/d</td></tr>`).join("");
+      ms.map(m => { const e = evDi("vento:" + m.stazione); return m.disponibile
+        ? `<tr class="${e ? e.classe : ""}"><td>${m.nome}</td><td class="num">${t(m.temperatura)}</td><td class="num${e && e.attiva ? " ev-val" : ""}">${e && e.attiva ? "▲ " : ""}${t(m.raffica_kmh)} km/h${evTxt(e)}</td><td class="num">${t(m.pioggia_1h)} mm</td><td class="num"${m.pioggia_24h >= 50 ? ' style="color:var(--allarme);font-weight:700"' : ""}>${t(m.pioggia_24h)} mm</td></tr>`
+        : `<tr><td>${m.nome || m.stazione || "?"}</td><td colspan="4" style="color:var(--muto)">n/d</td></tr>`; }).join("");
 
     // previsioni: massimi 12 h per località
     $("prev").innerHTML = `<tr><th>Località</th><th class="num">Raffica max</th><th class="num">Pioggia 12 h</th><th class="num">Zero termico 48 h</th><th class="num">Limite neve</th><th class="num">Neve 48 h</th></tr>` +
@@ -337,7 +387,11 @@
     document.querySelector("#basso .pannello:last-child h2").textContent = "Prossime 12–48 h (Open-Meteo, non ufficiale" + (riuso ? ", ultima lettura " + new Date(riuso.letta).toLocaleTimeString("it-CH", {hour: "2-digit", minute: "2-digit"}) : "") + ")" + (lu ? ` · luce ${lu.alba}–${lu.tramonto}, crepuscolo ${lu.crepuscolo_mattino}/${lu.crepuscolo_sera}` : "") + " · cosa è cambiato";
 
     // variazioni
-    $("var-lista").innerHTML = dati.variazioni.map(v => `<li class="${v.tipo}${nuovo ? " nuovo" : ""}">${v.testo}</li>`).join("");
+    // con una cronologia: ultime ore (più recenti in alto) e, del ciclo attuale, solo le note sulle fonti
+    const cron = (dati.cronologia || []).slice().reverse().slice(0, 12);
+    const delCiclo = cron.length ? dati.variazioni.filter(v => v.tipo === "info" && !v.testo.startsWith("Nessuna variazione")) : dati.variazioni;
+    $("var-lista").innerHTML = delCiclo.map(v => `<li class="${v.tipo}${nuovo ? " nuovo" : ""}">${v.testo}</li>`).join("") +
+      cron.map(c => `<li class="${c.livello ? "ev " + c.livello : c.tipo}"><small class="ora">${c.ora_locale}</small>${c.livello ? '<b style="color:var(--ev)">▲</b> ' : c.tipo === "migliora" ? "▼ " : ""}${c.testo}</li>`).join("");
 
     disegnaCarta(stantio);
   }
@@ -359,7 +413,7 @@
       stratoPunti.clearLayers();
       for (const p of dati.pegel) {
         if (!p.lat || !p.lon) continue;
-        const cls = (stantio || !p.disponibile || p.livello == null) ? "nd" : "l" + p.livello;
+        const cls = ((stantio || !p.disponibile || p.livello == null) ? "nd" : "l" + p.livello) + (evDi("ufam:" + p.id, "grado:" + p.id) ? " ev" : "");
         L.marker([p.lat, p.lon], {icon: L.divIcon({className: "", html: `<div class="etichetta-peg ${cls}">${p.disponibile && p.livello != null ? p.livello : "·"}</div>`, iconSize: [24, 24], iconAnchor: [12, 12]})})
           .bindTooltip(`${p.nome} – ${p.luogo}: ${p.disponibile ? p.valore + " " + p.unita : "n/d"}`).addTo(stratoPunti);
       }
