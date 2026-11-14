@@ -6,7 +6,8 @@ Per ogni ciclo:
   1. interroga le fonti (MeteoSvizzera, Alertswiss, UFAM, Open-Meteo);
   2. salva le risposte grezze in archivio/AAAA/MM/GG/HHMM.json.gz;
   3. produce sito/dati.json (normalizzato) per il cockpit;
-  4. confronta con il ciclo precedente e scrive la lista delle variazioni.
+  4. confronta con il ciclo precedente e scrive la lista delle variazioni;
+  5. riconosce le variazioni rapide (vento, stazioni UFAM) e tiene la cronologia delle ultime ore.
 
 Regola di base: una fonte che non risponde produce "disponibile": false,
 mai un valore di default rassicurante.
@@ -84,9 +85,15 @@ def misure_smn(st):
     for i in range(0, len(ultime), 6):
         blocco = [num(r, "pioggia_10min") for r in ultime[i:i + 6]]
         pioggia_oraria.append(round(sum(x for x in blocco if x is not None), 1))
+    eta = None
+    try:   # l'ora del file OGD è in UTC
+        t_ril = datetime.strptime(str(ultima.get(col_ts)).strip(), "%d.%m.%Y %H:%M").replace(tzinfo=timezone.utc)
+        eta = int((ADESSO - t_ril).total_seconds() // 60)
+    except (TypeError, ValueError):
+        pass
     return {
         "disponibile": True, "stazione": st["id"], "nome": st["nome"],
-        "rilevamento": ultima.get(col_ts), "temperatura": num(ultima, "temperatura"),
+        "rilevamento": ultima.get(col_ts), "eta_minuti": eta, "temperatura": num(ultima, "temperatura"),
         "umidita": num(ultima, "umidita"), "pioggia_10min": num(ultima, "pioggia_10min"),
         "pioggia_1h": round(pioggia1h, 1), "pioggia_24h": round(pioggia24, 1),
         # OGD fornisce il vento in km/h (da verificare nei metadati: fkl010z0 è in km/h)
@@ -198,7 +205,7 @@ def alertswiss():
 
 # ---------------------------------------------------------------- UFAM: pegel
 def pegel(st):
-    valore, serie, usato = None, [], None
+    valore, serie, punti, usato = None, [], [], None
     for tpl in CFG["ufam_url_candidati"]:
         url = tpl.format(id=st["id"])
         try:
@@ -207,7 +214,7 @@ def pegel(st):
             log(f"UFAM {st['id']}: {url} non risponde ({e})")
             continue
         GREZZI.setdefault("ufam", {})[st["id"]] = js
-        valore, serie = _estrai_ufam(js, st["param"])
+        valore, serie, punti = _estrai_ufam(js, st["param"])
         if valore is not None:
             usato = url
             break
@@ -227,6 +234,7 @@ def pegel(st):
     prev = previsione_ufam(st)
     return {"disponibile": True, "id": st["id"], "nome": st["nome"], "luogo": st["luogo"],
             "tipo": st["tipo"], "parametro": st["param"], "unita": st["unita"], "previsione": prev,
+            "ritmo": _ritmo_ufam(punti, valore, st),
             "valore": round(valore, 2), "livello": livello, "soglie": st.get("soglie"),
             "lat": st.get("lat"), "lon": st.get("lon"),
             "trend_8h": trend, "serie_8h": [round(v, 2) for v in serie], "fonte": usato}
@@ -247,7 +255,9 @@ def _estrai_ufam(js, param):
             if any(p in nome for p in parole):
                 y = [v for v in serie.get("y", []) if isinstance(v, (int, float))]
                 if y:
-                    return float(y[-1]), y[-48:]
+                    xs, ys = serie.get("x", []), serie.get("y", [])
+                    recenti = [(_tempo(x), v) for x, v in list(zip(xs, ys))[-60:] if isinstance(v, (int, float))]
+                    return float(y[-1]), y[-48:], [(t, v) for t, v in recenti if t is not None]
     except (KeyError, TypeError):
         pass
     # formato geo.admin identify: {"feature": {"attributes": {...}}}
@@ -255,10 +265,49 @@ def _estrai_ufam(js, param):
         attr = js["feature"]["attributes"]
         for k, v in attr.items():
             if isinstance(v, (int, float)) and ("value" in k.lower() or "wert" in k.lower()):
-                return float(v), []
+                return float(v), [], []
     except (KeyError, TypeError):
         pass
-    return None, []
+    return None, [], []
+
+
+def _ritmo_ufam(punti, valore, st):
+    """Variazione nell'ultima ora e tempo stimato alla soglia del grado successivo, al ritmo attuale.
+    Restituisce None se la serie non basta o se l'ultima misura è troppo vecchia: in quel caso non si segnala nulla."""
+    if not punti:
+        return None
+    t0, v0 = punti[-1]
+    eta = (ADESSO - t0).total_seconds() / 60
+    if eta > 60 or eta < -10:
+        return None
+
+    def valore_a(minuti_prima):   # misura più vicina a t0 − n minuti, con tolleranza di 10 minuti
+        bersaglio = t0 - timedelta(minutes=minuti_prima)
+        t, v = min(punti, key=lambda tv: abs((tv[0] - bersaglio).total_seconds()))
+        return v if abs((t - bersaglio).total_seconds()) <= 600 else None
+
+    v60, v30 = valore_a(60), valore_a(30)
+    if v60 is None:
+        return None
+    out = {"eta_minuti": int(eta), "delta_1h": round(v0 - v60, 3),
+           "in_salita": bool(v30 is not None and v0 > v30 and v0 > v60)}
+    soglie = sorted((int(k), float(v)) for k, v in (st.get("soglie") or {}).items())
+    if soglie:
+        sopra = [(g, s) for g, s in soglie if s > v0]
+        sotto = [s for g, s in soglie if s <= v0]
+        if sopra:
+            g, s = sopra[0]
+            # scala di riferimento per giudicare se la salita è significativa
+            if sotto:
+                scala = s - sotto[-1]
+            elif st["param"] == "P" and len(soglie) >= 2:
+                scala = soglie[1][1] - soglie[0][1]      # laghi: distanza tra le prime due soglie
+            else:
+                scala = s                                 # fiumi: da zero alla prima soglia
+            out.update(grado_successivo=g, soglia_successiva=s, scala=round(scala, 3))
+            if out["delta_1h"] > 0:
+                out["ore_alla_soglia"] = round((s - v0) / out["delta_1h"], 2)
+    return out
 
 
 # ---------------------------------------------------------------- OASI: rete cantonale
@@ -540,7 +589,8 @@ def variazioni(nuovo, vecchio):
         if (p.get("disponibile") and p["id"] in vp and p["livello"] is not None
                 and vp[p["id"]].get("livello") is not None and p["livello"] != vp[p["id"]]["livello"]):
             out.append({"testo": f"{p['nome']} ({p['luogo']}): livello da {vp[p['id']]['livello']} a {p['livello']}",
-                        "tipo": "peggiora" if p["livello"] > vp[p["id"]]["livello"] else "migliora"})
+                        "tipo": "peggiora" if p["livello"] > vp[p["id"]]["livello"] else "migliora",
+                        "chiave": f"grado:{p['id']}", "da": vp[p["id"]]["livello"], "a": p["livello"]})
     vs, ns = vecchio.get("alertswiss", {}), nuovo.get("alertswiss", {})
     if vs.get("disponibile") and ns.get("disponibile"):
         vt = {v["titolo"] for v in vs["notifiche"]}
@@ -563,6 +613,160 @@ def _ok(d, fonte):
     if isinstance(v, list):
         return any(x.get("disponibile") for x in v)
     return False
+
+
+# ---------------------------------------------------------------- variazioni rapide (evidenze) e cronologia
+EV_PREDEFINITO = {
+    "durata_minuti": 60, "cronologia_ore": 6,
+    "vento": {"dato_max_minuti": 40, "salto_kmh": 30, "stazioni_quota_alta": [],
+              "pianura": {"rapida_kmh": 70, "critica_kmh": 90, "salto_minimo_kmh": 50},
+              "quota_alta": {"rapida_kmh": 100, "critica_kmh": 130, "salto_minimo_kmh": 70}},
+    "ufam": {"rapida_ore": 3, "critica_ore": 1, "salita_minima_frazione": 0.1},
+}
+
+
+def _cfg_ev():
+    """Parametri delle evidenze: valori di config.json sopra i predefiniti."""
+    utente = CFG.get("evidenza") or {}
+    out = json.loads(json.dumps(EV_PREDEFINITO))
+    for k, v in utente.items():
+        if k.startswith("_"):
+            continue
+        if isinstance(v, dict) and isinstance(out.get(k), dict):
+            for k2, v2 in v.items():
+                if isinstance(v2, dict) and isinstance(out[k].get(k2), dict):
+                    out[k][k2].update(v2)
+                else:
+                    out[k][k2] = v2
+        else:
+            out[k] = v
+    return out
+
+
+def _n(v):
+    """Numero in forma leggibile: senza decimali inutili."""
+    return f"{v:.0f}" if abs(v) >= 100 or float(v).is_integer() else f"{v:.1f}" if abs(v) >= 10 else f"{v:.2f}"
+
+
+def _durata(ore):
+    minuti = max(5, int(round(ore * 60 / 5.0)) * 5)
+    return f"{minuti} min" if minuti < 60 else f"{minuti // 60} h" + (f" {minuti % 60:02d} min" if minuti % 60 else "")
+
+
+def _ev_vento(m, E):
+    """Raffiche: superamento delle soglie (allineate alle allerte MeteoSvizzera) oppure salto brusco."""
+    v = E["vento"]
+    if not m.get("disponibile") or m.get("eta_minuti") is None or m["eta_minuti"] > v["dato_max_minuti"]:
+        return None
+    serie = (m.get("serie_24h") or {}).get("raffica_kmh") or []
+    recenti = [x for x in serie[-3:] if isinstance(x, (int, float))]          # ultimi 30 minuti
+    prima = [x for x in serie[-9:-3] if isinstance(x, (int, float))]           # i 60 minuti precedenti
+    if not recenti:
+        return None
+    alta = m.get("stazione") in v["stazioni_quota_alta"]
+    s = v["quota_alta" if alta else "pianura"]
+    ora, salto = max(recenti), None
+    if len(prima) >= 3:
+        salto = ora - max(prima)
+    brusco = salto is not None and salto >= v["salto_kmh"]
+    if ora >= s["critica_kmh"] or (brusco and ora >= s["rapida_kmh"]):
+        livello = "critica"
+    elif ora >= s["rapida_kmh"] or (brusco and ora >= s["salto_minimo_kmh"]):
+        livello = "rapida"
+    else:
+        return None
+    if brusco:
+        testo = f"{m['nome']}: raffiche da {_n(max(prima))} a {_n(ora)} km/h in un'ora"
+        breve = f"▲ +{_n(salto)} km/h in 1 h"
+    else:
+        soglia = s["critica_kmh"] if ora >= s["critica_kmh"] else s["rapida_kmh"]
+        testo = f"{m['nome']}: raffica {_n(ora)} km/h (soglia {soglia} km/h)"
+        breve = f"▲ oltre {soglia} km/h"
+    return {"chiave": f"vento:{m.get('stazione')}", "ambito": "vento", "livello": livello, "testo": testo, "breve": breve}
+
+
+def _ev_ufam(p, E):
+    """Stazioni UFAM: tempo stimato alla soglia del grado successivo, al ritmo dell'ultima ora."""
+    u, r = E["ufam"], p.get("ritmo")
+    if not p.get("disponibile") or not r or not r.get("in_salita") or r.get("ore_alla_soglia") is None:
+        return None
+    if r["delta_1h"] < u["salita_minima_frazione"] * r["scala"]:
+        return None
+    ore = r["ore_alla_soglia"]
+    if ore < u["critica_ore"]:
+        livello = "critica"
+    elif ore < u["rapida_ore"]:
+        livello = "rapida"
+    else:
+        return None
+    return {"chiave": f"ufam:{p['id']}", "ambito": "ufam", "livello": livello, "verso_grado": r["grado_successivo"],
+            "testo": f"{p['nome']} ({p['luogo']}): +{_n(r['delta_1h'])} {p['unita']} in 1 h, al ritmo attuale "
+                     f"soglia del grado {r['grado_successivo']} ({_n(r['soglia_successiva'])}) in circa {_durata(ore)}",
+            "breve": f"▲ +{_n(r['delta_1h'])} in 1 h · grado {r['grado_successivo']} in ~{_durata(ore)}"}
+
+
+def evidenze(nuovo, vecchio):
+    """Aggiunge a `nuovo` le chiavi "evidenze" (variazioni rapide in corso o concluse da meno di durata_minuti)
+    e "cronologia" (inizio delle evidenze e cambi di livello delle ultime ore).
+    Una misura mancante o vecchia non genera mai un'evidenza; il ritorno a n/d non conta come variazione."""
+    E = _cfg_ev()
+    adesso_iso = nuovo["generato"]
+    ora_loc = ADESSO.astimezone(TZ).strftime("%H:%M")
+    attuali = []
+    for m in (nuovo.get("misure") or {}).values():
+        attuali.append(_ev_vento(m, E))
+    for p in nuovo.get("pegel") or []:
+        attuali.append(_ev_ufam(p, E))
+    # passaggio a un grado superiore di una stazione UFAM (dalla lista delle variazioni di questo ciclo)
+    for v in nuovo.get("variazioni") or []:
+        if str(v.get("chiave", "")).startswith("grado:") and v.get("tipo") == "peggiora":
+            critica = v["a"] >= 3 or v["a"] - v["da"] >= 2
+            attuali.append({"chiave": v["chiave"], "ambito": "ufam", "livello": "critica" if critica else "rapida",
+                            "testo": v["testo"].replace("livello da", "grado da"), "breve": f"▲ grado {v['da']} → {v['a']}",
+                            "una_tantum": True})
+    attuali = {e["chiave"]: e for e in attuali if e}
+
+    precedenti = {e["chiave"]: e for e in ((vecchio or {}).get("evidenze") or []) if isinstance(e, dict) and e.get("chiave")}
+    cronologia = [c for c in ((vecchio or {}).get("cronologia") or []) if isinstance(c, dict)]
+    out = []
+    for chiave, e in attuali.items():
+        prec = precedenti.get(chiave)
+        una_tantum = e.pop("una_tantum", False)
+        nuova = prec is None
+        sale = prec is not None and prec.get("livello") == "rapida" and e["livello"] == "critica"
+        e.update(dal=adesso_iso if (nuova or una_tantum) else prec.get("dal", adesso_iso), ultimo=adesso_iso,
+                 attiva=not una_tantum, dal_locale=ora_loc if (nuova or una_tantum) else prec.get("dal_locale", ora_loc))
+        if sale:
+            e.update(critica_dal=adesso_iso)
+        elif prec and prec.get("critica_dal") and e["livello"] == "critica":
+            e["critica_dal"] = prec["critica_dal"]
+        out.append(e)
+        if (nuova or sale) and not una_tantum:      # i cambi di grado entrano in cronologia come variazioni
+            cronologia.append({"ora": adesso_iso, "ora_locale": ora_loc, "testo": e["testo"], "tipo": "peggiora",
+                               "livello": e["livello"], "chiave": chiave})
+    limite = ADESSO - timedelta(minutes=E["durata_minuti"])
+    gradi = {f"ufam:{p['id']}": p.get("livello") for p in nuovo.get("pegel") or [] if p.get("disponibile")}
+    for chiave, e in precedenti.items():
+        if chiave in attuali:
+            continue
+        # «verso il grado N» è superata se la stazione ha nel frattempo raggiunto quel grado: resta il cambio di grado
+        if e.get("verso_grado") and (gradi.get(chiave) or 0) >= e["verso_grado"]:
+            continue
+        t = _tempo(e.get("ultimo"))
+        if t is not None and t >= limite:
+            out.append({**e, "attiva": False})
+    for v in nuovo.get("variazioni") or []:
+        if v.get("tipo") in ("peggiora", "migliora"):
+            ev = attuali.get(v.get("chiave"))
+            cronologia.append({"ora": adesso_iso, "ora_locale": ora_loc, "testo": v["testo"], "tipo": v["tipo"],
+                               "livello": ev["livello"] if ev else None, "chiave": v.get("chiave")})
+    limite_c = ADESSO - timedelta(hours=E["cronologia_ore"])
+    cronologia = [c for c in cronologia if (_tempo(c.get("ora")) or limite_c) > limite_c][-40:]
+    ordine = {"critica": 0, "rapida": 1}
+    out.sort(key=lambda e: (not e.get("attiva"), ordine.get(e.get("livello"), 2), e.get("testo", "")))
+    nuovo["evidenze"] = out
+    nuovo["cronologia"] = cronologia
+    nuovo["evidenza_durata_minuti"] = E["durata_minuti"]
 
 
 # ---------------------------------------------------------------- quadro cantonale
@@ -600,6 +804,7 @@ def cantone(dati_regione):
     d["previsioni"] = {p["nome"]: previsione(p["lat"], p["lon"], prev_vecchie.get(p["nome"])) for p in C["previsioni"]}
     log("Quadro cantonale: previsioni lette")
     d["variazioni"] = variazioni(d, vecchio)
+    evidenze(d, vecchio)
     d["precedente"] = vecchio["generato"] if vecchio else None
     out.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
     GREZZI["cantone_allerte"] = {k: v for k, v in GREZZI.get("allerte", {}).items()}
@@ -631,6 +836,7 @@ def main():
     dati["messaggio"] = messaggio()
 
     dati["variazioni"] = variazioni(dati, vecchio)
+    evidenze(dati, vecchio)
     dati["precedente"] = vecchio["generato"] if vecchio else None
     sito.write_text(json.dumps(dati, ensure_ascii=False, indent=1), encoding="utf-8")
 
