@@ -774,6 +774,21 @@ def variazioni(nuovo, vecchio):
         if a != b:
             out.append({"testo": f"Valanghe (SLF): grado massimo in Ticino da {a or 'nessun bollettino'} a {b or 'nessun bollettino'}",
                         "tipo": "peggiora" if b > a else "migliora"})
+    vpk, npk = vecchio.get("picchetto") or {}, nuovo.get("picchetto") or {}
+    vi, ni = vpk.get("incendio") or {}, npk.get("incendio") or {}
+    if vi.get("disponibile") and ni.get("disponibile"):
+        prima = {r["id"]: r for r in vi.get("regioni") or []}
+        for r in ni.get("regioni") or []:
+            p = prima.get(r["id"])
+            if p and p.get("livello") is not None and r.get("livello") is not None and p["livello"] != r["livello"]:
+                out.append({"testo": f"Incendio di bosco, {r['nome']}: {r.get('misura') or 'misura ' + str(r['livello'])}",
+                            "tipo": "peggiora" if r["livello"] > p["livello"] else "migliora"})
+    vt, nt = vpk.get("terremoti") or {}, npk.get("terremoti") or {}
+    if vt.get("disponibile") and nt.get("disponibile"):
+        noti = {e["ora"] for e in vt.get("eventi") or []}
+        for e in nt.get("eventi") or []:
+            if e["ora"] not in noti and e.get("naturale") and e["magnitudo"] >= nt.get("soglia_avvertibile", 2.5):
+                out.append({"testo": f"Terremoto di magnitudo {e['magnitudo']} – {e['luogo']} ({e['ora_locale']})", "tipo": "peggiora"})
     for fonte in ("misure", "allerte", "alertswiss", "pegel", "oasi", "previsione"):
         if _ok(nuovo, fonte) != _ok(vecchio, fonte):
             out.append({"testo": f"Fonte «{fonte}»: {'di nuovo disponibile' if _ok(nuovo, fonte) else 'NON disponibile'}",
@@ -946,6 +961,185 @@ def evidenze(nuovo, vecchio):
     nuovo["evidenza_durata_minuti"] = E["durata_minuti"]
 
 
+# ---------------------------------------------------------------- pagina «Picchetto»: altri fattori di rischio
+def _riusa(prec, minuti):
+    """Le fonti del picchetto cambiano lentamente: si rileggono solo ogni `minuti`, altrimenti vale l'ultima lettura riuscita."""
+    try:
+        if prec and prec.get("disponibile") and (ADESSO - _tempo(prec["letto"])).total_seconds() < minuti * 60:
+            return True
+    except Exception:
+        pass
+    return False
+
+
+def incendio_bosco(cfg, prec):
+    """Misure di prevenzione degli incendi di bosco in vigore (UFAM, waldbrandgefahr.ch): è la scala delle MISURE
+    (1 = nessuna … 5 = divieto assoluto di accendere fuochi all'aperto), non il grado di pericolo."""
+    if _riusa(prec, cfg.get("intervallo_minuti", 60)):
+        return prec
+    try:
+        js = scarica(cfg["url"], "json", timeout=40)
+    except Exception as e:
+        return non_disp(e)
+    ids = set(cfg.get("regioni") or [])
+    regioni = []
+    for f in js.get("features") or []:
+        pr = f.get("properties") or {}
+        if pr.get("region_id") not in ids:
+            continue
+        regioni.append({"id": pr.get("region_id"), "nome": re.sub(r"\s*\((TI|GR)\)$", "", str(pr.get("name_it") or pr.get("name_de") or pr.get("region_id"))),
+                        "cantone": pr.get("canton"), "livello": pr.get("level") if isinstance(pr.get("level"), int) else None,
+                        "misura": pr.get("title_it") or pr.get("title_de"), "breve": pr.get("short_title_it"),
+                        "descrizione": pr.get("description_it"), "dal": (_tempo(pr.get("valid_from")) or ADESSO).astimezone(TZ).strftime("%d.%m.%Y")
+                        if pr.get("valid_from") else None})
+    if not regioni:
+        return non_disp("nessuna delle regioni configurate trovata nel file")
+    ordine = {i: n for n, i in enumerate(cfg.get("regioni") or [])}
+    regioni.sort(key=lambda r: ordine.get(r["id"], 99))
+    GREZZI.setdefault("picchetto", {})["incendio"] = regioni
+    livelli = [r["livello"] for r in regioni if r["livello"] is not None]
+    return {"disponibile": True, "letto": ADESSO.isoformat(timespec="seconds"), "regioni": regioni,
+            "livello_max": max(livelli) if livelli else None, "fonte": "UFAM / Cantoni, waldbrandgefahr.ch"}
+
+
+def siccita(cfg, prec):
+    """Indice combinato di siccità per regione (UFAM, trockenheit.admin.ch): settimana in corso e successiva,
+    più il livello di allerta. Un file con validità scaduta da oltre `datato_giorni` viene marcato come datato."""
+    if _riusa(prec, cfg.get("intervallo_minuti", 360)):
+        return prec
+    ids = set(cfg.get("regioni") or [])
+
+    def leggi(url):
+        js = scarica(url, "json", timeout=40)
+        out = {}
+        for f in js.get("features") or []:
+            pr = f.get("properties") or {}
+            if pr.get("ID") in ids:
+                out[pr["ID"]] = pr
+        return out
+
+    try:
+        ora = leggi(cfg["url_settimana"])
+    except Exception as e:
+        return non_disp(e)
+    if not ora:
+        return non_disp("nessuna delle regioni configurate trovata nel file")
+    try:
+        poi = leggi(cfg["url_prossima"])
+    except Exception:
+        poi = {}
+    try:
+        allerta = leggi(cfg["url_allerta"])
+    except Exception:
+        allerta = {}
+    regioni, scadenze = [], []
+    for i in cfg.get("regioni") or []:
+        pr = ora.get(i)
+        if not pr:
+            continue
+        fine = _tempo(_iso_fuso(pr.get("valid_to")))
+        if fine:
+            scadenze.append(fine)
+        a, n = allerta.get(i) or {}, poi.get(i) or {}
+        regioni.append({"id": i, "nome": pr.get("name_it") or pr.get("name_de"), "indice": pr.get("cdi-class"),
+                        "testo": pr.get("info_it"), "indice_prossima": n.get("cdi-class"), "testo_prossima": n.get("info_it"),
+                        "allerta": a.get("warnlevel"), "allerta_testo": a.get("info_it")})
+    GREZZI.setdefault("picchetto", {})["siccita"] = {"settimana": list(ora.values()), "allerta": list(allerta.values())}
+    fine = max(scadenze) if scadenze else None
+    datato = bool(fine and (ADESSO - fine).total_seconds() > cfg.get("datato_giorni", 10) * 86400)
+    indici = [r["indice"] for r in regioni if isinstance(r["indice"], int)]
+    return {"disponibile": True, "letto": ADESSO.isoformat(timespec="seconds"), "regioni": regioni,
+            "indice_max": max(indici) if indici else None, "datato": datato,
+            "valido_fino": fine.astimezone(TZ).strftime("%d.%m.%Y") if fine else None,
+            "fonte": "UFAM, piattaforma nazionale siccità"}
+
+
+def _iso_fuso(v):
+    """«2026-08-23T23:59:59+0200» → «…+02:00» (fromisoformat di Python < 3.11 non accetta il fuso senza due punti)."""
+    return re.sub(r"([+-]\d{2})(\d{2})$", r"\1:\2", v) if isinstance(v, str) else v
+
+
+def terremoti(cfg, prec):
+    """Eventi sismici degli ultimi giorni nella zona indicata, dal servizio FDSN (formato testo, colonne separate da |).
+    Nessun evento è un risultato valido, diverso da «fonte non disponibile»."""
+    if _riusa(prec, cfg.get("intervallo_minuti", 10)):
+        return prec
+    z = cfg["zona"]
+    inizio = (ADESSO - timedelta(days=cfg.get("giorni", 7))).strftime("%Y-%m-%dT%H:%M:%S")
+    query = (f"?format=text&orderby=time&starttime={inizio}&minlatitude={z['lat_min']}&maxlatitude={z['lat_max']}"
+             f"&minlongitude={z['lon_min']}&maxlongitude={z['lon_max']}&minmagnitude={cfg.get('magnitudo_minima', 1.0)}")
+    testo, fonte, errori = None, None, []
+    for c in cfg["url_candidati"]:
+        try:
+            r = requests.get(c["url"] + query, headers=HEADERS, timeout=15)
+            if r.status_code in (204, 404):       # FDSN: nessun evento nel periodo
+                testo, fonte = "", c["nome"]
+                break
+            r.raise_for_status()
+            if "|" not in r.text:
+                raise ValueError("risposta non in formato testo FDSN")
+            testo, fonte = r.text, c["nome"]
+            break
+        except Exception as e:
+            errori.append(f"{c['nome']}: {str(e)[:80]}")
+    if testo is None:
+        log("Terremoti: " + " | ".join(errori))
+        return non_disp("nessun servizio sismico risponde")
+    GREZZI.setdefault("picchetto", {})["terremoti"] = testo[:20000]
+    righe = [l for l in testo.splitlines() if l.strip()]
+    colonne = [c.strip().lower() for c in righe[0].lstrip("#").split("|")] if righe and righe[0].startswith("#") else \
+        ["eventid", "time", "latitude", "longitude", "depth/km", "author", "catalog", "contributor", "contributorid",
+         "magtype", "magnitude", "magauthor", "eventlocationname", "eventtype"]
+    eventi = []
+    for l in righe:
+        if l.startswith("#"):
+            continue
+        v = dict(zip(colonne, [x.strip() for x in l.split("|")]))
+        try:
+            t = _tempo(v["time"] if v["time"].endswith("Z") or "+" in v["time"][10:] else v["time"] + "+00:00")
+            mag = float(v["magnitude"])
+        except (KeyError, ValueError, TypeError):
+            continue
+        if t is None:
+            continue
+        tipo = (v.get("eventtype") or "").lower()
+        eventi.append({"ora": t.isoformat(timespec="minutes"), "ora_locale": t.astimezone(TZ).strftime("%d.%m. %H:%M"),
+                       "magnitudo": round(mag, 1), "tipo_magnitudo": v.get("magtype") or "",
+                       "luogo": v.get("eventlocationname") or "", "profondita_km": _num(v.get("depth/km")),
+                       "lat": _num(v.get("latitude")), "lon": _num(v.get("longitude")),
+                       "naturale": tipo in ("", "earthquake"), "tipo": tipo})
+    eventi.sort(key=lambda e: e["ora"], reverse=True)
+    naturali = [e for e in eventi if e["naturale"]]
+    return {"disponibile": True, "letto": ADESSO.isoformat(timespec="seconds"), "fonte": fonte, "giorni": cfg.get("giorni", 7),
+            "eventi": eventi[:25], "numero": len(eventi), "magnitudo_max": max((e["magnitudo"] for e in naturali), default=None),
+            "soglia_avvertibile": cfg.get("magnitudo_avvertibile", 2.5)}
+
+
+def _num(v):
+    try:
+        return round(float(v), 2)
+    except (TypeError, ValueError):
+        return None
+
+
+def picchetto(prec):
+    """Dati della pagina «Picchetto». Ogni fonte è indipendente: l'errore di una non tocca le altre."""
+    cfg = CFG.get("picchetto")
+    if not cfg:
+        return None
+    prec = prec or {}
+    out = {"collegamenti": cfg.get("collegamenti") or []}
+    for chiave, funzione in (("incendio", incendio_bosco), ("siccita", siccita), ("terremoti", terremoti)):
+        if chiave not in cfg:
+            continue
+        try:
+            out[chiave] = funzione(cfg[chiave], prec.get(chiave))
+        except Exception as e:
+            log(f"Picchetto, {chiave}: errore {str(e)[:120]}")
+            out[chiave] = non_disp("errore nella lettura")
+    return out
+
+
 # ---------------------------------------------------------------- quadro cantonale
 def cantone(dati_regione):
     """Produce sito/cantone.json riusando le stesse funzioni, con la configurazione cantonale."""
@@ -974,6 +1168,12 @@ def cantone(dati_regione):
         log(f"Valanghe: errore {str(e)[:120]}")
         d["valanghe"] = non_disp("errore nella lettura del bollettino")
     log("Quadro cantonale: bollettino valanghe letto")
+    try:
+        d["picchetto"] = picchetto((_leggi_json(BASE / "sito" / "cantone.json") or {}).get("picchetto"))
+    except Exception as e:
+        log(f"Picchetto: errore {str(e)[:120]}")
+        d["picchetto"] = None
+    log("Quadro cantonale: fonti del picchetto lette")
     if "oasi" in C and not OASI_BLOCCATO["stato"]:
         d["oasi"] = [oasi(st) for st in C["oasi"]["stazioni"]]
         log("Quadro cantonale: rete OASI letta")
