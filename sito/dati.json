@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-14T19:01:39+00:00",
- "generato_locale": "14.11.2026 20:01",
+ "generato": "2026-11-14T19:08:10+00:00",
+ "generato_locale": "14.11.2026 20:08",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -655,7 +655,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "previsione": null,
-   "valore": 1.6,
+   "valore": 1.59,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -667,8 +667,6 @@
    "lon": 8.9625,
    "trend_8h": "in aumento",
    "serie_8h": [
-    0.93,
-    0.96,
     0.95,
     0.93,
     0.93,
@@ -714,7 +712,9 @@
     1.52,
     1.55,
     1.58,
-    1.6
+    1.6,
+    1.6,
+    1.59
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
@@ -932,7 +932,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "rilevamento": "14.11. 19:05",
-   "eta_minuti": 56,
+   "eta_minuti": 63,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.1321,
@@ -999,7 +999,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "rilevamento": "14.11. 19:05",
-   "eta_minuti": 56,
+   "eta_minuti": 63,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.998,
@@ -1066,7 +1066,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "rilevamento": "14.11. 19:05",
-   "eta_minuti": 56,
+   "eta_minuti": 63,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9522,
@@ -1133,7 +1133,7 @@
    "parametro": "WL",
    "unita": "m s.l.m.",
    "rilevamento": "14.11. 19:05",
-   "eta_minuti": 56,
+   "eta_minuti": 63,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9959,
@@ -1200,7 +1200,7 @@
    "parametro": "WL",
    "unita": "m s.l.m.",
    "rilevamento": "14.11. 19:05",
-   "eta_minuti": 56,
+   "eta_minuti": 63,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9245,
@@ -1267,7 +1267,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "14.11. 19:05",
-   "eta_minuti": 56,
+   "eta_minuti": 63,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.0975,
@@ -1313,7 +1313,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "14.11. 18:55",
-   "eta_minuti": 66,
+   "eta_minuti": 73,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.0597,
@@ -1359,7 +1359,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "14.11. 19:25",
-   "eta_minuti": 36,
+   "eta_minuti": 43,
    "provvisorio": true,
    "proprietario": "UMAm",
    "lat": 46.1038,
@@ -1405,7 +1405,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "14.11. 19:05",
-   "eta_minuti": 56,
+   "eta_minuti": 63,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9763,
@@ -1451,7 +1451,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "14.11. 19:05",
-   "eta_minuti": 56,
+   "eta_minuti": 63,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.008,
@@ -1491,7 +1491,7 @@
  ],
  "previsione": {
   "disponibile": true,
-  "fonte": "Open-Meteo (non ufficiale)",
+  "fonte": "Open-Meteo (non ufficiale), ultima lettura 20:01",
   "orario": [
    {
     "ora": "20:00",
@@ -1695,7 +1695,7 @@
    }
   ],
   "letta": "2026-11-14T19:01:39+00:00",
-  "riutilizzata": false,
+  "riutilizzata": true,
   "_serie": {
    "hourly": {
     "time": [
@@ -2385,7 +2385,8 @@
      "2026-11-19T16:48"
     ]
    }
-  }
+  },
+  "motivo_riuso": "HTTPSConnectionPool(host='api.open-meteo.com', port=443): Read timed out. (read timeout=15)"
  },
  "messaggio": {
   "testo": "",
@@ -2400,5 +2401,5 @@
    "tipo": "info"
   }
  ],
- "precedente": "2026-11-14T18:51:02+00:00"
+ "precedente": "2026-11-14T19:01:39+00:00"
 }
