@@ -228,6 +228,40 @@
     "lat": 46.0037,
     "lon": 8.9511,
     "url": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m,relative_humidity_2m,precipitation,precipitation_probability,wind_speed_10m,wind_gusts_10m,weather_code,freezing_level_height,snowfall&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_gusts_10m_max,weather_code,sunrise,sunset&timezone=Europe%2FZurich&forecast_days=6&wind_speed_unit=kmh",
+    "meteosvizzera": {
+      "_nota": "Previsione locale ufficiale di MeteoSvizzera (dati aperti, la stessa dell'app; citare «Fonte: MeteoSvizzera»). Un file per parametro con tutti i punti della Svizzera (fino a 33 MB): si scarica solo quando esce una corsa nuova, circa ogni ora. punti: identificativo = codice postale seguito da due cifre, tipo 2 = codice postale, 1 = stazione, 3 = punto di montagna (elenco in ogd-local-forecasting_meta_point.csv, verificato il 15.11.2026). max_eta_ore: una corsa più vecchia non viene usata e si ripiega su Open-Meteo. Togliere url_item per disattivare.",
+      "url_item": "https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-local-forecasting/items/{giorno}-ch",
+      "parametri": {
+        "temperatura": "tre200h0",
+        "pioggia": "rre150h0",
+        "pioggia_alta": "rreq90h0",
+        "raffica": "fu3010h1",
+        "raffica_alta": "fu3q90h1",
+        "vento": "fu3010h0",
+        "zero_termico": "zprfr0hs",
+        "prob_pioggia_3h": "rp0003i0"
+      },
+      "punto_principale": 690000,
+      "punti": {
+        "690000": {"nome": "Lugano", "tipo": 2},
+        "690009": {"nome": "Paradiso", "tipo": 2},
+        "690005": {"nome": "Massagno", "tipo": 2},
+        "694200": {"nome": "Savosa", "tipo": 2},
+        "694300": {"nome": "Vezia", "tipo": 2},
+        "694800": {"nome": "Porza", "tipo": 2},
+        "694900": {"nome": "Comano", "tipo": 2},
+        "695200": {"nome": "Canobbio", "tipo": 2},
+        "692400": {"nome": "Sorengo", "tipo": 2},
+        "693300": {"nome": "Muzzano", "tipo": 2},
+        "692600": {"nome": "Collina d'Oro", "tipo": 2},
+        "691600": {"nome": "Grancia", "tipo": 2},
+        "681500": {"nome": "Melide", "tipo": 2},
+        "692200": {"nome": "Morcote", "tipo": 2},
+        "692100": {"nome": "Vico Morcote", "tipo": 2}
+      },
+      "intervallo_minuti": 20,
+      "max_eta_ore": 6
+    },
     "neve": {
       "_nota": "Limite delle nevicate, solo nelle ore con precipitazione prevista. url_modello: modello MeteoSvizzera ICON-CH tramite Open-Meteo, con la quota delle nevicate calcolata dal modello (DA_VERIFICARE al primo ciclo). Se non risponde: stima = zero termico meno lo scarto di scarti_m, dove ogni coppia è [precipitazione oraria minima in mm, scarto in m]. url_modello vuoto = sempre stima.",
       "url_modello": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=precipitation,snowfall,freezing_level_height,snowfall_height&models=meteoswiss_icon_seamless&timezone=Europe%2FZurich&forecast_days=3",
