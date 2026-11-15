@@ -130,6 +130,12 @@
     <p class="nota">Zona: Ticino e regioni confinanti. Da magnitudo <span id="ter-soglia">2.5</span> un terremoto è di norma avvertito dalla popolazione. I valori automatici possono essere corretti in seguito dal servizio sismico.</p>
   </section>
 
+  <section id="sez-radio">
+    <h2>Radioattività<small id="rad-sub"></small></h2>
+    <div id="radio"></div>
+    <p class="nota">Fonte: CENAL, rete NADAM, intensità di dose ambientale (media oraria). L'intervallo naturale dipende dal suolo e dalla quota; durante le precipitazioni il valore sale per qualche ora per cause naturali. L'allarme automatico della CENAL scatta a <span id="rad-soglia">1000</span> nSv/h. Lettura da una pagina pubblica del sito, non da un servizio ufficiale: in caso di dubbio fa fede naz.ch.</p>
+  </section>
+
   <section id="sez-passi">
     <h2>Passi alpini<small id="pas-sub">previsione delle prossime 24 ore</small></h2>
     <div id="passi"></div>
@@ -230,6 +236,19 @@
         ? `<ul class="lista">${ter.eventi.map(e => `<li class="${!e.naturale ? "artificiale" : e.magnitudo >= ter.soglia_avvertibile ? "forte" : ""}">${livHtml(e.naturale ? livMag(e.magnitudo) : 1, false, "M " + e.magnitudo)}<div><b>${esc(e.luogo || "luogo non indicato")}</b>${!e.naturale ? ` <span style="color:var(--muto)">(${e.tipo === "quarry blast" ? "brillamento in cava" : esc(e.tipo)})</span>` : e.magnitudo >= ter.soglia_avvertibile ? " · probabilmente avvertito" : ""}<small>${esc(e.ora_locale)}${e.profondita_km != null ? ` · profondità ${e.profondita_km} km` : ""}</small></div></li>`).join("")}</ul>` +
           (ter.numero > ter.eventi.length ? `<p class="nota">Mostrati i ${ter.eventi.length} più recenti su ${ter.numero}.</p>` : "")
         : `<div class="ok-box">Nessun evento registrato negli ultimi ${ter.giorni} giorni nella zona.</div>`;
+    }
+
+    // ---- radioattività (rete NADAM)
+    const rad = p.radioattivita;
+    if (!ok(rad)) { $("rad-sub").textContent = ""; $("radio").innerHTML = assente(rad, "Radioattività"); }
+    else {
+      $("rad-soglia").textContent = rad.soglia_allarme;
+      $("rad-sub").textContent = `intensità di dose · ${letto(rad)}`;
+      const statoRad = x => x.stato === "allarme" ? '<b style="color:var(--allarme)">soglia d\'allarme superata</b>' : x.stato === "sopra" ? "sopra l'intervallo naturale" : "nell'intervallo naturale";
+      $("radio").innerHTML = (rad.stato === "allarme" ? '<div class="nd-box" style="border-color:var(--allarme)"><b>Almeno una stazione supera la soglia d\'allarme della CENAL.</b> Verificare subito su naz.ch e attendere le comunicazioni ufficiali.</div>' : "") +
+        `<div class="scorri"><table class="tabella"><tr><th>Stazione</th><th>nSv/h</th><th>Massimo 24 h</th><th>Intervallo naturale</th><th>Valutazione</th></tr>${rad.stazioni.map(x => x.disponibile
+          ? `<tr><td><b>${esc(x.nome)}</b><small>${esc(x.ora_locale)}</small></td><td style="white-space:nowrap"><b>${t(x.valore)}</b></td><td>${t(x.max_24h)}</td><td style="white-space:nowrap">${x.normale_min != null ? x.normale_min + "–" + x.normale_max : "—"}</td><td>${statoRad(x)}</td></tr>`
+          : `<tr><td><b>${esc(x.nome)}</b></td><td colspan="4" style="color:var(--muto)">n/d – ${esc(x.motivo || "")}</td></tr>`).join("")}</table></div>`;
     }
 
     // ---- passi alpini
