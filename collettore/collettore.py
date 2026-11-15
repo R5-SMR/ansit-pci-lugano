@@ -1513,6 +1513,77 @@ def punti_riferimento():
     return out
 
 
+# ---------------------------------------------------------------- sonda provvisoria (da togliere a indagine conclusa)
+SONDA_NAZ = BASE / "archivio" / "stato" / "sonda_naz.json"
+
+
+def sonda_naz():
+    """Indagine una tantum: da quali indirizzi la pagina della CENAL prende i valori della rete NADAM.
+    Scrive archivio/stato/sonda_naz.json e poi non viene più eseguita. Non tocca i dati pubblicati."""
+    if SONDA_NAZ.exists():
+        return
+    from urllib.parse import urljoin
+    ua = {"User-Agent": "Mozilla/5.0 (ANSIT PCi Lugano; indagine fonte dati)", "Accept-Language": "it"}
+    esito = {"eseguita": ADESSO.isoformat(timespec="seconds"), "pagine": [], "script": [], "indirizzi": [], "prove": []}
+    chiave = re.compile(r"api|json|csv|nadam|mess|zeit|tages|station|sonde|dose|odl|data|graphql|wp-json|ajax", re.I)
+    trovati, da_leggere = set(), []
+    import time
+    scadenza = time.monotonic() + 90      # la sonda non deve mai rallentare il ciclo oltre un minuto e mezzo
+
+    def raccogli(testo, base):
+        for m in re.findall(r"""["'`]((?:https?:)?//[^"'`\s<>]{6,200}|/[A-Za-z0-9_\-./]{3,160}(?:\?[^"'`\s<>]{0,80})?)["'`]""", testo):
+            if chiave.search(m) and not re.search(r"\.(png|jpg|jpeg|svg|gif|woff2?|ttf|css|ico)(\?|$)", m, re.I):
+                trovati.add(urljoin(base, m))
+
+    for u in ("https://www.naz.ch/it/aktuell/zeitverlauf", "https://www.naz.ch/it/aktuell/messwerte"):
+        try:
+            r = requests.get(u, headers=ua, timeout=10)
+            t = r.text
+            esito["pagine"].append({"url": u, "finale": r.url, "stato": r.status_code, "byte": len(r.content), "inizio": t[:1500]})
+            for src in re.findall(r"""<script[^>]+src=["']([^"']+)["']""", t) + re.findall(r"""<link[^>]+href=["']([^"']+\.js[^"']*)["']""", t):
+                da_leggere.append(urljoin(r.url, src))
+            raccogli(t, r.url)
+        except Exception as e:
+            esito["pagine"].append({"url": u, "errore": str(e)[:150]})
+    visti = set()
+    while da_leggere and len(visti) < 25 and time.monotonic() < scadenza - 30:
+        u = da_leggere.pop(0)
+        if u in visti:
+            continue
+        visti.add(u)
+        try:
+            r = requests.get(u, headers=ua, timeout=10)
+            t = r.text if len(r.content) < 6_000_000 else ""
+            esito["script"].append({"url": u, "stato": r.status_code, "byte": len(r.content)})
+            raccogli(t, u)
+            # moduli caricati a richiesta dallo script principale
+            for m in re.findall(r"""["'`]((?:\./|/)?[A-Za-z0-9_\-./]{2,120}\.js)["'`]""", t)[:40]:
+                da_leggere.append(urljoin(u, m))
+            # contesto attorno alle parole che contano, per capire come si compone la richiesta
+            for m in list(re.finditer(r"fetch\(|axios|XMLHttpRequest|zeitverlauf|tagesmittel|nSv", t))[:25]:
+                esito.setdefault("contesto", []).append({"script": u.rsplit("/", 1)[-1][:60], "testo": t[max(0, m.start() - 160):m.start() + 260]})
+        except Exception as e:
+            esito["script"].append({"url": u, "errore": str(e)[:150]})
+    esito["indirizzi"] = sorted(trovati)[:400]
+    # prova diretta degli indirizzi più promettenti e di alcune ipotesi
+    ipotesi = ["https://www.naz.ch/api/", "https://www.naz.ch/api/nadam", "https://www.naz.ch/api/stations", "https://www.naz.ch/data/nadam.json",
+               "https://www.naz.ch/it/aktuell/zeitverlauf_LUG.shtml", "https://www.naz.ch/it/aktuell/tagesmittelwerte"]
+    candidati = [x for x in esito["indirizzi"] if "naz.ch" in x or "admin.ch" in x][:40] + ipotesi
+    for u in candidati:
+        if time.monotonic() > scadenza:
+            esito["prove"].append({"nota": "tempo esaurito, prove interrotte"})
+            break
+        try:
+            r = requests.get(u, headers=ua, timeout=8)
+            esito["prove"].append({"url": u, "stato": r.status_code, "tipo": r.headers.get("Content-Type", "")[:60], "byte": len(r.content), "inizio": r.text[:400]})
+        except Exception as e:
+            esito["prove"].append({"url": u, "errore": str(e)[:120]})
+    esito["contesto"] = (esito.get("contesto") or [])[:60]
+    SONDA_NAZ.parent.mkdir(parents=True, exist_ok=True)
+    SONDA_NAZ.write_text(json.dumps(esito, ensure_ascii=False, indent=1), encoding="utf-8")
+    log(f"Sonda CENAL: {len(esito['script'])} script letti, {len(esito['indirizzi'])} indirizzi annotati")
+
+
 # ---------------------------------------------------------------- quadro cantonale
 def cantone(dati_regione, ms=None):
     """Produce sito/cantone.json riusando le stesse funzioni, con la configurazione cantonale."""
@@ -1624,6 +1695,10 @@ def main():
     except Exception as e:
         log(f"Punti di riferimento: errore {str(e)[:120]}")
         dati["punti"] = None
+    try:
+        sonda_naz()
+    except Exception as e:
+        log(f"Sonda CENAL: errore {str(e)[:120]}")
 
     dati["variazioni"] = variazioni(dati, vecchio)
     evidenze(dati, vecchio)
