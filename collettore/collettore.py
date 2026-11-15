@@ -1447,6 +1447,72 @@ def picchetto(prec):
     return out
 
 
+# ---------------------------------------------------------------- punti di riferimento: PRU e impianti
+PUNTI_CFG = BASE / "config" / "punti.json"
+PRU_STATO = BASE / "archivio" / "stato" / "pru.json"
+
+
+def _lv95_wgs84(e, n):
+    """Coordinate nazionali svizzere LV95 → latitudine e longitudine (formule approssimate di swisstopo, precisione circa 1 m)."""
+    y, x = (e - 2600000) / 1e6, (n - 1200000) / 1e6
+    lon = 2.6779094 + 4.728982 * y + 0.791484 * y * x + 0.1306 * y * x * x - 0.0436 * y ** 3
+    lat = 16.9023892 + 3.238272 * x - 0.270978 * y * y - 0.002528 * x * x - 0.0447 * y * y * x - 0.0140 * x ** 3
+    return round(lat * 100 / 36, 6), round(lon * 100 / 36, 6)
+
+
+def punti_riferimento():
+    """Punti di riferimento della pagina regionale:
+    - PRU (punti di raccolta d'urgenza) dai geodati federali dell'UFPP, riletti una volta al giorno; se la fonte non risponde
+      vale l'ultima lettura salvata, e in mancanza l'elenco di riserva di config/punti.json;
+    - impianti e infrastruttura dall'elenco di config/punti.json, tenuto a mano.
+    I cantieri non passano di qui: le pagine li leggono direttamente dal modulo sul server."""
+    if not PUNTI_CFG.exists():
+        return None
+    cfg = json.loads(PUNTI_CFG.read_text(encoding="utf-8"))
+    comuni = {c["nome"].lower(): c["nome"] for c in CFG["comuni"]}
+    out = {"impianti": [], "pru": None}
+    for i in cfg.get("impianti") or []:
+        try:
+            out["impianti"].append({"nome": str(i["nome"])[:80], "tipo": str(i.get("tipo") or "impianto")[:30], "comune": i.get("comune"),
+                                    "lat": float(i["lat"]), "lon": float(i["lon"]), "nota": str(i.get("nota") or "")[:200]})
+        except (KeyError, TypeError, ValueError):
+            log(f"Punti: impianto ignorato perché incompleto ({str(i)[:60]})")
+    c = cfg.get("pru") or {}
+    stato = _leggi_json(PRU_STATO) if PRU_STATO.exists() else None
+    if stato and _riusa(stato, c.get("intervallo_minuti", 1440)):
+        out["pru"] = stato
+        return out
+    try:
+        js = scarica(c["url"], "json", timeout=60)
+        punti = []
+        for f in js.get("features") or []:
+            pr = f.get("properties") or {}
+            comune = comuni.get(str(pr.get("gemeinde") or "").strip().lower())
+            if pr.get("kanton") != "TI" or not comune:
+                continue
+            lat, lon = _lv95_wgs84(float(pr["xkoord"]), float(pr["ykoord"]))
+            via = " ".join(str(x) for x in (pr.get("strasse"), pr.get("nummer")) if x not in (None, "", "null"))
+            punti.append({"id": pr.get("ntp-id"), "nome": pr.get("gebbezeichnung"), "indirizzo": via, "localita": pr.get("ort"),
+                          "comune": comune, "lat": lat, "lon": lon, "nota": pr.get("bemerkungen") or ""})
+        if not punti:
+            raise ValueError("nessun punto del comprensorio nel file")
+        punti.sort(key=lambda x: (x["comune"], str(x["localita"])))
+        out["pru"] = {"disponibile": True, "letto": ADESSO.isoformat(timespec="seconds"), "fonte": "UFPP, geodati federali", "punti": punti}
+        PRU_STATO.parent.mkdir(parents=True, exist_ok=True)
+        PRU_STATO.write_text(json.dumps(out["pru"], ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        log(f"Punti: {len(punti)} PRU letti dai geodati federali")
+    except Exception as e:
+        log(f"Punti: PRU non letti ({str(e)[:100]})")
+        if stato and stato.get("punti"):
+            out["pru"] = {**stato, "nota": "fonte non raggiungibile, vale l'ultima lettura"}
+        elif c.get("riserva"):
+            out["pru"] = {"disponibile": True, "letto": None, "fonte": "UFPP, elenco di riserva del " + str(c.get("riserva_del", "")),
+                          "punti": c["riserva"], "nota": "fonte non raggiungibile, elenco di riserva"}
+        else:
+            out["pru"] = non_disp(e)
+    return out
+
+
 # ---------------------------------------------------------------- quadro cantonale
 def cantone(dati_regione, ms=None):
     """Produce sito/cantone.json riusando le stesse funzioni, con la configurazione cantonale."""
@@ -1553,6 +1619,11 @@ def main():
             log(f"MeteoSvizzera: riepilogo per Comune non riuscito ({str(e)[:100]})")
     log("Previsione letta")
     dati["messaggio"] = messaggio()
+    try:
+        dati["punti"] = punti_riferimento()
+    except Exception as e:
+        log(f"Punti di riferimento: errore {str(e)[:120]}")
+        dati["punti"] = None
 
     dati["variazioni"] = variazioni(dati, vecchio)
     evidenze(dati, vecchio)
