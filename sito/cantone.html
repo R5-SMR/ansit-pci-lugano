@@ -107,8 +107,8 @@
   #allerte { grid-row: 1 / 3; }
   table { width: 100%; border-collapse: collapse; }
   th, td { text-align: left; padding: .25em .4em; border-top: 1px solid var(--linea); font-size: .92em; vertical-align: middle; }
-  th { border-top: 0; color: var(--muto); font-weight: 600; font-size: .8em; }
-  td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  th { border-top: 0; color: var(--muto); font-weight: 600; font-size: .8em; vertical-align: bottom; }
+  th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .liv { display: inline-flex; align-items: center; justify-content: center; min-width: 1.9em; height: 1.9em; border-radius: 1em; font-weight: 700; color: #111; }
   .liv.l1 { background: var(--l1); color: var(--muto); } .liv.l2 { background: var(--l2); } .liv.l3 { background: var(--l3); } .liv.l4 { background: var(--l4); color: #fff; } .liv.l5 { background: var(--l5); color: #fff; }
   .liv.nd { background: var(--nd); color: var(--muto); font-size: .75em; }
@@ -186,6 +186,8 @@
   const $ = id => document.getElementById(id);
   const BASE_DATI = "https://raw.githubusercontent.com/R5-SMR/ansit-pci-lugano/main/sito/";
   const t = v => (v === null || v === undefined || Number.isNaN(v)) ? "—" : v;
+  const d1 = v => typeof v === "number" && !Number.isNaN(v) ? v.toFixed(1) : t(v);   // sempre un decimale, così le cifre stanno in colonna
+  const alta = v => v != null ? `<small style="color:var(--muto);display:inline-block;min-width:3.4em;text-align:right">/ ${d1(v)}</small>` : "";
   const livHtml = (l, nd) => (nd || l == null) ? '<span class="liv nd">n/d</span>' : `<span class="liv l${l}">${l}</span>`;
   let eraStantio = null;
   let dati = null, carta = null, ultimoGenerato = null;
@@ -402,13 +404,13 @@
     $("mis-sub").textContent = prima ? `rilevamento ${t(prima.rilevamento)} UTC` : "non disponibili";
     $("misure").innerHTML = `<tr><th>Stazione</th><th class="num">°C</th><th class="num">Raffica</th><th class="num">Pioggia 1 h</th><th class="num">Pioggia 24 h</th></tr>` +
       ms.map(m => { const e = evDi("vento:" + m.stazione); return m.disponibile
-        ? `<tr class="${e ? e.classe : ""}"><td>${m.nome}</td><td class="num">${t(m.temperatura)}</td><td class="num${e && e.attiva ? " ev-val" : ""}">${e && e.attiva ? "▲ " : ""}${t(m.raffica_kmh)} km/h${evTxt(e)}</td><td class="num">${t(m.pioggia_1h)} mm</td><td class="num"${m.pioggia_24h >= 50 ? ' style="color:var(--allarme);font-weight:700"' : ""}>${t(m.pioggia_24h)} mm</td></tr>`
+        ? `<tr class="${e ? e.classe : ""}"><td>${m.nome}</td><td class="num">${d1(m.temperatura)}</td><td class="num${e && e.attiva ? " ev-val" : ""}">${e && e.attiva ? "▲ " : ""}${d1(m.raffica_kmh)} km/h${evTxt(e)}</td><td class="num">${d1(m.pioggia_1h)} mm</td><td class="num"${m.pioggia_24h >= 50 ? ' style="color:var(--allarme);font-weight:700"' : ""}>${d1(m.pioggia_24h)} mm</td></tr>`
         : `<tr><td>${m.nome || m.stazione || "?"}</td><td colspan="4" style="color:var(--muto)">n/d</td></tr>`; }).join("");
 
     // previsioni: massimi 12 h per località
-    $("prev").innerHTML = `<tr><th>Località</th><th class="num">Raffica km/h</th><th class="num">Pioggia 12 h mm</th><th class="num">Zero termico (m)</th><th class="num" title="solo nelle ore con precipitazione; * = stima dallo zero termico">Limite neve</th><th class="num">Neve 48 h</th></tr>` +
+    $("prev").innerHTML = `<tr><th>Località</th><th class="num">Raffica<br>km/h</th><th class="num">Pioggia<br>12 h mm</th><th class="num">Zero termico<br>m</th><th class="num" title="solo nelle ore con precipitazione; * = stima dallo zero termico">Limite<br>neve</th><th class="num">Neve<br>48 h</th></tr>` +
       Object.entries(dati.previsioni).map(([n, p]) => p.disponibile
-        ? `<tr><td>${n}</td><td class="num">${t(p.massimi_12h.raffica_kmh)}${p.massimi_12h.raffica_alta_kmh != null ? `<small style="color:var(--muto)"> / ${p.massimi_12h.raffica_alta_kmh}</small>` : ""}</td><td class="num">${t(p.massimi_12h.pioggia_totale_mm)}</td><td class="num">${p.neve_48h && p.neve_48h.zero_termico_min != null ? p.neve_48h.zero_termico_min + "–" + p.neve_48h.zero_termico_max : "—"}</td><td class="num">${limiteNeve(p.neve_48h)}</td><td class="num">${p.neve_48h && p.neve_48h.neve_48h_cm ? p.neve_48h.neve_48h_cm + " cm" : "—"}</td></tr>`
+        ? `<tr><td>${n}</td><td class="num">${d1(p.massimi_12h.raffica_kmh)}${alta(p.massimi_12h.raffica_alta_kmh)}</td><td class="num">${d1(p.massimi_12h.pioggia_totale_mm)}</td><td class="num">${p.neve_48h && p.neve_48h.zero_termico_min != null ? p.neve_48h.zero_termico_min + "–" + p.neve_48h.zero_termico_max : "—"}</td><td class="num">${limiteNeve(p.neve_48h)}</td><td class="num">${p.neve_48h && p.neve_48h.neve_48h_cm ? p.neve_48h.neve_48h_cm + " cm" : "—"}</td></tr>`
         : `<tr><td>${n}</td><td colspan="5" style="color:var(--muto)">n/d</td></tr>`).join("");
     const ufficiale = Object.values(dati.previsioni).find(p => p.disponibile && p.ufficiale);
     $("prev").insertAdjacentHTML("beforeend", `<tr><td colspan="6" style="color:var(--muto);font-size:.8em">${ufficiale ? "Raffica: massimo in 12 h / scenario alto. " : ""}Limite neve: solo con precipitazione; * = stima dallo zero termico; ❄ = neve fino alla località.</td></tr>`);
