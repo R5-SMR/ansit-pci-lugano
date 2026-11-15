@@ -609,8 +609,11 @@ def meteosvizzera_locale(prec):
         t = _ms_tempo(d.get("corsa"))
         return bool(d.get("disponibile") and t and (ADESSO - t).total_seconds() <= cfg.get("max_eta_ore", 6) * 3600)
 
+    # se in config.json sono stati aggiunti punti, la lettura salvata non basta: si riscarica
+    completo = {str(k) for k in (cfg.get("punti") or {})} <= set(prec.get("punti") or {})
+
     try:   # controllo dell'elenco al massimo ogni intervallo_minuti
-        if prec.get("controllato") and (ADESSO - _tempo(prec["controllato"])).total_seconds() < cfg.get("intervallo_minuti", 20) * 60 and valida(prec):
+        if prec.get("controllato") and (ADESSO - _tempo(prec["controllato"])).total_seconds() < cfg.get("intervallo_minuti", 20) * 60 and valida(prec) and completo:
             return prec
     except Exception:
         pass
@@ -619,7 +622,7 @@ def meteosvizzera_locale(prec):
         if valida(prec):
             return {**prec, "nota": "elenco delle corse non raggiungibile, vale l'ultima lettura"}
         return non_disp("nessuna corsa di previsione trovata")
-    if prec.get("corsa") == corsa and prec.get("disponibile"):
+    if prec.get("corsa") == corsa and prec.get("disponibile") and completo:
         return {**prec, "controllato": ADESSO.isoformat(timespec="seconds")} if valida(prec) else non_disp("ultima corsa pubblicata troppo vecchia")
     punti = {str(k): v for k, v in (cfg.get("punti") or {}).items()}
     prefissi = {f"{pid};{v.get('tipo', 2)};".encode(): pid for pid, v in punti.items()}
@@ -650,17 +653,102 @@ def meteosvizzera_locale(prec):
         s = serie.get(pid) or {}
         if not s.get("temperatura"):
             continue
-        tempi = sorted(set().union(*[set(x) for x in s.values()]))
+        da = (ADESSO - timedelta(hours=1)).strftime("%Y%m%d%H%M")      # le ore già trascorse non servono
+        tempi = [t for t in sorted(set().union(*[set(x) for x in s.values()])) if t >= da]
         chiavi = MS_CHIAVI
         if pid != principale:
-            # per gli altri punti bastano le prossime 30 ore e le grandezze del riepilogo: il file dei dati resta leggero
-            limite = (ADESSO + timedelta(hours=30)).strftime("%Y%m%d%H%M")
+            # per gli altri punti bastano poche ore e le grandezze dei riepiloghi
+            cantonale = v.get("gruppo") in ("ticino", "passi")
+            limite = (ADESSO + timedelta(hours=56 if cantonale else 30)).strftime("%Y%m%d%H%M")
             tempi = [t for t in tempi if t <= limite]
-            chiavi = ("temperatura", "pioggia", "pioggia_alta", "raffica", "raffica_alta")
-        out["punti"][pid] = {"nome": v.get("nome"), "t": tempi,
+            chiavi = ("temperatura", "pioggia", "pioggia_alta", "raffica", "raffica_alta") + (("zero_termico",) if cantonale else ())
+        out["punti"][pid] = {"nome": v.get("nome"), "gruppo": v.get("gruppo", "comuni"), "quota": v.get("quota"), "t": tempi,
                              **{k: [s.get(k, {}).get(t) for t in tempi] for k in chiavi if s.get(k)}}
     GREZZI["meteosvizzera_locale"] = {"corsa": corsa, "punti": list(out["punti"]), "errori": errori}
     log(f"MeteoSvizzera: corsa {corsa} letta, {len(out['punti'])} punti")
+    return out
+
+
+MS_STATO = BASE / "archivio" / "stato" / "meteosvizzera.json"
+
+
+def _ms_stato_leggi():
+    """Le serie complete stanno in archivio/stato (salvato dal flusso insieme all'archivio), non nei file letti dalle pagine."""
+    return _leggi_json(MS_STATO) if MS_STATO.exists() else None
+
+
+def _ms_stato_scrivi(ms):
+    try:
+        MS_STATO.parent.mkdir(parents=True, exist_ok=True)
+        MS_STATO.write_text(json.dumps(ms, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    except Exception as e:
+        log(f"MeteoSvizzera: stato non salvato ({str(e)[:100]})")
+
+
+def _ms_sintesi(ms):
+    """Ciò che del risultato va nei file delle pagine: tutto tranne le serie."""
+    if not isinstance(ms, dict):
+        return ms
+    return {**{k: v for k, v in ms.items() if k != "punti"}, "numero_punti": len(ms.get("punti") or {})}
+
+
+def _ms_come_generico(punto):
+    """Serie MeteoSvizzera nella forma attesa da _neve_48h (ore locali, precipitazione, zero termico):
+    serve per stimare il limite delle nevicate con dati ufficiali quando il modello della quota neve non risponde."""
+    ore = [_ms_tempo(t).astimezone(TZ).strftime("%Y-%m-%dT%H:%M") for t in punto["t"]]
+    return {"hourly": {"time": ore, "precipitation": punto.get("pioggia") or [None] * len(ore),
+                       "freezing_level_height": punto.get("zero_termico") or [None] * len(ore)},
+            "elevation": punto.get("quota")}
+
+
+def previsione_ticino(luoghi, ms, prec, luce=None):
+    """Previsioni della pagina Ticino dai punti ufficiali MeteoSvizzera. Per il limite delle nevicate si chiede a Open-Meteo
+    solo il modello della quota neve (una richiesta per località con coordinate); se manca, stima dai dati ufficiali."""
+    out = {}
+    for pid, pt in (ms.get("punti") or {}).items():
+        if pt.get("gruppo") != "ticino" and pid != str(CFG["previsione"]["meteosvizzera"].get("punto_principale")):
+            continue
+        nome = pt.get("nome")
+        r = _ms_riepilogo(pt, ore=(12,))["12h"]
+        if r["raffica_max"] is None:
+            continue
+        coord = luoghi.get(nome)
+        modello = _neve_modello(coord["lat"], coord["lon"]) if coord else None
+        try:
+            neve = _neve_48h(_ms_come_generico(pt), modello)
+            if neve.get("modello", "").startswith("Open-Meteo, modello generico"):
+                neve["modello"] = "MeteoSvizzera, previsione locale"
+        except Exception as e:
+            log(f"Neve {nome}: {str(e)[:100]}")
+            neve = {"zero_termico_min": None, "zero_termico_max": None, "precipitazione": None}
+        out[nome] = {"disponibile": True, "ufficiale": True, "fonte": "MeteoSvizzera, previsione locale ufficiale",
+                     "corsa": ms.get("corsa_locale"), "quota": pt.get("quota"),
+                     "massimi_12h": {"raffica_kmh": r["raffica_max"], "raffica_alta_kmh": r["raffica_alta_max"],
+                                     "pioggia_totale_mm": r["pioggia"], "pioggia_totale_alta_mm": r["pioggia_alta"],
+                                     "temperatura": r["tmax"]},
+                     "neve_48h": neve, "luce": luce if nome == "Lugano" and luce else [], "riutilizzata": False,
+                     "letta": ms.get("letto")}
+    ordine = {n: i for i, n in enumerate(CFG["previsione"]["meteosvizzera"].get("ordine_ticino") or [])}
+    return dict(sorted(out.items(), key=lambda kv: ordine.get(kv[0], 99)))
+
+
+def previsione_passi(ms):
+    """Passi alpini: temperatura, raffiche e precipitazione delle prossime 24 ore dai punti di montagna MeteoSvizzera.
+    «Neve» = precipitazione nelle ore con temperatura prevista fino a 1 °C (indicazione, non una previsione di neve fresca)."""
+    out = []
+    for pid, pt in (ms.get("punti") or {}).items():
+        if pt.get("gruppo") != "passi":
+            continue
+        futuri = [i for i, t in enumerate(pt["t"]) if (_ms_tempo(t) or ADESSO) > ADESSO][:24]
+        g = lambda k: [pt[k][i] for i in futuri if k in pt and pt[k][i] is not None]
+        tem, raf, raf_a, pio = g("temperatura"), g("raffica"), g("raffica_alta"), g("pioggia")
+        if not tem:
+            continue
+        neve = sum(pt["pioggia"][i] for i in futuri if "pioggia" in pt and pt["pioggia"][i] is not None
+                   and pt["temperatura"][i] is not None and pt["temperatura"][i] <= 1.0)
+        out.append({"nome": pt.get("nome"), "quota": pt.get("quota"), "temperatura_ora": tem[0], "tmin": min(tem), "tmax": max(tem),
+                    "raffica_max": max(raf) if raf else None, "raffica_alta_max": max(raf_a) if raf_a else None,
+                    "precipitazione_mm": round(sum(pio), 1) if pio else None, "di_cui_con_gelo_mm": round(neve, 1), "ore": len(futuri)})
     return out
 
 
@@ -1360,7 +1448,7 @@ def picchetto(prec):
 
 
 # ---------------------------------------------------------------- quadro cantonale
-def cantone(dati_regione):
+def cantone(dati_regione, ms=None):
     """Produce sito/cantone.json riusando le stesse funzioni, con la configurazione cantonale."""
     cfg_path = BASE / "config" / "cantone.json"
     if not cfg_path.exists():
@@ -1403,7 +1491,18 @@ def cantone(dati_regione):
     out = BASE / "sito" / "cantone.json"
     vecchio = _leggi_json(out)
     prev_vecchie = (vecchio or {}).get("previsioni") or {}
-    d["previsioni"] = {p["nome"]: previsione(p["lat"], p["lon"], prev_vecchie.get(p["nome"])) for p in C["previsioni"]}
+    d["previsioni"], d["passi"] = {}, None
+    if ms and ms.get("disponibile"):
+        try:
+            luce = (dati_regione.get("previsione") or {}).get("luce")
+            d["previsioni"] = previsione_ticino({p["nome"]: p for p in C["previsioni"]}, ms, prev_vecchie, luce)
+            d["passi"] = {"disponibile": True, "corsa": ms.get("corsa_locale"), "fonte": "MeteoSvizzera, previsione locale", "punti": previsione_passi(ms)}
+        except Exception as e:
+            log(f"Quadro cantonale: previsione ufficiale non applicata ({str(e)[:120]})")
+            d["previsioni"] = {}
+    if not d["previsioni"]:      # riserva: Open-Meteo, come prima
+        d["previsioni"] = {p["nome"]: previsione(p["lat"], p["lon"], prev_vecchie.get(p["nome"])) for p in C["previsioni"]}
+        d["passi"] = non_disp("previsione MeteoSvizzera non disponibile")
     log("Quadro cantonale: previsioni lette")
     d["variazioni"] = variazioni(d, vecchio)
     evidenze(d, vecchio)
@@ -1434,19 +1533,22 @@ def main():
     sito = BASE / "sito" / "dati.json"
     vecchio = _leggi_json(sito)
     try:
-        dati["meteosvizzera"] = meteosvizzera_locale((vecchio or {}).get("meteosvizzera"))
+        ms = meteosvizzera_locale(_ms_stato_leggi() or (vecchio or {}).get("meteosvizzera"))
     except Exception as e:
         log(f"MeteoSvizzera: errore {str(e)[:120]}")
-        dati["meteosvizzera"] = non_disp("errore nella lettura")
+        ms = non_disp("errore nella lettura")
+    if ms and ms.get("disponibile"):
+        _ms_stato_scrivi(ms)
+    dati["meteosvizzera"] = _ms_sintesi(ms)
     log("Previsione MeteoSvizzera letta")
-    dati["previsione"] = previsione(precedente=(vecchio or {}).get("previsione"), ms=dati["meteosvizzera"])
-    ms = dati["meteosvizzera"]
+    dati["previsione"] = previsione(precedente=(vecchio or {}).get("previsione"), ms=ms)
     if ms and ms.get("disponibile"):
         # riepilogo per Comune (raffiche e pioggia delle prossime 12 e 24 ore)
         nomi = {str(k): v.get("nome") for k, v in (CFG["previsione"]["meteosvizzera"].get("punti") or {}).items()}
         try:
             dati["previsione_comuni"] = {"corsa": ms.get("corsa_locale"),
-                                         "punti": {nomi.get(pid, pid): _ms_riepilogo(pt) for pid, pt in ms["punti"].items()}}
+                                         "punti": {nomi.get(pid, pid): _ms_riepilogo(pt) for pid, pt in ms["punti"].items()
+                                                   if pt.get("gruppo", "comuni") == "comuni" or pid == str(CFG["previsione"]["meteosvizzera"].get("punto_principale"))}}
         except Exception as e:
             log(f"MeteoSvizzera: riepilogo per Comune non riuscito ({str(e)[:100]})")
     log("Previsione letta")
@@ -1458,7 +1560,7 @@ def main():
     sito.write_text(json.dumps(dati, ensure_ascii=False, indent=1), encoding="utf-8")
 
     try:
-        cantone(dati)
+        cantone(dati, ms)
     except Exception as e:
         log(f"Quadro cantonale: errore {e}")
 
