@@ -406,15 +406,16 @@
         : `<tr><td>${m.nome || m.stazione || "?"}</td><td colspan="4" style="color:var(--muto)">n/d</td></tr>`; }).join("");
 
     // previsioni: massimi 12 h per località
-    $("prev").innerHTML = `<tr><th>Località</th><th class="num">Raffica</th><th class="num">Pioggia 12 h</th><th class="num">Zero termico (m)</th><th class="num" title="solo nelle ore con precipitazione; * = stima dallo zero termico">Limite neve</th><th class="num">Neve 48 h</th></tr>` +
+    $("prev").innerHTML = `<tr><th>Località</th><th class="num">Raffica km/h</th><th class="num">Pioggia 12 h mm</th><th class="num">Zero termico (m)</th><th class="num" title="solo nelle ore con precipitazione; * = stima dallo zero termico">Limite neve</th><th class="num">Neve 48 h</th></tr>` +
       Object.entries(dati.previsioni).map(([n, p]) => p.disponibile
-        ? `<tr><td>${n}</td><td class="num">${t(p.massimi_12h.raffica_kmh)} km/h</td><td class="num">${t(p.massimi_12h.pioggia_totale_mm)} mm</td><td class="num">${p.neve_48h && p.neve_48h.zero_termico_min != null ? p.neve_48h.zero_termico_min + "–" + p.neve_48h.zero_termico_max : "—"}</td><td class="num">${limiteNeve(p.neve_48h)}</td><td class="num">${p.neve_48h && p.neve_48h.neve_48h_cm ? p.neve_48h.neve_48h_cm + " cm" : "—"}</td></tr>`
+        ? `<tr><td>${n}</td><td class="num">${t(p.massimi_12h.raffica_kmh)}${p.massimi_12h.raffica_alta_kmh != null ? `<small style="color:var(--muto)"> / ${p.massimi_12h.raffica_alta_kmh}</small>` : ""}</td><td class="num">${t(p.massimi_12h.pioggia_totale_mm)}</td><td class="num">${p.neve_48h && p.neve_48h.zero_termico_min != null ? p.neve_48h.zero_termico_min + "–" + p.neve_48h.zero_termico_max : "—"}</td><td class="num">${limiteNeve(p.neve_48h)}</td><td class="num">${p.neve_48h && p.neve_48h.neve_48h_cm ? p.neve_48h.neve_48h_cm + " cm" : "—"}</td></tr>`
         : `<tr><td>${n}</td><td colspan="5" style="color:var(--muto)">n/d</td></tr>`).join("");
-    $("prev").insertAdjacentHTML("beforeend", `<tr><td colspan="6" style="color:var(--muto);font-size:.8em">Limite neve: solo nelle ore con precipitazione, quota del modello MeteoSvizzera ICON-CH; * = stima dallo zero termico; ❄ = neve fino alla quota della località; — = nessuna precipitazione in 48 h.</td></tr>`);
+    const ufficiale = Object.values(dati.previsioni).find(p => p.disponibile && p.ufficiale);
+    $("prev").insertAdjacentHTML("beforeend", `<tr><td colspan="6" style="color:var(--muto);font-size:.8em">${ufficiale ? "Raffica: massimo in 12 h / scenario alto. " : ""}Limite neve: solo con precipitazione; * = stima dallo zero termico; ❄ = neve fino alla località.</td></tr>`);
     const lu = ((dati.previsioni["Lugano"] || {}).luce || [])[0];
     const riuso = Object.values(dati.previsioni).find(p => p.disponibile && p.riutilizzata);
     if (lu) $("prev").insertAdjacentHTML("afterend", "");
-    document.querySelector("#basso .pannello:last-child h2").textContent = "Prossime 12–48 h (Open-Meteo, non ufficiale" + (riuso ? ", ultima lettura " + new Date(riuso.letta).toLocaleTimeString("it-CH", {hour: "2-digit", minute: "2-digit"}) : "") + ")" + (lu ? ` · luce ${lu.alba}–${lu.tramonto}, crepuscolo ${lu.crepuscolo_mattino}/${lu.crepuscolo_sera}` : "") + " · cosa è cambiato";
+    document.querySelector("#basso .pannello:last-child h2").textContent = (ufficiale ? "Prossime 12–48 h · MeteoSvizzera, corsa del " + (ufficiale.corsa || "?") : "Prossime 12–48 h (Open-Meteo, non ufficiale" + (riuso ? ", ultima lettura " + new Date(riuso.letta).toLocaleTimeString("it-CH", {hour: "2-digit", minute: "2-digit"}) : "") + ")") + (lu && lu.alba ? ` · luce ${lu.alba}–${lu.tramonto}${lu.crepuscolo_mattino ? `, crepuscolo ${lu.crepuscolo_mattino}/${lu.crepuscolo_sera}` : ""}` : "") + " · cosa è cambiato";
 
     // variazioni
     // con una cronologia: ultime ore (più recenti in alto) e, del ciclo attuale, solo le note sulle fonti

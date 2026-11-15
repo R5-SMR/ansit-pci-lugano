@@ -130,6 +130,12 @@
     <p class="nota">Zona: Ticino e regioni confinanti. Da magnitudo <span id="ter-soglia">2.5</span> un terremoto è di norma avvertito dalla popolazione. I valori automatici possono essere corretti in seguito dal servizio sismico.</p>
   </section>
 
+  <section id="sez-passi">
+    <h2>Passi alpini<small id="pas-sub">previsione delle prossime 24 ore</small></h2>
+    <div id="passi"></div>
+    <p class="nota">Fonte: MeteoSvizzera, previsione locale per i punti di montagna. È la previsione meteo sul passo, non lo stato di apertura della strada: per quello consultare le informazioni sul traffico. Raffica: massimo previsto / scenario alto (superato in un caso su dieci). «Con gelo»: precipitazione nelle ore con temperatura prevista fino a 1 °C.</p>
+  </section>
+
   <section id="sez-siccita">
     <h2>Siccità<small id="sic-sub"></small></h2>
     <div id="siccita"></div>
@@ -224,6 +230,15 @@
         ? `<ul class="lista">${ter.eventi.map(e => `<li class="${!e.naturale ? "artificiale" : e.magnitudo >= ter.soglia_avvertibile ? "forte" : ""}">${livHtml(e.naturale ? livMag(e.magnitudo) : 1, false, "M " + e.magnitudo)}<div><b>${esc(e.luogo || "luogo non indicato")}</b>${!e.naturale ? ` <span style="color:var(--muto)">(${e.tipo === "quarry blast" ? "brillamento in cava" : esc(e.tipo)})</span>` : e.magnitudo >= ter.soglia_avvertibile ? " · probabilmente avvertito" : ""}<small>${esc(e.ora_locale)}${e.profondita_km != null ? ` · profondità ${e.profondita_km} km` : ""}</small></div></li>`).join("")}</ul>` +
           (ter.numero > ter.eventi.length ? `<p class="nota">Mostrati i ${ter.eventi.length} più recenti su ${ter.numero}.</p>` : "")
         : `<div class="ok-box">Nessun evento registrato negli ultimi ${ter.giorni} giorni nella zona.</div>`;
+    }
+
+    // ---- passi alpini
+    const pa = dati.passi;
+    if (!pa || !pa.disponibile || stantio || !(pa.punti || []).length) { $("pas-sub").textContent = "previsione delle prossime 24 ore"; $("passi").innerHTML = `<div class="nd-box">Previsione per i passi non disponibile${pa && pa.motivo ? " (" + esc(pa.motivo) + ")" : ""}.</div>`; }
+    else {
+      $("pas-sub").textContent = `prossime 24 ore · MeteoSvizzera, corsa del ${pa.corsa || "?"}`;
+      $("passi").innerHTML = `<div class="scorri"><table class="tabella"><tr><th>Passo</th><th>°C min / max</th><th>Raffica km/h</th><th>Precipitazione</th></tr>${pa.punti.map(x =>
+        `<tr><td><b>${esc(x.nome)}</b><small>${t(x.quota)} m</small></td><td style="white-space:nowrap">${t(x.tmin)} / ${t(x.tmax)}</td><td style="white-space:nowrap">${t(x.raffica_max)}${x.raffica_alta_max != null ? `<span style="color:var(--muto)"> / ${x.raffica_alta_max}</span>` : ""}</td><td>${t(x.precipitazione_mm)} mm${x.di_cui_con_gelo_mm > 0 ? `<small>❄ ${x.di_cui_con_gelo_mm} mm con gelo</small>` : ""}</td></tr>`).join("")}</table></div>`;
     }
 
     // ---- siccità
