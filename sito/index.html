@@ -9,7 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin=""></script>
 <style>
   :root {
-    --sfondo: #f3f4f2; --carta: #ffffff; --testo: #1b1f1d; --muto: #5c645f; --linea: #d8dcd9;
+    --rif: #1565c0; --sfondo: #f3f4f2; --carta: #ffffff; --testo: #1b1f1d; --muto: #5c645f; --linea: #d8dcd9;
     --l1: #e4e8e5; --l2: #f5d442; --l3: #f08a1f; --l4: #d8322c; --l5: #7a1b3a;
     --nd: repeating-linear-gradient(135deg,#dfe3e0 0 6px,#cfd4d0 6px 12px);
     --ok: #2e7d4f; --attenzione: #b35c00; --allarme: #b3261e;
@@ -18,7 +18,7 @@
   }
   @media (prefers-color-scheme: dark) { :root {
     color-scheme: dark;
-    --sfondo: #161917; --carta: #202522; --testo: #ecefed; --muto: #a2aaa5; --linea: #38403b;
+    --rif: #64b5f6; --sfondo: #161917; --carta: #202522; --testo: #ecefed; --muto: #a2aaa5; --linea: #38403b;
     --l1: #2c332f; --nd: repeating-linear-gradient(135deg,#2c332f 0 6px,#363d39 6px 12px);
     --ev: #c77dff; --ev-chiaro: #3d2952;
   }}
@@ -106,6 +106,17 @@
   .ctrl-carta a:not(.testo) { width: 60px !important; }
   .ctrl-carta a.on { background: var(--testo) !important; color: var(--carta) !important; }
   .sfondo-bianco { background: var(--carta) !important; }
+  /* punti di riferimento: colori neutri, fuori dalla scala 1–5 e dal viola delle evidenze */
+  #mappa .rif { width: 20px; height: 20px; line-height: 17px; text-align: center; font-weight: 700; font-size: 11px; border: 1.5px solid var(--carta); box-shadow: 0 1px 3px rgba(0,0,0,.5); }
+  #mappa .rif.pru { background: var(--testo); color: var(--carta); border-radius: 3px; }
+  #mappa .rif.imp { background: var(--carta); color: var(--testo); border-color: var(--testo); border-radius: 3px; transform: rotate(45deg); }
+  #mappa .rif.imp span { display: block; transform: rotate(-45deg); }
+  #mappa .rif.cant { background: var(--rif); color: #fff; border-radius: 50%; width: 24px; height: 24px; line-height: 21px; font-size: 12px; }
+  ul.lista li.cant { border-left-color: var(--rif); }
+  ul.lista li.cant small { display: block; color: var(--muto); }
+  ul.lista li.cant .gr { display: inline-block; min-width: 1.5em; text-align: center; border-radius: 3px; padding: 0 4px; font-weight: 700; border: 1px solid var(--linea); }
+  .legenda .rifl { display: inline-block; width: 12px; height: 12px; margin-right: 4px; vertical-align: -1px; border: 1.5px solid var(--testo); }
+  .legenda .rifl.pru { background: var(--testo); } .legenda .rifl.imp { transform: rotate(45deg) scale(.8); background: var(--carta); } .legenda .rifl.cant { background: var(--rif); border-radius: 50%; border-color: var(--rif); }
   .nome-distretto { background: none; border: 0; box-shadow: none; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muto); text-shadow: 0 0 3px var(--carta), 0 0 4px var(--carta); white-space: nowrap; }
   @media (prefers-color-scheme: dark) { #mappa .leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.85); } #mappa { background: #1e2320; } }
   #carta svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; }
@@ -265,9 +276,15 @@
   <section>
     <h2>Carta del comprensorio<small id="carta-sub">colore = livello di allerta massimo; toccare un Comune per il dettaglio</small></h2>
     <div class="carta-box"><div id="mappa"></div><div id="carta" hidden></div>
-      <div class="legenda"><span><i class="l1"></i>1 nessun pericolo</span><span><i class="l2"></i>2</span><span><i class="l3"></i>3</span><span><i class="l4"></i>4</span><span><i class="l5"></i>5</span><span><i class="nd"></i>n/d</span></div>
+      <div class="legenda"><span><i class="l1"></i>1 nessun pericolo</span><span><i class="l2"></i>2</span><span><i class="l3"></i>3</span><span><i class="l4"></i>4</span><span><i class="l5"></i>5</span><span><i class="nd"></i>n/d</span><span><b class="rifl cant"></b>cantiere</span><span><b class="rifl imp"></b>impianto</span><span><b class="rifl pru"></b>PRU</span></div>
     </div>
-    <p class="nota">Sfondo: carta nazionale grigia © swisstopo. Confini comunali: swissBOUNDARIES3D © swisstopo, semplificati.</p>
+    <p class="nota">Sfondo: carta nazionale grigia © swisstopo. Confini comunali: swissBOUNDARIES3D © swisstopo, semplificati. Punti di raccolta d'urgenza: UFPP, geodati federali<span id="pru-stato"></span>. I pulsanti CANT, IMP e PRU sulla carta mostrano o nascondono i punti di riferimento.</p>
+  </section>
+
+  <section id="sez-cantieri">
+    <h2>Cantieri di lavoro<small id="cantieri-sub"></small></h2>
+    <ul class="lista" id="cantieri"></ul>
+    <p class="nota">Inseriti dai militi con il <a href="https://179-237-106-60.sslip.io/cantieri/" target="_blank" rel="noopener">modulo cantieri</a> (utenza condivisa); spariscono da soli dopo la data di fine. Grado = livello di allerta del Comune; raffica e pioggia = previsione ufficiale MeteoSvizzera per il Comune nelle prossime 12 ore.</p>
   </section>
 
   <section id="sez-dettaglio">
@@ -335,7 +352,7 @@
   const OFFSET = {"Vezia": [-22, -4], "Savosa": [14, -12], "Massagno": [-4, 8], "Porza": [10, -6], "Canobbio": [18, 4], "Comano": [-8, -10],
                   "Sorengo": [-10, -4], "Muzzano": [-12, 8], "Grancia": [12, 4], "Vico Morcote": [22, 10], "Morcote": [-16, 2], "Paradiso": [8, -4]};
 
-  let mappa = null, strato = null, stratoPunti = null, geo = null, inquadraCarta = null;
+  let mappa = null, strato = null, stratoPunti = null, stratoRif = null, geo = null, inquadraCarta = null;
   // adattamento allo schermo: «stretto» = telefono in verticale; «tattile» = schermo a tocco senza mouse
   const mqStretto = window.matchMedia("(max-width: 640px)");
   const stretto = () => mqStretto.matches;
@@ -360,6 +377,8 @@
         l.bindTooltip(f.properties.nome, {permanent: true, direction: "center", className: "nome-comune"});
       }}).addTo(mappa);
     stratoPunti = L.layerGroup().addTo(mappa);
+    mappa.createPane("rif").style.zIndex = 660;   // sopra i nomi dei Comuni, sotto i riquadri informativi
+    stratoRif = L.layerGroup().addTo(mappa);
     const inquadra = () => { mappa.invalidateSize(); mappa.fitBounds(strato.getBounds(), {padding: [6, 6]}); };
     inquadra(); setTimeout(inquadra, 300); setTimeout(inquadra, 1500); window.addEventListener("load", inquadra);
     inquadraCarta = inquadra;
@@ -384,12 +403,18 @@
   function controlloCarta(m, inquadra, cont) {
     const C = L.Control.extend({options: {position: "topleft"}, onAdd: function () {
       const d = L.DomUtil.create("div", "ctrl-carta");
-      d.innerHTML = '<a href="#" title="Ingrandisci" aria-label="Ingrandisci">+</a><a href="#" title="Rimpicciolisci" aria-label="Rimpicciolisci">−</a><a href="#" title="Inquadra tutto" aria-label="Inquadra tutto">⌂</a><a href="#" class="testo" data-sfondo title="Sfondo bianco / carta swisstopo">BIANCO</a>';
+      d.innerHTML = '<a href="#" title="Ingrandisci" aria-label="Ingrandisci">+</a><a href="#" title="Rimpicciolisci" aria-label="Rimpicciolisci">−</a><a href="#" title="Inquadra tutto" aria-label="Inquadra tutto">⌂</a><a href="#" class="testo" data-sfondo title="Sfondo bianco / carta swisstopo">BIANCO</a><a href="#" class="testo" data-rif="cant" title="Cantieri di lavoro">CANT</a><a href="#" class="testo" data-rif="imp" title="Impianti e infrastruttura">IMP</a><a href="#" class="testo" data-rif="pru" title="Punti di raccolta d\'urgenza">PRU</a>';
       const a = d.querySelectorAll("a");
       L.DomEvent.on(a[0], "click", e => { L.DomEvent.preventDefault(e); m.zoomIn(); });
       L.DomEvent.on(a[1], "click", e => { L.DomEvent.preventDefault(e); m.zoomOut(); });
       L.DomEvent.on(a[2], "click", e => { L.DomEvent.preventDefault(e); inquadra(); });
       L.DomEvent.on(a[3], "click", e => { L.DomEvent.preventDefault(e); try { localStorage.setItem("ansit-sfondo", sfondoAttivo() ? "bianco" : "carta"); } catch (x) {} applicaSfondo(m, cont); });
+      d.querySelectorAll("a[data-rif]").forEach(b => {
+        b.classList.toggle("on", rifAttivo(b.dataset.rif));
+        L.DomEvent.on(b, "click", e => { L.DomEvent.preventDefault(e); const k = b.dataset.rif, st = Object.assign({}, RIF_BASE, rifStato(), {[k]: !rifAttivo(k)});
+          try { localStorage.setItem("ansit-strati", JSON.stringify(st)); } catch (x) { rifMemoria = st; }
+          b.classList.toggle("on", rifAttivo(k)); disegnaRiferimenti(); });
+      });
       L.DomEvent.disableClickPropagation(d);
       return d;
     }});
@@ -398,6 +423,63 @@
   }
 
   function colore(l, nd) { return nd || l == null ? css("--muto") : css("--l" + l); }
+
+  // ---- punti di riferimento: cantieri (dal server, in diretta), impianti e PRU (dal collettore) ----
+  const RIF_BASE = {cant: true, imp: true, pru: false};   // i 26 PRU si accendono a richiesta, per non coprire la carta
+  let rifMemoria = null, cantieri = null, cantieriOra = null;   // cantieri = null: elenco non raggiungibile
+  const esc = x => String(x == null ? "" : x).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  function rifStato() { if (rifMemoria) return rifMemoria; try { return JSON.parse(localStorage.getItem("ansit-strati")) || {}; } catch (e) { return {}; } }
+  function rifAttivo(k) { const s = rifStato(); return typeof s[k] === "boolean" ? s[k] : RIF_BASE[k]; }
+  const oggiCH = () => new Intl.DateTimeFormat("sv-SE", {timeZone: "Europe/Zurich"}).format(new Date());   // AAAA-MM-GG
+  const giornoBreve = iso => { const d = new Date(iso + "T12:00:00"); return isNaN(d) ? esc(iso) : ["dom", "lun", "mar", "mer", "gio", "ven", "sab"][d.getDay()] + " " + iso.slice(8, 10) + "." + iso.slice(5, 7) + "."; };
+  function inAnello(lon, lat, an) { let d = false; for (let i = 0, j = an.length - 1; i < an.length; j = i++) { const [xi, yi] = an[i], [xj, yj] = an[j]; if ((yi > lat) !== (yj > lat) && lon < (xj - xi) * (lat - yi) / (yj - yi) + xi) d = !d; } return d; }
+  function comuneDi(lat, lon) {
+    if (!geo) return null;
+    for (const f of geo.features) {
+      const g = f.geometry, pol = g.type === "Polygon" ? [g.coordinates] : g.type === "MultiPolygon" ? g.coordinates : [];
+      for (const p of pol) if (inAnello(lon, lat, p[0]) && !p.slice(1).some(b => inAnello(lon, lat, b))) return f.properties.nome;
+    }
+    return null;
+  }
+  const cantieriAttivi = () => (cantieri || []).filter(c => c && typeof c.lat === "number" && typeof c.lon === "number" && String(c.fino || "") >= oggiCH());
+  async function caricaCantieri() {
+    let d = null;
+    try { const r = await fetch("https://179-237-106-60.sslip.io/cantieri.json?_=" + Date.now(), {cache: "no-store"}); if (r.ok) d = await r.json(); } catch (e) { d = null; }
+    if (d && Array.isArray(d.cantieri)) { cantieri = d.cantieri; cantieriOra = Date.now(); }
+    else if (cantieriOra && Date.now() - cantieriOra > 10 * 60 * 1000) cantieri = null;   // dopo 10 minuti senza risposta l'elenco non vale più
+    disegnaRiferimenti(); disegnaCantieri();
+  }
+  function disegnaRiferimenti() {
+    if (!mappa || !stratoRif) return;
+    stratoRif.clearLayers();
+    const icona = (cls, t, n) => L.divIcon({className: "", html: `<div class="rif ${cls}"><span>${t}</span></div>`, iconSize: [n, n], iconAnchor: [n / 2, n / 2]});
+    const pt = (dati && dati.punti) || {};
+    if (rifAttivo("pru")) for (const p of ((pt.pru || {}).punti || []))
+      L.marker([p.lat, p.lon], {pane: "rif", icon: icona("pru", "P", 20)}).bindTooltip(`PRU ${esc(p.nome)}`).bindPopup(`<b>Punto di raccolta d'urgenza</b><br>${esc(p.nome)}<br>${esc(p.indirizzo)}${p.localita ? ", " + esc(p.localita) : ""}${p.nota ? "<br><small>" + esc(p.nota) + "</small>" : ""}`).addTo(stratoRif);
+    if (rifAttivo("imp")) for (const p of (pt.impianti || []))
+      L.marker([p.lat, p.lon], {pane: "rif", icon: icona("imp", esc((p.sigla || p.tipo || "I").slice(0, 1).toUpperCase()), 20)}).bindTooltip(esc(p.nome)).bindPopup(`<b>${esc(p.nome)}</b><br>${esc(p.tipo || "")}${p.comune ? " · " + esc(p.comune) : ""}${p.nota ? "<br><small>" + esc(p.nota) + "</small>" : ""}`).addTo(stratoRif);
+    if (rifAttivo("cant")) cantieriAttivi().forEach((c, i) =>
+      L.marker([c.lat, c.lon], {pane: "rif", icon: icona("cant", i + 1, 24), zIndexOffset: 500}).bindTooltip(`Cantiere ${i + 1}: ${esc(c.nome)}`).bindPopup(`<b>Cantiere ${i + 1}: ${esc(c.nome)}</b><br>fino a ${giornoBreve(String(c.fino))}${c.nota ? "<br><small>" + esc(c.nota) + "</small>" : ""}`).addTo(stratoRif));
+    const st = document.getElementById("pru-stato"), pr = pt.pru;
+    if (st) st.textContent = !pr ? "" : pr.punti && pr.punti.length ? ` (${pr.punti.length} punti${pr.nota ? "; " + pr.nota : ""})` : " (n/d: elenco non disponibile)";
+  }
+  function disegnaCantieri() {
+    const el = document.getElementById("cantieri"), sub = document.getElementById("cantieri-sub");
+    if (!el) return;
+    if (cantieri === null) { sub.textContent = "n/d"; el.innerHTML = '<li class="cant"><b>Elenco dei cantieri non raggiungibile (n/d)</b><small>Il server dei cantieri non risponde: l\'assenza di cantieri sulla carta non significa che non ce ne siano.</small></li>'; return; }
+    const att = cantieriAttivi();
+    sub.textContent = att.length ? att.length + (att.length === 1 ? " attivo" : " attivi") : "nessuno attivo";
+    if (!att.length) { el.innerHTML = ""; return; }
+    const vecchio = !dati || (Date.now() - new Date(dati.generato).getTime()) / 60000 > dati.dati_stantii_minuti;
+    const prev = (dati && dati.previsione_comuni && dati.previsione_comuni.punti) || {};
+    el.innerHTML = att.map((c, i) => {
+      const com = comuneDi(c.lat, c.lon), a = (com && dati && dati.allerte[com]) || {}, ok = !vecchio && a.disponibile && a.livello_max != null;
+      const p12 = (!vecchio && com && prev[com] && prev[com]["12h"]) || null;
+      const grado = !com ? "" : ` · grado <span class="gr"${ok ? ` style="background:${css("--l" + a.livello_max)};color:${a.livello_max >= 4 ? "#fff" : "#1b1f1d"}"` : ""}>${ok ? a.livello_max : "n/d"}</span>`;
+      const meteo = !com ? "fuori dal comprensorio: nessun dato per questo punto" : p12 ? `raffica max ${Math.round(p12.raffica_max)} km/h (scenario alto ${Math.round(p12.raffica_alta_max)}) · pioggia ${p12.pioggia} mm (scenario alto ${p12.pioggia_alta}) nelle prossime 12 h` : "previsione per il Comune: n/d";
+      return `<li class="cant"><b>${i + 1}. ${esc(c.nome)}</b> – ${com ? esc(com) : "fuori comprensorio"}${grado} · fino a ${giornoBreve(String(c.fino))}<small>${meteo}</small>${c.nota ? "<small>" + esc(c.nota) + "</small>" : ""}</li>`;
+    }).join("");
+  }
 
   function stileComuni(stantio) {
     const scelto = $("scelta-comune").value;
@@ -431,6 +513,7 @@
         L.marker([o.lat, o.lon], {icon: icona})
           .bindTooltip(stretto() ? `${o.nome} – ${o.luogo}: ${testo} (OASI, ${o.rilevamento})` : `${o.nome} – ${o.luogo} (OASI, ${o.rilevamento})`).addTo(stratoPunti);
       }
+      disegnaRiferimenti(); disegnaCantieri();
       return;
     }
     if (!carta) { $("carta").innerHTML = ""; return; }
@@ -714,12 +797,13 @@
   window.addEventListener("resize", () => { if (window.innerWidth !== larghezza) { larghezza = window.innerWidth; if (inquadraCarta) setTimeout(inquadraCarta, 250); } });
 
   setInterval(caricaMessaggio, 60 * 1000);
+  setInterval(caricaCantieri, 60 * 1000);
   $("aggiorna").addEventListener("click", carica);
-  caricaCarta().then(carica).then(caricaMessaggio);
+  caricaCarta().then(carica).then(caricaMessaggio).then(caricaCantieri);
   // Aggiornamento automatico: ogni 2 minuti, e subito quando la pagina torna in primo piano o la rete ritorna
   // (su telefoni, tablet e schede in secondo piano il browser sospende i timer).
   let ultimoTentativo = Date.now();
-  const ricarica = () => { ultimoTentativo = Date.now(); carica(); caricaMessaggio(); };
+  const ricarica = () => { ultimoTentativo = Date.now(); carica(); caricaMessaggio(); caricaCantieri(); };
   setInterval(ricarica, 2 * 60 * 1000);
   const alRitorno = () => { if (document.visibilityState === "visible" && Date.now() - ultimoTentativo > 60 * 1000) ricarica(); };
   document.addEventListener("visibilitychange", alRitorno);
