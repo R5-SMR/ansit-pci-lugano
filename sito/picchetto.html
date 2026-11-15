@@ -212,9 +212,9 @@
       casella("cantone.html", livHtml(al, al === null), "Allerte meteo<br>Ticino", al >= 3, evid.some(e => e.ambito === "vento")) +
       casella("cantone.html", livHtml(pg, pg === null), "Corsi d'acqua<br>e laghi", pg >= 3, evid.some(e => e.ambito === "ufam")) +
       casella("cantone.html", !va || !va.disponibile || stantio || (va.in_vigore && vaScaduto) ? livHtml(null, true) : va.in_vigore ? livHtml(va.grado_max) : "—", "Valanghe" + (va && va.disponibile && !va.in_vigore ? "<br>nessun bollettino" : ""), va && va.in_vigore && va.grado_max >= 3 && !vaScaduto) +
-      casella("#sez-incendio", ok(inc) ? livHtml(inc.livello_max) : livHtml(null, true), "Incendio di bosco<br>misura massima", ok(inc) && inc.livello_max >= 4) +
-      casella("#sez-terremoti", ok(ter) ? (ter.magnitudo_max != null ? livHtml(livMag(ter.magnitudo_max), false, "M " + ter.magnitudo_max) : "—") : livHtml(null, true), `Terremoti<br>massimo ${ter && ter.giorni ? ter.giorni : 7} giorni`, ok(ter) && ter.magnitudo_max >= 4) +
-      casella("#sez-siccita", ok(sic) && !sic.datato ? livHtml(sic.indice_max) : livHtml(null, true), "Siccità<br>indice massimo", ok(sic) && !sic.datato && sic.indice_max >= 4);
+      casella("#sez-incendio", ok(inc) ? livHtml(inc.livello_max) : livHtml(null, true), "Incendio di bosco<br>misura più elevata", ok(inc) && inc.livello_max >= 4) +
+      casella("#sez-terremoti", ok(ter) ? (ter.magnitudo_max != null ? livHtml(livMag(ter.magnitudo_max), false, "M " + ter.magnitudo_max) : "—") : livHtml(null, true), `Terremoti<br>più forte in ${ter && ter.giorni ? ter.giorni : 7} giorni`, ok(ter) && ter.magnitudo_max >= 4) +
+      casella("#sez-siccita", ok(sic) && !sic.datato ? livHtml(sic.indice_max) : livHtml(null, true), "Siccità<br>indice più elevato", ok(sic) && !sic.datato && sic.indice_max >= 4);
 
     // ---- variazioni rapide (viola) riprese dal quadro cantonale
     $("sez-evidenze").hidden = !evid.length;
