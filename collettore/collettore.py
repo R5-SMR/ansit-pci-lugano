@@ -1429,6 +1429,57 @@ def _num(v):
         return None
 
 
+def radioattivita(cfg, prec):
+    """Intensità di dose ambientale della rete NADAM (CENAL): medie orarie per stazione, dalle stesse pagine
+    che il sito naz.ch mostra al pubblico (tabella: ora UTC | nSv/h | mm | nota). Non è un servizio di dati ufficiale:
+    se il formato cambia, la stazione risulta non disponibile e la pagina mostra n/d."""
+    if _riusa(prec, cfg.get("intervallo_minuti", 20)):
+        return prec
+    max_eta = cfg.get("max_eta_ore", 4)
+    soglia = cfg.get("soglia_allarme", 1000)
+    stazioni, errori = [], []
+    for st in cfg["stazioni"]:
+        try:
+            r = requests.get(cfg["url"].format(sigla=st["sigla"]), headers=HEADERS, timeout=15)
+            r.raise_for_status()
+            testo = r.content.decode("iso-8859-1", "replace")
+            GREZZI.setdefault("picchetto", {}).setdefault("radioattivita", {})[st["sigla"]] = testo[:6000]
+            if "nSv" not in testo:
+                raise ValueError("la risposta non contiene misure")
+            piano = re.sub(r"</t[dh]>", "|", re.sub(r"</tr>", "\n", testo, flags=re.I), flags=re.I)
+            piano = re.sub(r"<[^>]+>", " ", piano).replace("&nbsp;", " ")
+            norm = re.search(r"(\d{2,4})\s*nSv/h\D{1,40}?(\d{2,4})\s*nSv/h", piano)
+            righe = []
+            for g, o, v in re.findall(r"(\d{2}\.\d{2}\.\d{4})\s+(\d{2}:\d{2})\s*\|\s*(\d+(?:[.,]\d+)?)\s*\|", piano):
+                righe.append((datetime.strptime(g + " " + o, "%d.%m.%Y %H:%M").replace(tzinfo=timezone.utc), float(v.replace(",", "."))))
+            if not righe:
+                raise ValueError("nessuna riga di misura riconosciuta")
+            righe.sort()
+            ora, valore = righe[-1]
+            eta = (ADESSO - ora).total_seconds() / 3600
+            if eta > max_eta or eta < -1.5:
+                raise ValueError(f"ultimo valore delle {ora.astimezone(TZ).strftime('%d.%m. %H:%M')}, troppo vecchio")
+            ultime = [v for t, v in righe if (ora - t).total_seconds() <= 24 * 3600]
+            nmin, nmax = (int(norm.group(1)), int(norm.group(2))) if norm else (None, None)
+            stazioni.append({"sigla": st["sigla"], "nome": st["nome"], "disponibile": True, "valore": round(valore),
+                             "ora": ora.isoformat(timespec="minutes"), "ora_locale": ora.astimezone(TZ).strftime("%d.%m. %H:%M"),
+                             "max_24h": round(max(ultime)), "normale_min": nmin, "normale_max": nmax,
+                             "stato": "allarme" if valore >= soglia else "sopra" if nmax and valore > nmax else "normale",
+                             "serie": [round(v) for t, v in righe][-48:]})
+        except Exception as e:
+            errori.append(f"{st['sigla']}: {str(e)[:70]}")
+            if not st.get("facoltativa"):
+                stazioni.append({"sigla": st["sigla"], "nome": st["nome"], "disponibile": False, "motivo": str(e)[:80]})
+    if errori:
+        log("Radioattività: " + " | ".join(errori))
+    buone = [x for x in stazioni if x["disponibile"]]
+    if not buone:
+        return non_disp("nessuna stazione NADAM leggibile")
+    return {"disponibile": True, "letto": ADESSO.isoformat(timespec="seconds"), "fonte": "CENAL, rete NADAM (medie orarie)",
+            "soglia_allarme": soglia, "stazioni": stazioni, "massimo": max(x["valore"] for x in buone),
+            "stato": "allarme" if any(x["stato"] == "allarme" for x in buone) else "sopra" if any(x["stato"] == "sopra" for x in buone) else "normale"}
+
+
 def picchetto(prec):
     """Dati della pagina «Picchetto». Ogni fonte è indipendente: l'errore di una non tocca le altre."""
     cfg = CFG.get("picchetto")
@@ -1436,7 +1487,7 @@ def picchetto(prec):
         return None
     prec = prec or {}
     out = {"collegamenti": cfg.get("collegamenti") or []}
-    for chiave, funzione in (("incendio", incendio_bosco), ("siccita", siccita), ("terremoti", terremoti)):
+    for chiave, funzione in (("incendio", incendio_bosco), ("siccita", siccita), ("terremoti", terremoti), ("radioattivita", radioattivita)):
         if chiave not in cfg:
             continue
         try:
@@ -1511,86 +1562,6 @@ def punti_riferimento():
         else:
             out["pru"] = non_disp(e)
     return out
-
-
-# ---------------------------------------------------------------- sonda provvisoria (da togliere a indagine conclusa)
-SONDA_NAZ = BASE / "archivio" / "stato" / "sonda_naz2.json"
-
-
-def sonda_naz():
-    """Indagine una tantum, secondo giro: il sito della CENAL carica a richiesta i moduli delle singole pagine.
-    Si leggono tutti i moduli, si annotano le chiamate ai dati e si provano gli indirizzi trovati.
-    Scrive archivio/stato/sonda_naz2.json e poi non viene più eseguita. Non tocca i dati pubblicati."""
-    if SONDA_NAZ.exists():
-        return
-    import time
-    from urllib.parse import urljoin
-    scadenza = time.monotonic() + 100
-    ua = {"User-Agent": "Mozilla/5.0 (ANSIT PCi Lugano; indagine fonte dati)", "Accept-Language": "it", "Accept": "application/json, text/plain, */*"}
-    base = "https://www.naz.ch"
-    esito = {"eseguita": ADESSO.isoformat(timespec="seconds"), "moduli": [], "contesto": [], "percorsi": [], "prove": []}
-    r = requests.get(base + "/it/aktuell/zeitverlauf", headers=ua, timeout=10)
-    esito["pagina"] = r.text[:4000]
-    script = [urljoin(base, x) for x in re.findall(r"""(?:src|href)=["']([^"']+\.js)["']""", r.text)]
-    avvio = next((u for u in script if "_nuxt" in u), None)
-    for u in [x for x in script if "_nuxt" in x]:
-        t = requests.get(u, headers=ua, timeout=10).text
-        if len(t) < 6000:
-            esito["avvio"] = {"url": u, "testo": t}
-            # tabella dei moduli: {12:"abc123",13:"def456"}
-            for nome in set(re.findall(r'[{,]\d+:"([0-9a-f]{6,10})"', t)):
-                script.append(base + "/_nuxt/" + nome + ".js")
-    percorsi, visti = set(), set()
-    segno = re.compile(r"\$axios|axios\.|\$get\(|\.get\(\s*[\"'`]|/shared|\.json|\.csv|nadam|NADAM|nSv|highcharts|chart", re.I)
-    for u in script:
-        if u in visti or "_nuxt" not in u or time.monotonic() > scadenza - 35:
-            continue
-        visti.add(u)
-        try:
-            t = requests.get(u, headers=ua, timeout=10).text
-        except Exception as e:
-            esito["moduli"].append({"url": u, "errore": str(e)[:100]})
-            continue
-        nome = u.rsplit("/", 1)[-1]
-        pagina = bool(re.search(r"zeitverl|tagesmittel|nSv", t))
-        esito["moduli"].append({"url": u, "byte": len(t), "pagina_misure": pagina})
-        n = 0
-        for m in segno.finditer(t):
-            if n >= (30 if pagina else 6):
-                break
-            pezzo = t[max(0, m.start() - 200):m.start() + 300]
-            if "transformRequest" in pezzo or "XMLHttpRequest" in pezzo:
-                continue
-            esito["contesto"].append({"modulo": nome, "testo": pezzo}); n += 1
-        for m in re.findall(r"""["'`]([A-Za-z0-9_\-./]{3,120}\.(?:json|csv|txt|xml)(?:\?[^"'`]{0,60})?)["'`]""", t):
-            percorsi.add(m)
-        for m in re.findall(r"""\$?(?:get|post)\(\s*["'`]([^"'`]{2,160})["'`]""", t):
-            percorsi.add(m)
-        for m in re.findall(r"""["'`](/shared[^"'`]{0,160})["'`]""", t):
-            percorsi.add(m)
-    esito["percorsi"] = sorted(percorsi)[:200]
-    candidati = []
-    for p in esito["percorsi"]:
-        p = re.sub(r"\$\{[^}]*\}", "LUG", p)
-        if p.startswith("http"):
-            candidati.append(p)
-        else:
-            candidati += [base + "/shared/" + p.lstrip("/"), base + "/" + p.lstrip("/")] if not p.startswith("/shared") else [base + p]
-    candidati += [base + "/shared/", base + "/shared/nadam.json", base + "/shared/data/nadam.json"]
-    for u in candidati[:60]:
-        if time.monotonic() > scadenza:
-            esito["prove"].append({"nota": "tempo esaurito"}); break
-        try:
-            q = requests.get(u, headers=ua, timeout=8)
-            guscio = len(q.content) == len(r.content) and "Nationale Alarmzentrale" in q.text[:600]
-            esito["prove"].append({"url": u, "stato": q.status_code, "tipo": q.headers.get("Content-Type", "")[:50], "byte": len(q.content),
-                                   "inizio": "(pagina vuota del sito)" if guscio else q.text[:700]})
-        except Exception as e:
-            esito["prove"].append({"url": u, "errore": str(e)[:100]})
-    esito["contesto"] = esito["contesto"][:140]
-    SONDA_NAZ.parent.mkdir(parents=True, exist_ok=True)
-    SONDA_NAZ.write_text(json.dumps(esito, ensure_ascii=False, indent=1), encoding="utf-8")
-    log(f"Sonda CENAL 2: {len(esito['moduli'])} moduli, {len(esito['percorsi'])} percorsi, {len(esito['prove'])} prove")
 
 
 # ---------------------------------------------------------------- quadro cantonale
@@ -1704,10 +1675,6 @@ def main():
     except Exception as e:
         log(f"Punti di riferimento: errore {str(e)[:120]}")
         dati["punti"] = None
-    try:
-        sonda_naz()
-    except Exception as e:
-        log(f"Sonda CENAL: errore {str(e)[:120]}")
 
     dati["variazioni"] = variazioni(dati, vecchio)
     evidenze(dati, vecchio)
