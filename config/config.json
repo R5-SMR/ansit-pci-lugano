@@ -243,7 +243,7 @@
       },
       "punto_principale": 690000,
       "punti": {
-        "690000": {"nome": "Lugano", "tipo": 2},
+        "690000": {"nome": "Lugano", "tipo": 2, "quota": 277},
         "690009": {"nome": "Paradiso", "tipo": 2},
         "690005": {"nome": "Massagno", "tipo": 2},
         "694200": {"nome": "Savosa", "tipo": 2},
@@ -257,8 +257,21 @@
         "691600": {"nome": "Grancia", "tipo": 2},
         "681500": {"nome": "Melide", "tipo": 2},
         "692200": {"nome": "Morcote", "tipo": 2},
-        "692100": {"nome": "Vico Morcote", "tipo": 2}
+        "692100": {"nome": "Vico Morcote", "tipo": 2},
+        "683000": {"nome": "Chiasso", "tipo": 2, "gruppo": "ticino", "quota": 235},
+        "650000": {"nome": "Bellinzona", "tipo": 2, "gruppo": "ticino", "quota": 233},
+        "660000": {"nome": "Locarno", "tipo": 2, "gruppo": "ticino", "quota": 199},
+        "667500": {"nome": "Cevio", "tipo": 2, "gruppo": "ticino", "quota": 412},
+        "671000": {"nome": "Biasca", "tipo": 2, "gruppo": "ticino", "quota": 297},
+        "671800": {"nome": "Olivone", "tipo": 2, "gruppo": "ticino", "quota": 888},
+        "678000": {"nome": "Airolo", "tipo": 2, "gruppo": "ticino", "quota": 1151},
+        "594": {"nome": "San Gottardo", "tipo": 3, "gruppo": "passi", "quota": 2107},
+        "606": {"nome": "Lucomagno", "tipo": 3, "gruppo": "passi", "quota": 1972},
+        "593": {"nome": "Novena", "tipo": 3, "gruppo": "passi", "quota": 2480},
+        "595": {"nome": "San Bernardino", "tipo": 3, "gruppo": "passi", "quota": 2067}
       },
+      "ordine_ticino": ["Chiasso", "Lugano", "Locarno", "Bellinzona", "Cevio", "Biasca", "Olivone", "Airolo"],
+      "_nota_gruppi": "gruppo: assente = Comuni del comprensorio; ticino = località della pagina Ticino; passi = passi alpini (pagine Ticino e Picchetto). quota in m s.l.m. dall'elenco dei punti MeteoSvizzera.",
       "intervallo_minuti": 20,
       "max_eta_ore": 6
     },
