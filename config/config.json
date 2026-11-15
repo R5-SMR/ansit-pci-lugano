@@ -313,10 +313,10 @@
       "intervallo_minuti": 5
     },
     "radioattivita": {
-      "_nota": "Intensità di dose ambientale, rete NADAM della CENAL: medie orarie lette dalle pagine pubbliche di naz.ch (indirizzo interno del sito, non un servizio ufficiale: può cambiare senza preavviso). soglia_allarme: valore oltre il quale la CENAL riceve l'allarme automatico. Le stazioni «facoltative» sono mostrate solo se leggibili (sigle da verificare).",
+      "_nota": "Intensità di dose ambientale, rete NADAM della CENAL: medie orarie lette dalle pagine pubbliche di naz.ch (indirizzo interno del sito, non un servizio ufficiale: può cambiare senza preavviso). soglia_allarme: valore oltre il quale la CENAL riceve l'allarme automatico. Le stazioni «facoltative» sono mostrate solo se leggibili (sigle verificate il 15.11.2026). max_eta_ore: la CENAL pubblica le medie orarie con alcune ore di ritardo (3,5 ore alla prima lettura).",
       "url": "https://www.naz.ch/shared/HOUR/{sigla}_it.html",
       "intervallo_minuti": 20,
-      "max_eta_ore": 4,
+      "max_eta_ore": 6,
       "soglia_allarme": 1000,
       "stazioni": [
         {"sigla": "LUG", "nome": "Lugano"},
