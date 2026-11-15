@@ -312,6 +312,21 @@
       "magnitudo_avvertibile": 2.5,
       "intervallo_minuti": 5
     },
+    "radioattivita": {
+      "_nota": "Intensità di dose ambientale, rete NADAM della CENAL: medie orarie lette dalle pagine pubbliche di naz.ch (indirizzo interno del sito, non un servizio ufficiale: può cambiare senza preavviso). soglia_allarme: valore oltre il quale la CENAL riceve l'allarme automatico. Le stazioni «facoltative» sono mostrate solo se leggibili (sigle da verificare).",
+      "url": "https://www.naz.ch/shared/HOUR/{sigla}_it.html",
+      "intervallo_minuti": 20,
+      "max_eta_ore": 4,
+      "soglia_allarme": 1000,
+      "stazioni": [
+        {"sigla": "LUG", "nome": "Lugano"},
+        {"sigla": "SBO", "nome": "Stabio", "facoltativa": true},
+        {"sigla": "MAG", "nome": "Magadino / Cadenazzo", "facoltativa": true},
+        {"sigla": "OTL", "nome": "Locarno-Monti", "facoltativa": true},
+        {"sigla": "PIO", "nome": "Piotta", "facoltativa": true},
+        {"sigla": "SBE", "nome": "San Bernardino", "facoltativa": true}
+      ]
+    },
     "collegamenti": [
       {"titolo": "Traffico: notizie e stato dei passi", "ente": "TCS / Viasuisse", "url": "https://www.tcs.ch/it/tools/infostrada-situazione-attuale-del-traffico/situazione-attuale-traffico.php"},
       {"titolo": "Traffico in tempo reale sulla carta", "ente": "Google Maps, strato del traffico", "url": "https://www.google.com/maps/@46.2,8.95,10z/data=!5m1!1e1?hl=it"},
