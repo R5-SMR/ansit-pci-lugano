@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-20T07:11:40+00:00",
- "generato_locale": "20.11.2026 08:11",
+ "generato": "2026-11-20T07:21:39+00:00",
+ "generato_locale": "20.11.2026 08:21",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,16 +25,16 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "20.11.2026 07:00",
+   "rilevamento": "20.11.2026 07:10",
    "eta_minuti": 11,
-   "temperatura": 5.4,
-   "umidita": 82.7,
+   "temperatura": 5.7,
+   "umidita": 81.4,
    "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
    "vento_kmh": 1.4,
-   "raffica_kmh": 2.0,
-   "direzione": 336.0,
+   "raffica_kmh": 2.1,
+   "direzione": 330.0,
    "pressione": 971.6,
    "serie_24h": {
     "temperatura": [
@@ -80,7 +80,8 @@
      5.1,
      5.3,
      5.2,
-     5.4
+     5.4,
+     5.7
     ],
     "raffica_kmh": [
      3.1,
@@ -125,7 +126,8 @@
      3.5,
      3.4,
      2.4,
-     2.0
+     2.0,
+     2.1
     ],
     "pioggia_oraria": [
      0.0,
@@ -143,17 +145,17 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "20.11.2026 07:00",
+   "rilevamento": "20.11.2026 07:10",
    "eta_minuti": 11,
-   "temperatura": 3.9,
-   "umidita": 50.3,
+   "temperatura": 4.1,
+   "umidita": 49.8,
    "pioggia_10min": null,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 3.1,
-   "raffica_kmh": 4.7,
-   "direzione": 322.0,
-   "pressione": 829.3,
+   "vento_kmh": 2.3,
+   "raffica_kmh": 3.4,
+   "direzione": 328.0,
+   "pressione": 829.4,
    "serie_24h": {
     "temperatura": [
      4.1,
@@ -198,7 +200,8 @@
      3.8,
      4.1,
      3.9,
-     3.9
+     3.9,
+     4.1
     ],
     "raffica_kmh": [
      4.4,
@@ -243,7 +246,8 @@
      3.0,
      2.0,
      3.1,
-     4.7
+     4.7,
+     3.4
     ],
     "pioggia_oraria": [
      0.0,
@@ -253,7 +257,7 @@
      0.0,
      0.0,
      0.0,
-     0
+     0.0
     ]
    }
   }
@@ -353,13 +357,14 @@
    "previsione": null,
    "ritmo": {
     "eta_minuti": 21,
-    "delta_1h": -0.017,
-    "in_salita": false,
+    "delta_1h": 0.012,
+    "in_salita": true,
     "grado_successivo": 2,
     "soglia_successiva": 40.0,
-    "scala": 40.0
+    "scala": 40.0,
+    "ore_alla_soglia": 3259.42
    },
-   "valore": 0.87,
+   "valore": 0.89,
    "livello": 1,
    "soglie": {
     "2": 40,
@@ -369,10 +374,8 @@
    },
    "lat": 46.0177,
    "lon": 8.9625,
-   "trend_8h": "in calo",
+   "trend_8h": "in aumento",
    "serie_8h": [
-    0.9,
-    0.89,
     0.88,
     0.88,
     0.88,
@@ -418,7 +421,9 @@
     0.86,
     0.86,
     0.86,
-    0.87
+    0.87,
+    0.87,
+    0.89
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
   },
@@ -432,13 +437,13 @@
    "unita": "m3/s",
    "previsione": null,
    "ritmo": {
-    "eta_minuti": 31,
-    "delta_1h": 0.105,
+    "eta_minuti": 21,
+    "delta_1h": 0.176,
     "in_salita": true,
     "grado_successivo": 2,
     "soglia_successiva": 55.0,
     "scala": 55.0,
-    "ore_alla_soglia": 508.61
+    "ore_alla_soglia": 303.43
    },
    "valore": 1.6,
    "livello": 1,
@@ -452,10 +457,6 @@
    "lon": 8.9102,
    "trend_8h": "in aumento",
    "serie_8h": [
-    1.38,
-    1.39,
-    1.33,
-    1.24,
     1.22,
     1.36,
     1.35,
@@ -499,6 +500,10 @@
     1.45,
     1.43,
     1.55,
+    1.6,
+    1.5,
+    1.43,
+    1.49,
     1.6
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
@@ -573,12 +578,11 @@
    },
    "ritmo": {
     "eta_minuti": 21,
-    "delta_1h": 0.007,
-    "in_salita": true,
+    "delta_1h": -0.001,
+    "in_salita": false,
     "grado_successivo": 2,
     "soglia_successiva": 270.9,
-    "scala": 0.2,
-    "ore_alla_soglia": 75.29
+    "scala": 0.2
    },
    "valore": 270.37,
    "livello": 1,
@@ -592,7 +596,6 @@
    "lon": 8.9554,
    "trend_8h": "in aumento",
    "serie_8h": [
-    270.37,
     270.36,
     270.37,
     270.37,
@@ -639,6 +642,7 @@
     270.37,
     270.37,
     270.37,
+    270.37,
     270.37
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2101_p_q_7days_it.json"
@@ -654,7 +658,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "rilevamento": "20.11. 07:05",
-   "eta_minuti": 66,
+   "eta_minuti": 76,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.1321,
@@ -721,7 +725,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "rilevamento": "20.11. 07:05",
-   "eta_minuti": 66,
+   "eta_minuti": 76,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.998,
@@ -788,7 +792,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "rilevamento": "20.11. 07:05",
-   "eta_minuti": 66,
+   "eta_minuti": 76,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9522,
@@ -855,7 +859,7 @@
    "parametro": "WL",
    "unita": "m s.l.m.",
    "rilevamento": "20.11. 07:05",
-   "eta_minuti": 66,
+   "eta_minuti": 76,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9959,
@@ -922,7 +926,7 @@
    "parametro": "WL",
    "unita": "m s.l.m.",
    "rilevamento": "20.11. 07:05",
-   "eta_minuti": 66,
+   "eta_minuti": 76,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9245,
@@ -989,7 +993,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "20.11. 07:35",
-   "eta_minuti": 36,
+   "eta_minuti": 46,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.0975,
@@ -1035,7 +1039,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "20.11. 07:35",
-   "eta_minuti": 36,
+   "eta_minuti": 46,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.0597,
@@ -1081,7 +1085,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "20.11. 07:55",
-   "eta_minuti": 16,
+   "eta_minuti": 26,
    "provvisorio": true,
    "proprietario": "UMAm",
    "lat": 46.1038,
@@ -1127,7 +1131,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "20.11. 07:35",
-   "eta_minuti": 36,
+   "eta_minuti": 46,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9763,
@@ -1173,7 +1177,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "20.11. 07:35",
-   "eta_minuti": 36,
+   "eta_minuti": 46,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.008,
@@ -1213,80 +1217,80 @@
  ],
  "meteosvizzera": {
   "disponibile": true,
-  "corsa": "202611200600",
-  "corsa_locale": "20.11. 07:00",
-  "letto": "2026-11-20T06:31:52+00:00",
-  "controllato": "2026-11-20T06:51:56+00:00",
+  "corsa": "202611200700",
+  "corsa_locale": "20.11. 08:00",
+  "letto": "2026-11-20T07:21:39+00:00",
+  "controllato": "2026-11-20T07:21:39+00:00",
   "fonte": "MeteoSvizzera, previsione locale",
   "numero_punti": 26
  },
  "previsione": {
   "disponibile": true,
-  "fonte": "MeteoSvizzera, previsione locale ufficiale (corsa del 20.11. 07:00)",
+  "fonte": "MeteoSvizzera, previsione locale ufficiale (corsa del 20.11. 08:00)",
   "orario": [
    {
     "ora": "09:00",
-    "temperatura": 6.4,
+    "temperatura": 6.2,
     "umidita": 94,
     "pioggia_mm": 0.0,
     "pioggia_alta_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 6.8,
-    "raffica_kmh": 15.7,
-    "raffica_alta_kmh": 21.4,
+    "vento_kmh": 6.9,
+    "raffica_kmh": 12.1,
+    "raffica_alta_kmh": 17.7,
     "codice": 0
    },
    {
     "ora": "10:00",
-    "temperatura": 8.3,
+    "temperatura": 8.1,
     "umidita": 84,
     "pioggia_mm": 0.0,
     "pioggia_alta_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 5.9,
-    "raffica_kmh": 15.0,
-    "raffica_alta_kmh": 20.3,
+    "vento_kmh": 6.8,
+    "raffica_kmh": 15.2,
+    "raffica_alta_kmh": 20.5,
     "codice": 0
    },
    {
     "ora": "11:00",
-    "temperatura": 10.1,
+    "temperatura": 9.8,
     "umidita": 76,
     "pioggia_mm": 0.0,
     "pioggia_alta_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 4.5,
-    "raffica_kmh": 12.5,
-    "raffica_alta_kmh": 15.8,
+    "vento_kmh": 6.5,
+    "raffica_kmh": 16.6,
+    "raffica_alta_kmh": 19.9,
     "codice": 0
    },
    {
     "ora": "12:00",
-    "temperatura": 11.6,
+    "temperatura": 11.3,
     "umidita": 61,
     "pioggia_mm": 0.0,
     "pioggia_alta_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 3.1,
-    "raffica_kmh": 9.9,
-    "raffica_alta_kmh": 13.1,
+    "vento_kmh": 5.8,
+    "raffica_kmh": 14.8,
+    "raffica_alta_kmh": 18.0,
     "codice": 1
    },
    {
     "ora": "13:00",
-    "temperatura": 12.7,
+    "temperatura": 12.3,
     "umidita": 63,
     "pioggia_mm": 0.0,
     "pioggia_alta_mm": 0.0,
     "prob_pioggia": 0,
-    "vento_kmh": 2.8,
-    "raffica_kmh": 6.6,
-    "raffica_alta_kmh": 12.9,
+    "vento_kmh": 5.0,
+    "raffica_kmh": 12.9,
+    "raffica_alta_kmh": 19.3,
     "codice": 3
    },
    {
     "ora": "14:00",
-    "temperatura": 13.1,
+    "temperatura": 12.7,
     "umidita": 64,
     "pioggia_mm": 0.0,
     "pioggia_alta_mm": 0.0,
@@ -1298,7 +1302,7 @@
    },
    {
     "ora": "15:00",
-    "temperatura": 12.6,
+    "temperatura": 12.5,
     "umidita": 61,
     "pioggia_mm": 0.0,
     "pioggia_alta_mm": 0.0,
@@ -1322,7 +1326,7 @@
    },
    {
     "ora": "17:00",
-    "temperatura": 10.6,
+    "temperatura": 10.5,
     "umidita": 84,
     "pioggia_mm": 0.0,
     "pioggia_alta_mm": 0.0,
@@ -1334,7 +1338,7 @@
    },
    {
     "ora": "18:00",
-    "temperatura": 9.5,
+    "temperatura": 9.4,
     "umidita": 79,
     "pioggia_mm": 0.0,
     "pioggia_alta_mm": 0.0,
@@ -1372,17 +1376,17 @@
   "giorni": [
    {
     "data": "2026-11-20",
-    "tmax": 13.1,
-    "tmin": 6.0,
+    "tmax": 12.7,
+    "tmin": 6.1,
     "pioggia_mm": 0.0,
-    "raffica_max": 15.7,
+    "raffica_max": 16.6,
     "codice": 45,
     "ore": 16
    },
    {
     "data": "2026-11-21",
     "tmax": 14.1,
-    "tmin": 5.6,
+    "tmin": 5.7,
     "pioggia_mm": 0.0,
     "raffica_max": 13.5,
     "codice": 45,
@@ -1426,17 +1430,17 @@
    }
   ],
   "massimi_12h": {
-   "raffica_kmh": 15.7,
-   "raffica_alta_kmh": 21.4,
+   "raffica_kmh": 16.6,
+   "raffica_alta_kmh": 20.5,
    "pioggia_oraria_mm": 0.0,
    "pioggia_totale_mm": 0.0,
    "pioggia_totale_alta_mm": 0.0,
-   "temperatura": 13.1
+   "temperatura": 12.7
   },
   "neve_48h": {
    "zero_termico_min": 1697,
    "zero_termico_max": 2172,
-   "zero_termico_ora": 2102,
+   "zero_termico_ora": 2090,
    "limite_neve_min": 1370.0,
    "neve_48h_cm": 0.0,
    "precipitazione": false,
@@ -1461,7 +1465,7 @@
     "crepuscolo_sera": "17:19"
    }
   ],
-  "letta": "2026-11-20T07:11:40+00:00",
+  "letta": "2026-11-20T07:21:39+00:00",
   "riutilizzata": false,
   "_serie": {
    "hourly": {
@@ -1552,30 +1556,30 @@
      5.9,
      5.4,
      5.9,
-     6.0,
-     6.7,
-     8.4,
-     11.0,
-     12.6,
-     13.8,
-     14.3,
-     14.7,
-     15.0,
-     12.4,
-     8.3,
-     7.1,
-     5.3,
-     5.0,
-     5.5,
-     5.5,
-     5.4,
-     5.6,
-     5.9,
-     5.2,
-     5.2,
      5.8,
-     5.7,
-     6.9,
+     6.6,
+     8.3,
+     11.1,
+     12.7,
+     13.6,
+     14.3,
+     15.2,
+     14.3,
+     11.2,
+     8.7,
+     7.4,
+     5.9,
+     4.8,
+     4.8,
+     4.9,
+     4.8,
+     5.0,
+     4.9,
+     4.2,
+     4.8,
+     5.1,
+     5.5,
+     6.6,
      7.8,
      8.1,
      8.2,
@@ -1616,28 +1620,28 @@
      81,
      82,
      81,
-     78,
      77,
-     55,
-     52,
-     52,
+     76,
+     56,
+     57,
      60,
-     48,
-     72,
+     46,
+     56,
      80,
-     85,
-     98,
-     97,
+     79,
+     84,
      91,
-     88,
+     98,
+     96,
+     92,
+     92,
+     89,
      87,
-     85,
-     88,
-     92,
-     92,
-     88,
-     92,
-     86,
+     94,
+     91,
+     93,
+     94,
+     87,
      88,
      90,
      92,
@@ -1801,29 +1805,29 @@
      4.7,
      4.0,
      3.2,
+     1.5,
      2.8,
-     2.0,
-     1.3,
-     1.1,
+     1.6,
+     2.8,
      0.8,
-     2.7,
-     2.4,
-     3.0,
-     3.3,
-     4.1,
-     6.5,
+     1.1,
+     4.4,
      3.8,
-     4.1,
-     3.9,
-     3.8,
-     4.6,
-     2.3,
+     4.7,
+     4.4,
+     4.3,
+     4.9,
+     3.4,
+     4.8,
+     3.4,
      4.0,
-     3.5,
-     3.9,
-     3.0,
-     2.5,
-     1.8,
+     4.0,
+     3.6,
+     3.1,
+     3.6,
+     3.3,
+     2.7,
+     2.3,
      2.3,
      3.2,
      0.8,
@@ -1862,30 +1866,30 @@
      5.8,
      7.9,
      5.4,
-     5.1,
-     6.5,
+     4.9,
+     8.1,
      5.5,
-     2.9,
-     2.9,
+     3.6,
      5.4,
+     5.4,
+     2.9,
      6.8,
-     3.6,
-     4.3,
+     8.6,
+     7.2,
+     7.6,
+     6.8,
+     6.5,
+     6.5,
+     7.2,
+     7.6,
      6.1,
-     6.5,
-     7.2,
-     7.2,
-     6.5,
+     7.6,
      6.8,
-     5.8,
-     7.2,
-     6.5,
-     5.9,
-     7.6,
-     7.4,
-     7.6,
      5.0,
-     3.6,
+     5.0,
+     6.7,
+     5.4,
+     4.2,
      2.9,
      4.0,
      4.0,
@@ -1927,16 +1931,16 @@
      0,
      0,
      0,
-     2,
-     2,
-     2,
      0,
+     0,
+     0,
+     2,
      1,
-     3,
      2,
      3,
      3,
-     45,
+     3,
+     3,
      45,
      3,
      3,
@@ -1987,29 +1991,29 @@
      2070.0,
      2080.0,
      2080.0,
-     2070.0,
+     2055.0,
+     2077.5,
      2100.0,
      2110.0,
-     2110.0,
-     2140.0,
+     2120.0,
      2160.0,
-     2200.0,
      2180.0,
-     2170.0,
-     2150.0,
-     2150.0,
-     2080.0,
-     2050.0,
-     2050.0,
-     2010.0,
-     2000.0,
-     1970.0,
+     2220.0,
+     2210.0,
+     2190.0,
+     2130.0,
+     2110.0,
+     2070.0,
+     2030.0,
+     2030.0,
      1990.0,
-     1980.0,
-     1967.5,
+     1970.0,
      1960.0,
+     1980.0,
+     1960.0,
+     1945.0,
      1860.0,
-     1800.0,
+     1812.5,
      1690.0,
      1620.0,
      1590.0,
@@ -2097,7 +2101,7 @@
     ],
     "temperature_2m_max": [
      14.3,
-     15.1,
+     15.2,
      8.9,
      14.1,
      10.0,
@@ -2105,8 +2109,8 @@
     ],
     "temperature_2m_min": [
      3.5,
-     5.0,
-     4.8,
+     4.7,
+     4.2,
      4.7,
      1.2,
      6.4
@@ -2121,7 +2125,7 @@
     ],
     "wind_gusts_10m_max": [
      13.0,
-     7.9,
+     8.6,
      9.0,
      18.7,
      10.1,
@@ -2154,146 +2158,146 @@
    }
   },
   "ufficiale": true,
-  "corsa": "20.11. 07:00",
+  "corsa": "20.11. 08:00",
   "fonte_secondaria": "tipo di tempo, umidità, luce e limite neve: Open-Meteo"
  },
  "previsione_comuni": {
-  "corsa": "20.11. 07:00",
+  "corsa": "20.11. 08:00",
   "punti": {
    "Lugano": {
     "12h": {
-     "raffica_max": 15.7,
-     "raffica_alta_max": 21.4,
+     "raffica_max": 16.6,
+     "raffica_alta_max": 20.5,
      "pioggia": 0.0,
      "pioggia_alta": 0.0,
-     "tmin": 6.4,
-     "tmax": 13.1
+     "tmin": 6.2,
+     "tmax": 12.7
     },
     "24h": {
-     "raffica_max": 15.7,
-     "raffica_alta_max": 21.4,
+     "raffica_max": 16.6,
+     "raffica_alta_max": 21.2,
      "pioggia": 0.0,
      "pioggia_alta": 0.0,
-     "tmin": 5.6,
-     "tmax": 13.1
+     "tmin": 5.7,
+     "tmax": 12.7
     }
    },
    "Paradiso": {
     "12h": {
-     "raffica_max": 12.8,
-     "raffica_alta_max": 16.2,
-     "pioggia": 0.2,
-     "pioggia_alta": 0.2,
-     "tmin": 7.2,
-     "tmax": 12.9
-    },
-    "24h": {
-     "raffica_max": 12.8,
-     "raffica_alta_max": 16.2,
-     "pioggia": 0.2,
-     "pioggia_alta": 0.2,
-     "tmin": 5.1,
-     "tmax": 12.9
-    }
-   },
-   "Massagno": {
-    "12h": {
-     "raffica_max": 16.7,
-     "raffica_alta_max": 22.8,
-     "pioggia": 0.0,
-     "pioggia_alta": 0.0,
-     "tmin": 7.2,
-     "tmax": 12.5
-    },
-    "24h": {
-     "raffica_max": 16.7,
-     "raffica_alta_max": 22.8,
-     "pioggia": 0.0,
-     "pioggia_alta": 0.0,
-     "tmin": 5.3,
-     "tmax": 12.5
-    }
-   },
-   "Savosa": {
-    "12h": {
-     "raffica_max": 21.0,
-     "raffica_alta_max": 26.4,
-     "pioggia": 0.0,
-     "pioggia_alta": 0.0,
-     "tmin": 7.5,
-     "tmax": 12.5
-    },
-    "24h": {
-     "raffica_max": 21.0,
-     "raffica_alta_max": 26.4,
-     "pioggia": 0.0,
-     "pioggia_alta": 0.0,
-     "tmin": 5.6,
-     "tmax": 12.5
-    }
-   },
-   "Vezia": {
-    "12h": {
-     "raffica_max": 12.2,
-     "raffica_alta_max": 16.4,
+     "raffica_max": 10.6,
+     "raffica_alta_max": 14.1,
      "pioggia": 0.0,
      "pioggia_alta": 0.0,
      "tmin": 6.8,
      "tmax": 12.6
     },
     "24h": {
-     "raffica_max": 12.2,
-     "raffica_alta_max": 16.4,
+     "raffica_max": 10.6,
+     "raffica_alta_max": 14.1,
      "pioggia": 0.0,
      "pioggia_alta": 0.0,
-     "tmin": 4.8,
+     "tmin": 5.2,
      "tmax": 12.6
+    }
+   },
+   "Massagno": {
+    "12h": {
+     "raffica_max": 16.9,
+     "raffica_alta_max": 22.2,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
+     "tmin": 7.3,
+     "tmax": 12.3
+    },
+    "24h": {
+     "raffica_max": 16.9,
+     "raffica_alta_max": 22.2,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
+     "tmin": 5.4,
+     "tmax": 12.3
+    }
+   },
+   "Savosa": {
+    "12h": {
+     "raffica_max": 19.8,
+     "raffica_alta_max": 26.7,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
+     "tmin": 7.5,
+     "tmax": 12.4
+    },
+    "24h": {
+     "raffica_max": 19.8,
+     "raffica_alta_max": 26.7,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
+     "tmin": 5.7,
+     "tmax": 12.4
+    }
+   },
+   "Vezia": {
+    "12h": {
+     "raffica_max": 12.9,
+     "raffica_alta_max": 17.6,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
+     "tmin": 6.9,
+     "tmax": 12.4
+    },
+    "24h": {
+     "raffica_max": 12.9,
+     "raffica_alta_max": 17.6,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
+     "tmin": 4.9,
+     "tmax": 12.4
     }
    },
    "Porza": {
     "12h": {
-     "raffica_max": 23.1,
-     "raffica_alta_max": 29.0,
+     "raffica_max": 21.0,
+     "raffica_alta_max": 26.5,
      "pioggia": 0.0,
      "pioggia_alta": 0.0,
      "tmin": 7.9,
      "tmax": 12.5
     },
     "24h": {
-     "raffica_max": 23.1,
-     "raffica_alta_max": 29.0,
+     "raffica_max": 21.0,
+     "raffica_alta_max": 26.5,
      "pioggia": 0.0,
      "pioggia_alta": 0.0,
-     "tmin": 6.3,
+     "tmin": 6.4,
      "tmax": 12.5
     }
    },
    "Comano": {
     "12h": {
-     "raffica_max": 27.2,
-     "raffica_alta_max": 34.0,
+     "raffica_max": 24.4,
+     "raffica_alta_max": 31.6,
      "pioggia": 0.0,
      "pioggia_alta": 0.0,
      "tmin": 8.0,
-     "tmax": 12.1
+     "tmax": 11.9
     },
     "24h": {
-     "raffica_max": 27.2,
-     "raffica_alta_max": 34.0,
+     "raffica_max": 24.4,
+     "raffica_alta_max": 31.6,
      "pioggia": 0.0,
      "pioggia_alta": 0.0,
-     "tmin": 6.6,
-     "tmax": 12.1
+     "tmin": 6.7,
+     "tmax": 11.9
     }
    },
    "Canobbio": {
     "12h": {
-     "raffica_max": 15.3,
-     "raffica_alta_max": 23.0,
+     "raffica_max": 15.7,
+     "raffica_alta_max": 23.5,
      "pioggia": 0.0,
      "pioggia_alta": 0.0,
-     "tmin": 7.1,
-     "tmax": 12.6
+     "tmin": 7.5,
+     "tmax": 12.4
     },
     "24h": {
      "raffica_max": 15.9,
@@ -2301,133 +2305,133 @@
      "pioggia": 0.0,
      "pioggia_alta": 0.0,
      "tmin": 5.9,
-     "tmax": 12.6
+     "tmax": 12.4
     }
    },
    "Sorengo": {
     "12h": {
-     "raffica_max": 16.0,
-     "raffica_alta_max": 20.2,
+     "raffica_max": 15.9,
+     "raffica_alta_max": 20.4,
      "pioggia": 0.0,
      "pioggia_alta": 0.0,
-     "tmin": 7.0,
-     "tmax": 12.4
+     "tmin": 7.2,
+     "tmax": 12.1
     },
     "24h": {
-     "raffica_max": 16.0,
-     "raffica_alta_max": 20.2,
+     "raffica_max": 15.9,
+     "raffica_alta_max": 20.4,
      "pioggia": 0.0,
      "pioggia_alta": 0.0,
-     "tmin": 5.3,
-     "tmax": 12.4
+     "tmin": 5.4,
+     "tmax": 12.1
     }
    },
    "Muzzano": {
     "12h": {
-     "raffica_max": 19.3,
-     "raffica_alta_max": 22.1,
-     "pioggia": 0.1,
-     "pioggia_alta": 0.1,
-     "tmin": 6.2,
-     "tmax": 12.7
+     "raffica_max": 19.1,
+     "raffica_alta_max": 21.9,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
+     "tmin": 6.5,
+     "tmax": 12.3
     },
     "24h": {
-     "raffica_max": 19.3,
-     "raffica_alta_max": 22.1,
-     "pioggia": 0.1,
-     "pioggia_alta": 0.1,
-     "tmin": 4.8,
-     "tmax": 12.7
+     "raffica_max": 19.1,
+     "raffica_alta_max": 21.9,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
+     "tmin": 4.9,
+     "tmax": 12.3
     }
    },
    "Collina d'Oro": {
     "12h": {
-     "raffica_max": 13.7,
-     "raffica_alta_max": 20.0,
-     "pioggia": 0.2,
-     "pioggia_alta": 0.2,
-     "tmin": 6.9,
-     "tmax": 12.0
+     "raffica_max": 15.4,
+     "raffica_alta_max": 21.4,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
+     "tmin": 7.6,
+     "tmax": 11.7
     },
     "24h": {
-     "raffica_max": 14.8,
+     "raffica_max": 15.4,
      "raffica_alta_max": 23.2,
-     "pioggia": 0.2,
-     "pioggia_alta": 0.2,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
      "tmin": 6.0,
-     "tmax": 12.0
+     "tmax": 11.7
     }
    },
    "Grancia": {
     "12h": {
-     "raffica_max": 15.1,
-     "raffica_alta_max": 19.5,
-     "pioggia": 0.1,
-     "pioggia_alta": 0.1,
+     "raffica_max": 13.8,
+     "raffica_alta_max": 17.5,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
      "tmin": 6.9,
-     "tmax": 13.0
+     "tmax": 12.8
     },
     "24h": {
-     "raffica_max": 15.1,
-     "raffica_alta_max": 19.5,
-     "pioggia": 0.1,
-     "pioggia_alta": 0.1,
-     "tmin": 4.8,
-     "tmax": 13.0
+     "raffica_max": 13.8,
+     "raffica_alta_max": 18.1,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
+     "tmin": 4.9,
+     "tmax": 12.8
     }
    },
    "Melide": {
     "12h": {
-     "raffica_max": 17.1,
-     "raffica_alta_max": 20.8,
-     "pioggia": 0.5,
-     "pioggia_alta": 0.5,
+     "raffica_max": 14.9,
+     "raffica_alta_max": 18.2,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
      "tmin": 8.1,
-     "tmax": 13.2
+     "tmax": 13.0
     },
     "24h": {
-     "raffica_max": 17.1,
-     "raffica_alta_max": 20.8,
-     "pioggia": 0.5,
-     "pioggia_alta": 0.5,
-     "tmin": 6.1,
-     "tmax": 13.2
+     "raffica_max": 14.9,
+     "raffica_alta_max": 18.2,
+     "pioggia": 0.0,
+     "pioggia_alta": 0.0,
+     "tmin": 6.2,
+     "tmax": 13.0
     }
    },
    "Morcote": {
     "12h": {
-     "raffica_max": 12.3,
-     "raffica_alta_max": 18.6,
-     "pioggia": 0.5,
-     "pioggia_alta": 0.5,
+     "raffica_max": 13.2,
+     "raffica_alta_max": 19.9,
+     "pioggia": 1.6,
+     "pioggia_alta": 1.6,
      "tmin": 8.2,
-     "tmax": 13.1
+     "tmax": 12.8
     },
     "24h": {
      "raffica_max": 14.2,
      "raffica_alta_max": 21.0,
-     "pioggia": 0.5,
-     "pioggia_alta": 0.5,
-     "tmin": 6.2,
-     "tmax": 13.1
+     "pioggia": 1.6,
+     "pioggia_alta": 1.6,
+     "tmin": 6.3,
+     "tmax": 12.8
     }
    },
    "Vico Morcote": {
     "12h": {
-     "raffica_max": 12.5,
-     "raffica_alta_max": 18.2,
-     "pioggia": 0.6,
-     "pioggia_alta": 0.6,
+     "raffica_max": 11.4,
+     "raffica_alta_max": 17.5,
+     "pioggia": 1.2,
+     "pioggia_alta": 1.2,
      "tmin": 8.1,
-     "tmax": 12.7
+     "tmax": 12.4
     },
     "24h": {
      "raffica_max": 16.6,
      "raffica_alta_max": 24.5,
-     "pioggia": 0.6,
-     "pioggia_alta": 0.6,
-     "tmin": 6.7,
-     "tmax": 12.7
+     "pioggia": 1.2,
+     "pioggia_alta": 1.2,
+     "tmin": 6.8,
+     "tmax": 12.4
     }
    }
   }
@@ -2556,7 +2560,7 @@
   ],
   "pru": {
    "disponibile": true,
-   "letto": "2026-11-19T07:21:28+00:00",
+   "letto": "2026-11-20T07:21:39+00:00",
    "fonte": "UFPP, geodati federali",
    "punti": [
     {
@@ -2831,5 +2835,5 @@
  "evidenze": [],
  "cronologia": [],
  "evidenza_durata_minuti": 60,
- "precedente": "2026-11-20T07:02:06+00:00"
+ "precedente": "2026-11-20T07:11:40+00:00"
 }
