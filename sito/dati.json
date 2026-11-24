@@ -1,6 +1,6 @@
 {
- "generato": "2026-11-24T11:31:58+00:00",
- "generato_locale": "24.11.2026 12:31",
+ "generato": "2026-11-24T11:41:47+00:00",
+ "generato_locale": "24.11.2026 12:41",
  "regione": "Consorzio Protezione Civile Regione Lugano Città (R5)",
  "dati_stantii_minuti": 30,
  "comuni": [
@@ -25,17 +25,17 @@
    "disponibile": true,
    "stazione": "LUG",
    "nome": "Lugano",
-   "rilevamento": "24.11.2026 11:20",
+   "rilevamento": "24.11.2026 11:30",
    "eta_minuti": 11,
    "temperatura": 8.9,
-   "umidita": 74.3,
+   "umidita": 74.1,
    "pioggia_10min": 0.0,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 0.6,
-   "raffica_kmh": 1.2,
-   "direzione": 135.0,
-   "pressione": 987.6,
+   "vento_kmh": 0.9,
+   "raffica_kmh": 1.5,
+   "direzione": 199.0,
+   "pressione": 987.5,
    "serie_24h": {
     "temperatura": [
      5.5,
@@ -105,6 +105,7 @@
      8.6,
      8.7,
      8.8,
+     8.9,
      8.9,
      8.9
     ],
@@ -177,7 +178,8 @@
      1.9,
      1.9,
      1.4,
-     1.2
+     1.2,
+     1.5
     ],
     "pioggia_oraria": [
      0.0,
@@ -199,17 +201,17 @@
    "disponibile": true,
    "stazione": "GEN",
    "nome": "Monte Generoso",
-   "rilevamento": "24.11.2026 11:20",
+   "rilevamento": "24.11.2026 11:30",
    "eta_minuti": 11,
    "temperatura": 0.0,
    "umidita": 99.2,
    "pioggia_10min": null,
    "pioggia_1h": 0.0,
    "pioggia_24h": 0.0,
-   "vento_kmh": 1.9,
-   "raffica_kmh": 3.2,
-   "direzione": 123.0,
-   "pressione": 841.6,
+   "vento_kmh": 2.8,
+   "raffica_kmh": 5.3,
+   "direzione": 138.0,
+   "pressione": 841.5,
    "serie_24h": {
     "temperatura": [
      1.5,
@@ -280,6 +282,7 @@
      -0.6,
      -0.6,
      -0.3,
+     0.0,
      0.0
     ],
     "raffica_kmh": [
@@ -351,7 +354,8 @@
      4.4,
      3.7,
      3.3,
-     3.2
+     3.2,
+     5.3
     ],
     "pioggia_oraria": [
      0.0,
@@ -465,12 +469,12 @@
    "previsione": null,
    "ritmo": {
     "eta_minuti": 21,
-    "delta_1h": 0.184,
+    "delta_1h": 0.174,
     "in_salita": false,
     "grado_successivo": 2,
     "soglia_successiva": 40.0,
     "scala": 40.0,
-    "ore_alla_soglia": 213.13
+    "ore_alla_soglia": 225.4
    },
    "valore": 0.78,
    "livello": 1,
@@ -482,10 +486,8 @@
    },
    "lat": 46.0177,
    "lon": 8.9625,
-   "trend_8h": "stabile",
+   "trend_8h": "in aumento",
    "serie_8h": [
-    0.78,
-    0.78,
     0.78,
     0.79,
     0.82,
@@ -531,6 +533,8 @@
     0.81,
     0.79,
     0.79,
+    0.78,
+    0.78,
     0.78
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2321_p_q_7days_it.json"
@@ -546,14 +550,13 @@
    "previsione": null,
    "ritmo": {
     "eta_minuti": 31,
-    "delta_1h": 0.166,
+    "delta_1h": -0.11,
     "in_salita": false,
     "grado_successivo": 2,
     "soglia_successiva": 55.0,
-    "scala": 55.0,
-    "ore_alla_soglia": 322.26
+    "scala": 55.0
    },
-   "valore": 1.5,
+   "valore": 1.61,
    "livello": 1,
    "soglie": {
     "2": 55,
@@ -563,10 +566,8 @@
    },
    "lat": 46.0014,
    "lon": 8.9102,
-   "trend_8h": "in calo",
+   "trend_8h": "in aumento",
    "serie_8h": [
-    1.63,
-    1.39,
     1.53,
     1.71,
     1.53,
@@ -612,7 +613,9 @@
     1.39,
     1.46,
     1.63,
-    1.5
+    1.5,
+    1.53,
+    1.61
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2629_p_q_7days_it.json"
   },
@@ -686,11 +689,12 @@
    },
    "ritmo": {
     "eta_minuti": 21,
-    "delta_1h": -0.001,
+    "delta_1h": 0.001,
     "in_salita": false,
     "grado_successivo": 2,
     "soglia_successiva": 270.9,
-    "scala": 0.2
+    "scala": 0.2,
+    "ore_alla_soglia": 544.0
    },
    "valore": 270.36,
    "livello": 1,
@@ -702,9 +706,8 @@
    },
    "lat": 45.9559,
    "lon": 8.9554,
-   "trend_8h": "stabile",
+   "trend_8h": "in calo",
    "serie_8h": [
-    270.36,
     270.36,
     270.36,
     270.36,
@@ -751,6 +754,7 @@
     270.36,
     270.36,
     270.36,
+    270.36,
     270.36
    ],
    "fonte": "https://www.hydrodaten.admin.ch/plots/p_q_7days/2101_p_q_7days_it.json"
@@ -766,7 +770,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "rilevamento": "24.11. 11:05",
-   "eta_minuti": 86,
+   "eta_minuti": 96,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.1321,
@@ -833,7 +837,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "rilevamento": "24.11. 11:05",
-   "eta_minuti": 86,
+   "eta_minuti": 96,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.998,
@@ -900,7 +904,7 @@
    "parametro": "Q",
    "unita": "m3/s",
    "rilevamento": "24.11. 11:05",
-   "eta_minuti": 86,
+   "eta_minuti": 96,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9522,
@@ -967,7 +971,7 @@
    "parametro": "WL",
    "unita": "m s.l.m.",
    "rilevamento": "24.11. 11:05",
-   "eta_minuti": 86,
+   "eta_minuti": 96,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9959,
@@ -1034,7 +1038,7 @@
    "parametro": "WL",
    "unita": "m s.l.m.",
    "rilevamento": "24.11. 11:05",
-   "eta_minuti": 86,
+   "eta_minuti": 96,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9245,
@@ -1101,7 +1105,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "24.11. 11:35",
-   "eta_minuti": 56,
+   "eta_minuti": 66,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.0975,
@@ -1147,7 +1151,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "24.11. 11:35",
-   "eta_minuti": 56,
+   "eta_minuti": 66,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.0597,
@@ -1192,8 +1196,8 @@
    "bacino": "Vedeggio (alto)",
    "parametro": "Prec",
    "unita": "mm",
-   "rilevamento": "24.11. 11:55",
-   "eta_minuti": 36,
+   "rilevamento": "24.11. 12:25",
+   "eta_minuti": 16,
    "provvisorio": true,
    "proprietario": "UMAm",
    "lat": 46.1038,
@@ -1239,7 +1243,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "24.11. 11:35",
-   "eta_minuti": 56,
+   "eta_minuti": 66,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 45.9763,
@@ -1285,7 +1289,7 @@
    "parametro": "Prec",
    "unita": "mm",
    "rilevamento": "24.11. 11:35",
-   "eta_minuti": 56,
+   "eta_minuti": 66,
    "provvisorio": true,
    "proprietario": "Cantone Ticino, Ufficio dei corsi d'acqua (UCA), via OASI",
    "lat": 46.008,
@@ -1552,15 +1556,15 @@
    "limite_neve_min": 1030.0,
    "neve_48h_cm": 0.0,
    "precipitazione": true,
-   "ore_con_precipitazione": 39,
-   "modello": "MeteoSvizzera ICON-CH (via Open-Meteo)",
-   "limite_min": 1000,
-   "limite_max": 1300,
-   "limite_quando": "mer 03:00",
-   "metodo": "modello",
+   "ore_con_precipitazione": 37,
+   "modello": "Open-Meteo, modello generico",
+   "limite_min": 900,
+   "limite_max": 1500,
+   "limite_quando": "mer 08:00",
+   "metodo": "stima",
    "fino_al_piano": false,
-   "quota_luogo": 286,
-   "nota": "quota delle nevicate del modello, solo ore con precipitazione",
+   "quota_luogo": null,
+   "nota": "stima: zero termico meno 300–600 m secondo l'intensità, solo ore con precipitazione",
    "zero_termico_fonte": "MeteoSvizzera"
   },
   "luce": [
@@ -1580,7 +1584,7 @@
    }
   ],
   "letta": "2026-11-24T11:31:58+00:00",
-  "riutilizzata": false,
+  "riutilizzata": true,
   "_serie": {
    "hourly": {
     "time": [
@@ -2271,6 +2275,7 @@
     ]
    }
   },
+  "motivo_riuso": "HTTPSConnectionPool(host='api.open-meteo.com', port=443): Read timed out. (read timeout=15)",
   "ufficiale": true,
   "corsa": "24.11. 12:00",
   "fonte_secondaria": "tipo di tempo, umidità, luce e limite neve: Open-Meteo"
@@ -2949,5 +2954,5 @@
  "evidenze": [],
  "cronologia": [],
  "evidenza_durata_minuti": 60,
- "precedente": "2026-11-24T11:22:29+00:00"
+ "precedente": "2026-11-24T11:31:58+00:00"
 }
